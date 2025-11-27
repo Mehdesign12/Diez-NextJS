@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Blog | Diez Agency</title>
+    <meta name="description" content="Actualités, astuces et guides sur l'automatisation et la transformation digitale.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://qegewzvyjiijozioqsgq.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlZ2V3enZ5amlpam96aW9xc2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxODExNTMsImV4cCI6MjA3OTc1NzE1M30.2Q84Q6aTfU--ShAa4VzRgEmzzkhdTFb6TZD73mqaar0'
+        // On utilise window.supabase pour être sûr d'appeler la librairie globale
+        // Et on nomme notre client 'supabaseClient' pour éviter le conflit
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey)
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        diez: {
+                            base: '#FFF8F3',
+                            orange: '#FF4D29',
+                            dark: '#0F0F0F',
+                            gray: '#F4F4F5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { width: 100%; max-width: 100vw; overflow-x: hidden; }
+        body { background-color: #FFF8F3; color: #0F0F0F; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navigation (Simplified for Blog) -->
+    <div class="fixed w-full z-50 top-6 transition-all duration-300" id="navbar-container">
+        <nav class="relative z-50 mx-4 md:mx-auto max-w-5xl px-4 py-3 bg-white/90 backdrop-blur-md border border-gray-100 shadow-lg rounded-full flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full overflow-hidden">
+                    <img src="images/logo_clean.png" alt="Diez Logo" class="w-full h-full object-cover">
+                </div>
+                <span class="font-bold text-lg hidden sm:block">Diez Agency</span>
+            </a>
+            <a href="index.html#contact" class="px-6 py-2 bg-diez-orange text-white text-sm font-bold rounded-full hover:bg-orange-600 transition-colors">
+                Retour au site
+            </a>
+        </nav>
+    </div>
+
+    <!-- Header -->
+    <header class="pt-40 pb-20 px-4 text-center">
+        <span class="text-diez-orange font-bold tracking-wider uppercase text-sm mb-4 block">Le Journal</span>
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-6">Insights & Innovations</h1>
+        <p class="text-gray-600 max-w-2xl mx-auto text-lg">Découvrez nos dernières réflexions sur l'IA, l'automatisation et le futur du travail.</p>
+    </header>
+
+    <!-- Blog Grid -->
+    <section class="pb-32 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div id="posts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Loading State -->
+                <div class="col-span-full text-center py-20">
+                    <div class="inline-block w-8 h-8 border-4 border-diez-orange border-t-transparent rounded-full animate-spin"></div>
+                    <p class="mt-4 text-gray-400">Chargement des articles...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (Simplified) -->
+    <footer class="bg-diez-dark text-white py-12 text-center">
+        <p class="text-gray-500 text-sm">© 2025 Diez Agency. Powered by AI.</p>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" onclick="lenis.scrollTo(0)" class="fixed bottom-6 right-6 z-40 w-12 h-12 bg-diez-orange text-white rounded-full shadow-lg shadow-diez-orange/40 flex items-center justify-center transition-all duration-300 opacity-0 translate-y-10 pointer-events-none hover:scale-110 hover:shadow-diez-orange/60 active:scale-95">
+        <i class="fas fa-arrow-up text-lg"></i>
+    </button>
+
+    <script>
+        // Smooth Scroll
+        const lenis = new Lenis({ duration: 1.2, smooth: true });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        // Back to Top Logic
+        const backToTop = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                backToTop.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+            } else {
+                backToTop.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+            }
+        });
+
+        // Fetch Posts from Supabase
+        async function loadPosts() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('posts')
+                    .select('*')
+                    .order('published_at', { ascending: false });
+                
+                const container = document.getElementById('posts-grid');
+
+                if (error) throw error;
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500">Aucun article pour le moment.</div>';
+                    return;
+                }
+
+                container.innerHTML = data.map(post => `
+                    <article class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group flex flex-col h-full">
+                        <div class="relative h-60 overflow-hidden">
+                            <img src="${post.image_url}" alt="${post.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-diez-orange uppercase">
+                                ${post.category || 'News'}
+                            </div>
+                        </div>
+                        <div class="p-8 flex flex-col flex-grow">
+                            <div class="text-xs text-gray-400 mb-3">${new Date(post.published_at).toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', year: 'numeric'})}</div>
+                            <h2 class="text-xl font-bold mb-3 text-diez-dark line-clamp-2 group-hover:text-diez-orange transition-colors">${post.title}</h2>
+                            <p class="text-gray-600 text-sm line-clamp-3 mb-6 flex-grow">${post.summary}</p>
+                            <a href="article.html?id=${post.id}" class="inline-flex items-center gap-2 font-bold text-sm text-diez-dark hover:gap-4 transition-all mt-auto">
+                                Lire l'article <i class="fas fa-arrow-right text-diez-orange"></i>
+                            </a>
+                        </div>
+                    </article>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('posts-grid').innerHTML = '<div class="col-span-full text-center text-red-500">Erreur de connexion à Supabase.</div>';
+            }
+        }
+
+        loadPosts();
+    </script>
+</body>
+</html>
