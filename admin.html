@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Diez Agency | Gestion des Réalisations</title>
+    <meta name="robots" content="noindex, nofollow">
+    
+    <link rel="icon" type="image/png" href="images/logo_clean.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        diez: {
+                            base: '#FFF8F3',
+                            orange: '#FF4D29',
+                            dark: '#0F0F0F',
+                            gray: '#F4F4F5',
+                            surface: '#FFFFFF'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F4F4F5;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen">
+    <!-- Header -->
+    <header class="bg-diez-dark text-white sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-4">
+                    <a href="index.html" class="flex items-center gap-3">
+                        <img src="images/logo_clean.png" alt="Diez" class="w-10 h-10 rounded-full">
+                        <span class="font-bold text-xl">Diez Admin</span>
+                    </a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="work.html" class="text-sm text-gray-300 hover:text-white transition-colors">
+                        <i class="fas fa-external-link-alt mr-2"></i>Voir le site
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Réalisations</p>
+                        <p class="text-3xl font-bold text-diez-dark" id="stat-total">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-diez-orange/10 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-folder text-diez-orange text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Affichées sur l'accueil</p>
+                        <p class="text-3xl font-bold text-diez-dark" id="stat-accueil">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-home text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Actions rapides</p>
+                        <div class="flex gap-2 mt-2">
+                            <button onclick="openModal()" class="px-4 py-2 bg-diez-orange text-white rounded-lg text-sm font-medium hover:bg-diez-orange/90 transition-colors">
+                                <i class="fas fa-plus mr-1"></i> Ajouter
+                            </button>
+                            <button onclick="resetData()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors">
+                                <i class="fas fa-undo mr-1"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des réalisations -->
+        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-diez-dark">Réalisations</h2>
+                <button onclick="openModal()" class="px-4 py-2 bg-diez-orange text-white rounded-lg text-sm font-medium hover:bg-diez-orange/90 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Nouvelle réalisation
+                </button>
+            </div>
+            
+            <div id="realisations-list" class="divide-y divide-gray-100">
+                <!-- Les réalisations seront injectées ici -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Ajout/Modification -->
+    <div id="modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="absolute inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-2xl md:max-h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0">
+                <h3 class="text-xl font-bold text-diez-dark" id="modal-title">Nouvelle réalisation</h3>
+                <button onclick="closeModal()" class="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
+                    <i class="fas fa-times text-gray-500"></i>
+                </button>
+            </div>
+            
+            <form id="realisation-form" class="p-6 overflow-y-auto flex-1 space-y-6">
+                <input type="hidden" id="form-id">
+                
+                <!-- Nom -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nom du projet *</label>
+                    <input type="text" id="form-nom" required
+                           class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all"
+                           placeholder="Ex: Dashboard Fintech">
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+                    <textarea id="form-description" required rows="4"
+                              class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all resize-none"
+                              placeholder="Décrivez le projet en détail..."></textarea>
+                </div>
+
+                <!-- Catégorie & Client -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Catégorie *</label>
+                        <input type="text" id="form-categorie" required
+                               class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all"
+                               placeholder="Ex: Design Produit • Développement">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Client</label>
+                        <input type="text" id="form-client"
+                               class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all"
+                               placeholder="Ex: FinanceApp">
+                    </div>
+                </div>
+
+                <!-- Année & Lien -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Année</label>
+                        <input type="text" id="form-annee"
+                               class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all"
+                               placeholder="Ex: 2024">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Lien du projet</label>
+                        <input type="url" id="form-lien"
+                               class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all"
+                               placeholder="https://...">
+                    </div>
+                </div>
+
+                <!-- Technologies -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Technologies (séparées par des virgules)</label>
+                    <input type="text" id="form-technologies"
+                           class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all"
+                           placeholder="Ex: React, Node.js, PostgreSQL">
+                </div>
+
+                <!-- Apparence -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Couleur de fond</label>
+                        <div class="flex gap-2">
+                            <input type="color" id="form-couleur-fond" value="#1f2937"
+                                   class="w-12 h-12 rounded-lg border border-gray-200 cursor-pointer">
+                            <input type="text" id="form-couleur-fond-text" value="#1f2937"
+                                   class="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all text-sm"
+                                   onchange="document.getElementById('form-couleur-fond').value = this.value">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Couleur du texte</label>
+                        <select id="form-couleur-texte"
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all">
+                            <option value="white">Blanc</option>
+                            <option value="dark">Sombre</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Icône FontAwesome</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                <i id="icon-preview" class="fas fa-chart-line"></i>
+                            </span>
+                            <input type="text" id="form-icone" value="fa-chart-line"
+                                   class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all"
+                                   placeholder="fa-chart-line"
+                                   oninput="updateIconPreview()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Images -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Images du projet</label>
+                    <div class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-diez-orange transition-colors cursor-pointer" onclick="document.getElementById('form-images').click()">
+                        <input type="file" id="form-images" multiple accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-300 mb-2"></i>
+                        <p class="text-gray-500 text-sm">Cliquez pour ajouter des images</p>
+                        <p class="text-gray-400 text-xs mt-1">PNG, JPG jusqu'à 5MB</p>
+                    </div>
+                    <div id="images-preview" class="grid grid-cols-4 gap-2 mt-4"></div>
+                </div>
+
+                <!-- Vidéos -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">URLs des vidéos (YouTube, Vimeo...)</label>
+                    <div id="videos-container" class="space-y-2">
+                        <div class="flex gap-2">
+                            <input type="url" class="video-input flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all"
+                                   placeholder="https://youtube.com/watch?v=...">
+                            <button type="button" onclick="addVideoInput()" class="px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Afficher sur l'accueil -->
+                <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+                    <input type="checkbox" id="form-afficher-accueil" checked
+                           class="w-5 h-5 text-diez-orange rounded focus:ring-diez-orange">
+                    <label for="form-afficher-accueil" class="text-sm font-medium text-gray-700">
+                        Afficher cette réalisation sur la page d'accueil
+                    </label>
+                </div>
+            </form>
+
+            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+                <button type="button" onclick="closeModal()" class="px-6 py-3 text-gray-600 font-medium hover:bg-gray-200 rounded-xl transition-colors">
+                    Annuler
+                </button>
+                <button type="submit" form="realisation-form" class="px-6 py-3 bg-diez-orange text-white font-medium rounded-xl hover:bg-diez-orange/90 transition-colors">
+                    <i class="fas fa-save mr-2"></i>Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation de suppression -->
+    <div id="delete-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-2xl p-6">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-trash-alt text-2xl text-red-500"></i>
+                </div>
+                <h3 class="text-xl font-bold text-diez-dark mb-2">Supprimer cette réalisation ?</h3>
+                <p class="text-gray-500 mb-6">Cette action est irréversible. La réalisation sera définitivement supprimée.</p>
+                <div class="flex gap-3 justify-center">
+                    <button onclick="closeDeleteModal()" class="px-6 py-3 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors">
+                        Annuler
+                    </button>
+                    <button onclick="confirmDelete()" class="px-6 py-3 bg-red-500 text-white font-medium rounded-xl hover:bg-red-600 transition-colors">
+                        <i class="fas fa-trash-alt mr-2"></i>Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/realisations.js"></script>
+    <script>
+        let currentEditId = null;
+        let deleteTargetId = null;
+        let uploadedImages = [];
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRealisations();
+            
+            // Sync couleur picker et text input
+            document.getElementById('form-couleur-fond').addEventListener('input', (e) => {
+                document.getElementById('form-couleur-fond-text').value = e.target.value;
+            });
+
+            // Form submit
+            document.getElementById('realisation-form').addEventListener('submit', handleSubmit);
+        });
+
+        function loadRealisations() {
+            const realisations = RealisationsManager.get();
+            const container = document.getElementById('realisations-list');
+            
+            // Update stats
+            document.getElementById('stat-total').textContent = realisations.length;
+            document.getElementById('stat-accueil').textContent = realisations.filter(r => r.afficherAccueil).length;
+
+            if (realisations.length === 0) {
+                container.innerHTML = `
+                    <div class="p-12 text-center">
+                        <i class="fas fa-folder-open text-5xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500 mb-4">Aucune réalisation pour le moment</p>
+                        <button onclick="openModal()" class="px-6 py-3 bg-diez-orange text-white rounded-xl font-medium hover:bg-diez-orange/90 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Ajouter une réalisation
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = realisations.map(r => `
+                <div class="p-4 md:p-6 hover:bg-gray-50 transition-colors card-hover">
+                    <div class="flex flex-col md:flex-row md:items-center gap-4">
+                        <!-- Preview -->
+                        <div class="w-full md:w-24 h-32 md:h-16 rounded-xl flex items-center justify-center flex-shrink-0" style="background-color: ${r.couleurFond}">
+                            <i class="fas ${r.icone} text-2xl ${r.couleurTexte === 'white' ? 'text-white' : 'text-gray-800'}"></i>
+                        </div>
+                        
+                        <!-- Info -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="font-bold text-diez-dark">${r.nom}</h3>
+                                ${r.afficherAccueil ? '<span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">Accueil</span>' : ''}
+                            </div>
+                            <p class="text-gray-500 text-sm truncate">${r.categorie}</p>
+                            <p class="text-gray-400 text-xs mt-1">${r.client || 'Client non spécifié'} • ${r.annee || 'Année non spécifiée'}</p>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="flex items-center gap-2 justify-end">
+                            <button onclick="editRealisation('${r.id}')" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-diez-orange hover:text-white text-gray-600 flex items-center justify-center transition-all" title="Modifier">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button onclick="openDeleteModal('${r.id}')" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-red-500 hover:text-white text-gray-600 flex items-center justify-center transition-all" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openModal(editId = null) {
+            currentEditId = editId;
+            uploadedImages = [];
+            document.getElementById('modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            if (editId) {
+                const r = RealisationsManager.getById(editId);
+                if (r) {
+                    document.getElementById('modal-title').textContent = 'Modifier la réalisation';
+                    document.getElementById('form-id').value = r.id;
+                    document.getElementById('form-nom').value = r.nom;
+                    document.getElementById('form-description').value = r.description;
+                    document.getElementById('form-categorie').value = r.categorie;
+                    document.getElementById('form-client').value = r.client || '';
+                    document.getElementById('form-annee').value = r.annee || '';
+                    document.getElementById('form-lien').value = r.lien || '';
+                    document.getElementById('form-technologies').value = (r.technologies || []).join(', ');
+                    document.getElementById('form-couleur-fond').value = r.couleurFond;
+                    document.getElementById('form-couleur-fond-text').value = r.couleurFond;
+                    document.getElementById('form-couleur-texte').value = r.couleurTexte;
+                    document.getElementById('form-icone').value = r.icone;
+                    document.getElementById('form-afficher-accueil').checked = r.afficherAccueil;
+                    uploadedImages = r.images || [];
+                    updateIconPreview();
+                    renderImagesPreview();
+                    
+                    // Videos
+                    const videosContainer = document.getElementById('videos-container');
+                    if (r.videos && r.videos.length > 0) {
+                        videosContainer.innerHTML = r.videos.map((v, i) => `
+                            <div class="flex gap-2">
+                                <input type="url" class="video-input flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all"
+                                       placeholder="https://youtube.com/watch?v=..." value="${v}">
+                                ${i === 0 ? `<button type="button" onclick="addVideoInput()" class="px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors"><i class="fas fa-plus"></i></button>` : `<button type="button" onclick="this.parentElement.remove()" class="px-4 py-3 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors"><i class="fas fa-minus"></i></button>`}
+                            </div>
+                        `).join('');
+                    }
+                }
+            } else {
+                document.getElementById('modal-title').textContent = 'Nouvelle réalisation';
+                document.getElementById('realisation-form').reset();
+                document.getElementById('form-id').value = '';
+                document.getElementById('form-couleur-fond').value = '#1f2937';
+                document.getElementById('form-couleur-fond-text').value = '#1f2937';
+                document.getElementById('form-icone').value = 'fa-chart-line';
+                document.getElementById('form-afficher-accueil').checked = true;
+                document.getElementById('images-preview').innerHTML = '';
+                document.getElementById('videos-container').innerHTML = `
+                    <div class="flex gap-2">
+                        <input type="url" class="video-input flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all"
+                               placeholder="https://youtube.com/watch?v=...">
+                        <button type="button" onclick="addVideoInput()" class="px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                `;
+                updateIconPreview();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            document.body.style.overflow = '';
+            currentEditId = null;
+        }
+
+        function updateIconPreview() {
+            const icon = document.getElementById('form-icone').value;
+            document.getElementById('icon-preview').className = 'fas ' + icon;
+        }
+
+        function addVideoInput() {
+            const container = document.getElementById('videos-container');
+            const div = document.createElement('div');
+            div.className = 'flex gap-2';
+            div.innerHTML = `
+                <input type="url" class="video-input flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all"
+                       placeholder="https://youtube.com/watch?v=...">
+                <button type="button" onclick="this.parentElement.remove()" class="px-4 py-3 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors">
+                    <i class="fas fa-minus"></i>
+                </button>
+            `;
+            container.appendChild(div);
+        }
+
+        async function handleImageUpload(event) {
+            const files = event.target.files;
+            for (const file of files) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('L\'image ' + file.name + ' est trop grande (max 5MB)');
+                    continue;
+                }
+                const base64 = await RealisationsManager.imageToBase64(file);
+                uploadedImages.push(base64);
+            }
+            renderImagesPreview();
+        }
+
+        function renderImagesPreview() {
+            const container = document.getElementById('images-preview');
+            container.innerHTML = uploadedImages.map((img, i) => `
+                <div class="relative group">
+                    <img src="${img}" class="w-full h-20 object-cover rounded-lg">
+                    <button type="button" onclick="removeImage(${i})" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            renderImagesPreview();
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            
+            const videos = Array.from(document.querySelectorAll('.video-input'))
+                .map(input => input.value.trim())
+                .filter(v => v);
+
+            const data = {
+                nom: document.getElementById('form-nom').value,
+                description: document.getElementById('form-description').value,
+                categorie: document.getElementById('form-categorie').value,
+                client: document.getElementById('form-client').value,
+                annee: document.getElementById('form-annee').value,
+                lien: document.getElementById('form-lien').value,
+                technologies: document.getElementById('form-technologies').value.split(',').map(t => t.trim()).filter(t => t),
+                couleurFond: document.getElementById('form-couleur-fond').value,
+                couleurTexte: document.getElementById('form-couleur-texte').value,
+                icone: document.getElementById('form-icone').value,
+                images: uploadedImages,
+                videos: videos,
+                afficherAccueil: document.getElementById('form-afficher-accueil').checked
+            };
+
+            if (currentEditId) {
+                RealisationsManager.update(currentEditId, data);
+            } else {
+                RealisationsManager.add(data);
+            }
+
+            closeModal();
+            loadRealisations();
+        }
+
+        function editRealisation(id) {
+            openModal(id);
+        }
+
+        function openDeleteModal(id) {
+            deleteTargetId = id;
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.add('hidden');
+            deleteTargetId = null;
+        }
+
+        function confirmDelete() {
+            if (deleteTargetId) {
+                RealisationsManager.delete(deleteTargetId);
+                loadRealisations();
+            }
+            closeDeleteModal();
+        }
+
+        function resetData() {
+            if (confirm('Êtes-vous sûr de vouloir réinitialiser toutes les données aux valeurs par défaut ?')) {
+                RealisationsManager.reset();
+                loadRealisations();
+            }
+        }
+    </script>
+</body>
+</html>
