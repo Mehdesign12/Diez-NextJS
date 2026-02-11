@@ -13,6 +13,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -44,6 +47,18 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
         }
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #FF4D29;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="antialiased min-h-screen">
@@ -56,6 +71,9 @@
                         <img src="images/logo_clean.png" alt="Diez" class="w-10 h-10 rounded-full">
                         <span class="font-bold text-xl">Diez Admin</span>
                     </a>
+                    <span id="connection-status" class="text-xs px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400">
+                        <i class="fas fa-circle text-[8px] mr-1"></i>Connexion...
+                    </span>
                 </div>
                 <div class="flex items-center gap-4">
                     <a href="work.html" class="text-sm text-gray-300 hover:text-white transition-colors">
@@ -73,7 +91,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm">Total Réalisations</p>
-                        <p class="text-3xl font-bold text-diez-dark" id="stat-total">0</p>
+                        <p class="text-3xl font-bold text-diez-dark" id="stat-total">-</p>
                     </div>
                     <div class="w-12 h-12 bg-diez-orange/10 rounded-xl flex items-center justify-center">
                         <i class="fas fa-folder text-diez-orange text-xl"></i>
@@ -84,7 +102,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm">Affichées sur l'accueil</p>
-                        <p class="text-3xl font-bold text-diez-dark" id="stat-accueil">0</p>
+                        <p class="text-3xl font-bold text-diez-dark" id="stat-accueil">-</p>
                     </div>
                     <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                         <i class="fas fa-home text-green-600 text-xl"></i>
@@ -98,9 +116,6 @@
                         <div class="flex gap-2 mt-2">
                             <button onclick="openModal()" class="px-4 py-2 bg-diez-orange text-white rounded-lg text-sm font-medium hover:bg-diez-orange/90 transition-colors">
                                 <i class="fas fa-plus mr-1"></i> Ajouter
-                            </button>
-                            <button onclick="resetData()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors">
-                                <i class="fas fa-undo mr-1"></i> Reset
                             </button>
                         </div>
                     </div>
@@ -118,7 +133,11 @@
             </div>
             
             <div id="realisations-list" class="divide-y divide-gray-100">
-                <!-- Les réalisations seront injectées ici -->
+                <!-- Loading state -->
+                <div class="p-12 text-center" id="loading-state">
+                    <div class="loading-spinner mx-auto mb-4"></div>
+                    <p class="text-gray-500">Chargement des réalisations...</p>
+                </div>
             </div>
         </div>
     </main>
@@ -230,11 +249,17 @@
                 <!-- Images -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Images du projet</label>
-                    <div class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-diez-orange transition-colors cursor-pointer" onclick="document.getElementById('form-images').click()">
+                    <div id="upload-zone" class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-diez-orange transition-colors cursor-pointer" onclick="document.getElementById('form-images').click()">
                         <input type="file" id="form-images" multiple accept="image/*" class="hidden" onchange="handleImageUpload(event)">
                         <i class="fas fa-cloud-upload-alt text-4xl text-gray-300 mb-2"></i>
                         <p class="text-gray-500 text-sm">Cliquez pour ajouter des images</p>
                         <p class="text-gray-400 text-xs mt-1">PNG, JPG jusqu'à 5MB</p>
+                    </div>
+                    <div id="upload-progress" class="hidden mt-4">
+                        <div class="flex items-center gap-3">
+                            <div class="loading-spinner"></div>
+                            <span class="text-sm text-gray-500">Upload en cours...</span>
+                        </div>
                     </div>
                     <div id="images-preview" class="grid grid-cols-4 gap-2 mt-4"></div>
                 </div>
@@ -267,8 +292,9 @@
                 <button type="button" onclick="closeModal()" class="px-6 py-3 text-gray-600 font-medium hover:bg-gray-200 rounded-xl transition-colors">
                     Annuler
                 </button>
-                <button type="submit" form="realisation-form" class="px-6 py-3 bg-diez-orange text-white font-medium rounded-xl hover:bg-diez-orange/90 transition-colors">
-                    <i class="fas fa-save mr-2"></i>Enregistrer
+                <button type="submit" form="realisation-form" id="submit-btn" class="px-6 py-3 bg-diez-orange text-white font-medium rounded-xl hover:bg-diez-orange/90 transition-colors flex items-center gap-2">
+                    <i class="fas fa-save"></i>
+                    <span>Enregistrer</span>
                 </button>
             </div>
         </div>
@@ -288,24 +314,62 @@
                     <button onclick="closeDeleteModal()" class="px-6 py-3 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors">
                         Annuler
                     </button>
-                    <button onclick="confirmDelete()" class="px-6 py-3 bg-red-500 text-white font-medium rounded-xl hover:bg-red-600 transition-colors">
-                        <i class="fas fa-trash-alt mr-2"></i>Supprimer
+                    <button onclick="confirmDelete()" id="delete-confirm-btn" class="px-6 py-3 bg-red-500 text-white font-medium rounded-xl hover:bg-red-600 transition-colors flex items-center gap-2">
+                        <i class="fas fa-trash-alt"></i>
+                        <span>Supprimer</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Toast notifications -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+    <script src="js/supabase-config.js"></script>
     <script src="js/realisations.js"></script>
     <script>
         let currentEditId = null;
         let deleteTargetId = null;
         let uploadedImages = [];
+        let isLoading = false;
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 transform translate-x-full transition-transform duration-300 ${
+                type === 'success' ? 'bg-green-500 text-white' : 
+                type === 'error' ? 'bg-red-500 text-white' : 
+                'bg-gray-800 text-white'
+            }`;
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.remove('translate-x-full'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Update connection status
+        function updateConnectionStatus(connected) {
+            const status = document.getElementById('connection-status');
+            if (connected) {
+                status.className = 'text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400';
+                status.innerHTML = '<i class="fas fa-circle text-[8px] mr-1"></i>Connecté';
+            } else {
+                status.className = 'text-xs px-2 py-1 rounded-full bg-red-500/20 text-red-400';
+                status.innerHTML = '<i class="fas fa-circle text-[8px] mr-1"></i>Déconnecté';
+            }
+        }
 
         // Initialisation
-        document.addEventListener('DOMContentLoaded', () => {
-            loadRealisations();
-            
+        document.addEventListener('DOMContentLoaded', async () => {
             // Sync couleur picker et text input
             document.getElementById('form-couleur-fond').addEventListener('input', (e) => {
                 document.getElementById('form-couleur-fond-text').value = e.target.value;
@@ -313,84 +377,113 @@
 
             // Form submit
             document.getElementById('realisation-form').addEventListener('submit', handleSubmit);
+
+            // Load data
+            await loadRealisations();
         });
 
-        function loadRealisations() {
-            const realisations = RealisationsManager.get();
+        async function loadRealisations() {
             const container = document.getElementById('realisations-list');
+            const loadingState = document.getElementById('loading-state');
             
-            // Update stats
-            document.getElementById('stat-total').textContent = realisations.length;
-            document.getElementById('stat-accueil').textContent = realisations.filter(r => r.afficherAccueil).length;
+            try {
+                const realisations = await RealisationsManager.get();
+                updateConnectionStatus(true);
+                
+                // Update stats
+                document.getElementById('stat-total').textContent = realisations.length;
+                document.getElementById('stat-accueil').textContent = realisations.filter(r => r.afficher_accueil).length;
 
-            if (realisations.length === 0) {
+                if (realisations.length === 0) {
+                    container.innerHTML = `
+                        <div class="p-12 text-center">
+                            <i class="fas fa-folder-open text-5xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-500 mb-4">Aucune réalisation pour le moment</p>
+                            <button onclick="openModal()" class="px-6 py-3 bg-diez-orange text-white rounded-xl font-medium hover:bg-diez-orange/90 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Ajouter une réalisation
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = realisations.map(r => {
+                    const couleurFond = r.couleur_fond || '#1f2937';
+                    const couleurTexte = r.couleur_texte || 'white';
+                    const icone = r.icone || 'fa-chart-line';
+                    const afficherAccueil = r.afficher_accueil;
+                    
+                    return `
+                    <div class="p-4 md:p-6 hover:bg-gray-50 transition-colors card-hover">
+                        <div class="flex flex-col md:flex-row md:items-center gap-4">
+                            <!-- Preview -->
+                            <div class="w-full md:w-24 h-32 md:h-16 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden" style="background-color: ${couleurFond}">
+                                ${r.images && r.images.length > 0 
+                                    ? `<img src="${r.images[0]}" alt="${r.nom}" class="w-full h-full object-cover">`
+                                    : `<i class="fas ${icone} text-2xl ${couleurTexte === 'white' ? 'text-white' : 'text-gray-800'}"></i>`
+                                }
+                            </div>
+                            
+                            <!-- Info -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h3 class="font-bold text-diez-dark">${r.nom}</h3>
+                                    ${afficherAccueil ? '<span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">Accueil</span>' : ''}
+                                </div>
+                                <p class="text-gray-500 text-sm truncate">${r.categorie || ''}</p>
+                                <p class="text-gray-400 text-xs mt-1">${r.client || 'Client non spécifié'} • ${r.annee || 'Année non spécifiée'}</p>
+                            </div>
+                            
+                            <!-- Actions -->
+                            <div class="flex items-center gap-2 justify-end">
+                                <button onclick="editRealisation('${r.id}')" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-diez-orange hover:text-white text-gray-600 flex items-center justify-center transition-all" title="Modifier">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                                <button onclick="openDeleteModal('${r.id}')" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-red-500 hover:text-white text-gray-600 flex items-center justify-center transition-all" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `}).join('');
+            } catch (error) {
+                console.error('Error loading realisations:', error);
+                updateConnectionStatus(false);
                 container.innerHTML = `
                     <div class="p-12 text-center">
-                        <i class="fas fa-folder-open text-5xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500 mb-4">Aucune réalisation pour le moment</p>
-                        <button onclick="openModal()" class="px-6 py-3 bg-diez-orange text-white rounded-xl font-medium hover:bg-diez-orange/90 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Ajouter une réalisation
+                        <i class="fas fa-exclamation-triangle text-5xl text-red-300 mb-4"></i>
+                        <p class="text-gray-500 mb-4">Erreur de connexion à la base de données</p>
+                        <button onclick="loadRealisations()" class="px-6 py-3 bg-diez-orange text-white rounded-xl font-medium hover:bg-diez-orange/90 transition-colors">
+                            <i class="fas fa-redo mr-2"></i>Réessayer
                         </button>
                     </div>
                 `;
-                return;
             }
-
-            container.innerHTML = realisations.map(r => `
-                <div class="p-4 md:p-6 hover:bg-gray-50 transition-colors card-hover">
-                    <div class="flex flex-col md:flex-row md:items-center gap-4">
-                        <!-- Preview -->
-                        <div class="w-full md:w-24 h-32 md:h-16 rounded-xl flex items-center justify-center flex-shrink-0" style="background-color: ${r.couleurFond}">
-                            <i class="fas ${r.icone} text-2xl ${r.couleurTexte === 'white' ? 'text-white' : 'text-gray-800'}"></i>
-                        </div>
-                        
-                        <!-- Info -->
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <h3 class="font-bold text-diez-dark">${r.nom}</h3>
-                                ${r.afficherAccueil ? '<span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">Accueil</span>' : ''}
-                            </div>
-                            <p class="text-gray-500 text-sm truncate">${r.categorie}</p>
-                            <p class="text-gray-400 text-xs mt-1">${r.client || 'Client non spécifié'} • ${r.annee || 'Année non spécifiée'}</p>
-                        </div>
-                        
-                        <!-- Actions -->
-                        <div class="flex items-center gap-2 justify-end">
-                            <button onclick="editRealisation('${r.id}')" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-diez-orange hover:text-white text-gray-600 flex items-center justify-center transition-all" title="Modifier">
-                                <i class="fas fa-pen"></i>
-                            </button>
-                            <button onclick="openDeleteModal('${r.id}')" class="w-10 h-10 rounded-xl bg-gray-100 hover:bg-red-500 hover:text-white text-gray-600 flex items-center justify-center transition-all" title="Supprimer">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
         }
 
-        function openModal(editId = null) {
+        async function openModal(editId = null) {
             currentEditId = editId;
             uploadedImages = [];
             document.getElementById('modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
             
             if (editId) {
-                const r = RealisationsManager.getById(editId);
+                const r = await RealisationsManager.getById(editId);
                 if (r) {
                     document.getElementById('modal-title').textContent = 'Modifier la réalisation';
                     document.getElementById('form-id').value = r.id;
-                    document.getElementById('form-nom').value = r.nom;
-                    document.getElementById('form-description').value = r.description;
-                    document.getElementById('form-categorie').value = r.categorie;
+                    document.getElementById('form-nom').value = r.nom || '';
+                    document.getElementById('form-description').value = r.description || '';
+                    document.getElementById('form-categorie').value = r.categorie || '';
                     document.getElementById('form-client').value = r.client || '';
                     document.getElementById('form-annee').value = r.annee || '';
                     document.getElementById('form-lien').value = r.lien || '';
                     document.getElementById('form-technologies').value = (r.technologies || []).join(', ');
-                    document.getElementById('form-couleur-fond').value = r.couleurFond;
-                    document.getElementById('form-couleur-fond-text').value = r.couleurFond;
-                    document.getElementById('form-couleur-texte').value = r.couleurTexte;
-                    document.getElementById('form-icone').value = r.icone;
-                    document.getElementById('form-afficher-accueil').checked = r.afficherAccueil;
+                    document.getElementById('form-couleur-fond').value = r.couleur_fond || '#1f2937';
+                    document.getElementById('form-couleur-fond-text').value = r.couleur_fond || '#1f2937';
+                    document.getElementById('form-couleur-texte').value = r.couleur_texte || 'white';
+                    document.getElementById('form-icone').value = r.icone || 'fa-chart-line';
+                    document.getElementById('form-afficher-accueil').checked = r.afficher_accueil !== false;
                     uploadedImages = r.images || [];
                     updateIconPreview();
                     renderImagesPreview();
@@ -405,6 +498,8 @@
                                 ${i === 0 ? `<button type="button" onclick="addVideoInput()" class="px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors"><i class="fas fa-plus"></i></button>` : `<button type="button" onclick="this.parentElement.remove()" class="px-4 py-3 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors"><i class="fas fa-minus"></i></button>`}
                             </div>
                         `).join('');
+                    } else {
+                        resetVideosContainer();
                     }
                 }
             } else {
@@ -416,17 +511,21 @@
                 document.getElementById('form-icone').value = 'fa-chart-line';
                 document.getElementById('form-afficher-accueil').checked = true;
                 document.getElementById('images-preview').innerHTML = '';
-                document.getElementById('videos-container').innerHTML = `
-                    <div class="flex gap-2">
-                        <input type="url" class="video-input flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all"
-                               placeholder="https://youtube.com/watch?v=...">
-                        <button type="button" onclick="addVideoInput()" class="px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                `;
+                resetVideosContainer();
                 updateIconPreview();
             }
+        }
+
+        function resetVideosContainer() {
+            document.getElementById('videos-container').innerHTML = `
+                <div class="flex gap-2">
+                    <input type="url" class="video-input flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-diez-orange focus:border-transparent outline-none transition-all"
+                           placeholder="https://youtube.com/watch?v=...">
+                    <button type="button" onclick="addVideoInput()" class="px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            `;
         }
 
         function closeModal() {
@@ -456,15 +555,36 @@
 
         async function handleImageUpload(event) {
             const files = event.target.files;
-            for (const file of files) {
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('L\'image ' + file.name + ' est trop grande (max 5MB)');
-                    continue;
+            const uploadProgress = document.getElementById('upload-progress');
+            const uploadZone = document.getElementById('upload-zone');
+            
+            uploadProgress.classList.remove('hidden');
+            uploadZone.style.pointerEvents = 'none';
+            uploadZone.style.opacity = '0.5';
+            
+            try {
+                for (const file of files) {
+                    if (file.size > 5 * 1024 * 1024) {
+                        showToast(`L'image ${file.name} est trop grande (max 5MB)`, 'error');
+                        continue;
+                    }
+                    
+                    try {
+                        const imageUrl = await RealisationsManager.uploadImage(file);
+                        uploadedImages.push(imageUrl);
+                        showToast('Image uploadée avec succès', 'success');
+                    } catch (err) {
+                        console.error('Upload error:', err);
+                        showToast(`Erreur lors de l'upload de ${file.name}`, 'error');
+                    }
                 }
-                const base64 = await RealisationsManager.imageToBase64(file);
-                uploadedImages.push(base64);
+                renderImagesPreview();
+            } finally {
+                uploadProgress.classList.add('hidden');
+                uploadZone.style.pointerEvents = '';
+                uploadZone.style.opacity = '';
+                event.target.value = ''; // Reset input
             }
-            renderImagesPreview();
         }
 
         function renderImagesPreview() {
@@ -479,46 +599,75 @@
             `).join('');
         }
 
-        function removeImage(index) {
+        async function removeImage(index) {
+            const imageUrl = uploadedImages[index];
+            
+            // Try to delete from storage (don't block on failure)
+            try {
+                await RealisationsManager.deleteImage(imageUrl);
+            } catch (e) {
+                console.warn('Could not delete image from storage:', e);
+            }
+            
             uploadedImages.splice(index, 1);
             renderImagesPreview();
         }
 
-        function handleSubmit(e) {
+        async function handleSubmit(e) {
             e.preventDefault();
             
-            const videos = Array.from(document.querySelectorAll('.video-input'))
-                .map(input => input.value.trim())
-                .filter(v => v);
+            if (isLoading) return;
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const originalContent = submitBtn.innerHTML;
+            
+            isLoading = true;
+            submitBtn.innerHTML = '<div class="loading-spinner"></div><span>Enregistrement...</span>';
+            submitBtn.disabled = true;
+            
+            try {
+                const videos = Array.from(document.querySelectorAll('.video-input'))
+                    .map(input => input.value.trim())
+                    .filter(v => v);
 
-            const data = {
-                nom: document.getElementById('form-nom').value,
-                description: document.getElementById('form-description').value,
-                categorie: document.getElementById('form-categorie').value,
-                client: document.getElementById('form-client').value,
-                annee: document.getElementById('form-annee').value,
-                lien: document.getElementById('form-lien').value,
-                technologies: document.getElementById('form-technologies').value.split(',').map(t => t.trim()).filter(t => t),
-                couleurFond: document.getElementById('form-couleur-fond').value,
-                couleurTexte: document.getElementById('form-couleur-texte').value,
-                icone: document.getElementById('form-icone').value,
-                images: uploadedImages,
-                videos: videos,
-                afficherAccueil: document.getElementById('form-afficher-accueil').checked
-            };
+                const data = {
+                    nom: document.getElementById('form-nom').value,
+                    description: document.getElementById('form-description').value,
+                    categorie: document.getElementById('form-categorie').value,
+                    client: document.getElementById('form-client').value,
+                    annee: document.getElementById('form-annee').value,
+                    lien: document.getElementById('form-lien').value,
+                    technologies: document.getElementById('form-technologies').value.split(',').map(t => t.trim()).filter(t => t),
+                    couleurFond: document.getElementById('form-couleur-fond').value,
+                    couleurTexte: document.getElementById('form-couleur-texte').value,
+                    icone: document.getElementById('form-icone').value,
+                    images: uploadedImages,
+                    videos: videos,
+                    afficherAccueil: document.getElementById('form-afficher-accueil').checked
+                };
 
-            if (currentEditId) {
-                RealisationsManager.update(currentEditId, data);
-            } else {
-                RealisationsManager.add(data);
+                if (currentEditId) {
+                    await RealisationsManager.update(currentEditId, data);
+                    showToast('Réalisation mise à jour avec succès', 'success');
+                } else {
+                    await RealisationsManager.add(data);
+                    showToast('Réalisation ajoutée avec succès', 'success');
+                }
+
+                closeModal();
+                await loadRealisations();
+            } catch (error) {
+                console.error('Error saving:', error);
+                showToast('Erreur lors de l\'enregistrement', 'error');
+            } finally {
+                isLoading = false;
+                submitBtn.innerHTML = originalContent;
+                submitBtn.disabled = false;
             }
-
-            closeModal();
-            loadRealisations();
         }
 
-        function editRealisation(id) {
-            openModal(id);
+        async function editRealisation(id) {
+            await openModal(id);
         }
 
         function openDeleteModal(id) {
@@ -531,18 +680,28 @@
             deleteTargetId = null;
         }
 
-        function confirmDelete() {
-            if (deleteTargetId) {
-                RealisationsManager.delete(deleteTargetId);
-                loadRealisations();
-            }
-            closeDeleteModal();
-        }
-
-        function resetData() {
-            if (confirm('Êtes-vous sûr de vouloir réinitialiser toutes les données aux valeurs par défaut ?')) {
-                RealisationsManager.reset();
-                loadRealisations();
+        async function confirmDelete() {
+            if (!deleteTargetId || isLoading) return;
+            
+            const deleteBtn = document.getElementById('delete-confirm-btn');
+            const originalContent = deleteBtn.innerHTML;
+            
+            isLoading = true;
+            deleteBtn.innerHTML = '<div class="loading-spinner"></div><span>Suppression...</span>';
+            deleteBtn.disabled = true;
+            
+            try {
+                await RealisationsManager.delete(deleteTargetId);
+                showToast('Réalisation supprimée', 'success');
+                closeDeleteModal();
+                await loadRealisations();
+            } catch (error) {
+                console.error('Error deleting:', error);
+                showToast('Erreur lors de la suppression', 'error');
+            } finally {
+                isLoading = false;
+                deleteBtn.innerHTML = originalContent;
+                deleteBtn.disabled = false;
             }
         }
     </script>

@@ -984,54 +984,78 @@
         </div>
     </footer>
 
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <!-- Script de gestion des réalisations -->
+    <script src="js/supabase-config.js"></script>
     <script src="js/realisations.js"></script>
     
     <!-- Scripts for simple interactions -->
     <script>
-        // Charger les réalisations dynamiquement
-        function loadAccueilRealisations() {
+        // Charger les réalisations dynamiquement (async pour Supabase)
+        async function loadAccueilRealisations() {
             const container = document.getElementById('slider-work');
             const indicators = document.getElementById('work-indicators');
             
             if (!container || typeof RealisationsManager === 'undefined') return;
             
-            const realisations = RealisationsManager.getAccueil();
+            // Show loading state
+            container.innerHTML = `
+                <div class="min-w-full flex items-center justify-center py-12">
+                    <div class="w-8 h-8 border-4 border-diez-orange border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            `;
             
-            if (realisations.length === 0) return;
-            
-            // Générer les cartes
-            container.innerHTML = realisations.map((r, index) => {
-                const textColorClass = r.couleurTexte === 'white' ? 'text-white' : 'text-gray-900';
-                const descColorClass = r.couleurTexte === 'white' ? 'text-gray-400' : 'text-gray-600';
-                const delayClass = index % 2 === 0 ? 'delay-100' : 'delay-200';
-                const marginTop = index % 2 === 1 ? 'md:mt-16' : '';
+            try {
+                const realisations = await RealisationsManager.getAccueil();
                 
-                return `
-                    <div class="min-w-[85vw] md:min-w-0 snap-center group cursor-pointer ${marginTop} reveal ${delayClass} parallax-card overflow-hidden rounded-3xl shadow-lg mb-0 md:mb-6 aspect-[4/3] relative active:scale-95 transition-transform duration-300"
-                         onclick="window.location.href='work.html?open=${r.id}'">
-                        <div class="parallax-bg absolute inset-0 w-full h-[120%] -top-[10%] flex items-center justify-center" style="background-color: ${r.couleurFond}">
-                            <i class="fas ${r.icone} text-7xl md:text-9xl opacity-30 ${textColorClass} transform scale-90 group-hover:scale-100 transition-transform duration-700"></i>
+                if (realisations.length === 0) {
+                    container.innerHTML = '<div class="text-center py-12 text-gray-500">Aucune réalisation pour le moment</div>';
+                    return;
+                }
+                
+                // Générer les cartes
+                container.innerHTML = realisations.map((r, index) => {
+                    // Normalize data from Supabase (snake_case to camelCase)
+                    const normalized = RealisationsManager.normalize(r);
+                    const textColorClass = normalized.couleurTexte === 'white' ? 'text-white' : 'text-gray-900';
+                    const descColorClass = normalized.couleurTexte === 'white' ? 'text-gray-400' : 'text-gray-600';
+                    const delayClass = index % 2 === 0 ? 'delay-100' : 'delay-200';
+                    const marginTop = index % 2 === 1 ? 'md:mt-16' : '';
+                    
+                    return `
+                        <div class="min-w-[85vw] md:min-w-0 snap-center group cursor-pointer ${marginTop} reveal ${delayClass} parallax-card overflow-hidden rounded-3xl shadow-lg mb-0 md:mb-6 aspect-[4/3] relative active:scale-95 transition-transform duration-300"
+                             onclick="window.location.href='work.html?open=${normalized.id}'">
+                            <div class="parallax-bg absolute inset-0 w-full h-[120%] -top-[10%] flex items-center justify-center" style="background-color: ${normalized.couleurFond}">
+                                ${normalized.images && normalized.images.length > 0 
+                                    ? `<img src="${normalized.images[0]}" alt="${normalized.nom}" class="w-full h-full object-cover">`
+                                    : `<i class="fas ${normalized.icone} text-7xl md:text-9xl opacity-30 ${textColorClass} transform scale-90 group-hover:scale-100 transition-transform duration-700"></i>`
+                                }
+                            </div>
+                            <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors z-10"></div>
+                            
+                            <div class="absolute bottom-0 left-0 right-0 p-8 z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                                <h3 class="text-2xl font-bold ${textColorClass} mb-1">${normalized.nom}</h3>
+                                <p class="${descColorClass} text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">${normalized.categorie}</p>
+                            </div>
                         </div>
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors z-10"></div>
-                        
-                        <div class="absolute bottom-0 left-0 right-0 p-8 z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                            <h3 class="text-2xl font-bold ${textColorClass} mb-1">${r.nom}</h3>
-                            <p class="${descColorClass} text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">${r.categorie}</p>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            // Générer les indicateurs
-            if (indicators) {
-                indicators.innerHTML = realisations.map((_, i) => `
-                    <div class="w-2 h-2 rounded-full ${i === 0 ? 'bg-diez-orange' : 'bg-gray-300'}"></div>
-                `).join('');
+                    `;
+                }).join('');
+                
+                // Générer les indicateurs
+                if (indicators) {
+                    indicators.innerHTML = realisations.map((_, i) => `
+                        <div class="w-2 h-2 rounded-full ${i === 0 ? 'bg-diez-orange' : 'bg-gray-300'}"></div>
+                    `).join('');
+                }
+                
+                // Réinitialiser le scroll reveal et parallax
+                initDynamicEffects();
+            } catch (error) {
+                console.error('Error loading realisations:', error);
+                container.innerHTML = '<div class="text-center py-12 text-gray-500">Erreur de chargement</div>';
             }
-            
-            // Réinitialiser le scroll reveal et parallax
-            initDynamicEffects();
         }
         
         function initDynamicEffects() {
@@ -1039,7 +1063,9 @@
             const newReveals = document.querySelectorAll('#slider-work .reveal:not(.observed)');
             newReveals.forEach(el => {
                 el.classList.add('observed');
-                observer.observe(el);
+                if (typeof observer !== 'undefined') {
+                    observer.observe(el);
+                }
             });
             
             // Réinitialiser parallax pour les nouvelles cartes
