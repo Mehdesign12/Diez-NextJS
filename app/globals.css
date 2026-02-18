@@ -2,6 +2,19 @@
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 @import "tailwindcss";
 
+@theme {
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --color-diez-base: #FFF8F3;
+  --color-diez-orange: #FF4D29;
+  --color-diez-dark: #0F0F0F;
+  --color-diez-gray: #F4F4F5;
+  --color-diez-surface: #FFFFFF;
+  --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.05);
+  --shadow-glow: 0 0 20px rgba(255, 77, 41, 0.3);
+  --radius-4xl: 2rem;
+  --radius-5xl: 2.5rem;
+}
+
 html, body {
   width: 100%;
   max-width: 100vw;
@@ -12,6 +25,7 @@ html, body {
 body {
   background-color: #FFF8F3;
   color: #0F0F0F;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 /* Noise Texture Overlay */
@@ -153,7 +167,7 @@ body {
 .animation-delay-2000 { animation-delay: 2s; }
 .animation-delay-4000 { animation-delay: 4s; }
 
-/* FAQ animate-fadeIn */
+/* FAQ fadeIn */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }

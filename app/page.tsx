@@ -1,3 +1,5 @@
+'use client';
+
 import { LangProvider } from './context/LangContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
