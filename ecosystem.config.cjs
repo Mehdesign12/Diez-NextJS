@@ -2,9 +2,8 @@ module.exports = {
   apps: [
     {
       name: 'diez-nextjs',
-      script: 'npx',
-      args: 'next dev --port 3000',
-      cwd: '/home/user/diez-nextjs',
+      script: 'node_modules/.bin/next',
+      args: 'dev --port 3000',
       env: {
         NODE_ENV: 'development',
         PORT: 3000
