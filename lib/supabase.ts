@@ -1,72 +1,120 @@
-// Supabase client configuration
-import { createClient } from '@supabase/supabase-js';
+// ============================================================
+// Client Supabase + helpers — Diez Agency
+// ============================================================
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tfisxtkfiowogmthshqg.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmaXN4dGtmaW93b2dtdGhzaHFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MzIwMTksImV4cCI6MjA4NjQwODAxOX0._moBp0G0rxn7pCb6ZOXTKi_WJsF-JNE00SoUYOxcSbk';
+import { createClient } from '@supabase/supabase-js';
+import type { Realisation, Article } from './types';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export interface Realisation {
-  id: string;
-  nom: string;
-  description: string;
-  categorie: string;
-  client: string;
-  annee: string;
-  technologies: string[];
-  images: string[];
-  videos: string[];
-  lien: string;
-  couleur_fond: string;
-  couleur_texte: string;
-  icone: string;
-  afficher_accueil: boolean;
-  ordre: number;
+// ─────────────────────────────────────────
+// RÉALISATIONS
+// ─────────────────────────────────────────
+
+export async function getRealisations(): Promise<Realisation[]> {
+  const { data, error } = await supabase
+    .from('realisations')
+    .select('*')
+    .order('display_order', { ascending: true });
+  if (error) { console.error(error); return []; }
+  return data ?? [];
 }
 
-export function normalizeRealisation(r: Realisation) {
-  return {
-    id: r.id,
-    nom: r.nom,
-    description: r.description,
-    categorie: r.categorie,
-    client: r.client,
-    annee: r.annee,
-    technologies: r.technologies || [],
-    images: r.images || [],
-    videos: r.videos || [],
-    lien: r.lien,
-    couleurFond: r.couleur_fond || '#1f2937',
-    couleurTexte: r.couleur_texte || 'white',
-    icone: r.icone || 'fa-chart-line',
-    afficherAccueil: r.afficher_accueil,
-    ordre: r.ordre,
-  };
+export async function getRealisationsFeatured(): Promise<Realisation[]> {
+  const { data, error } = await supabase
+    .from('realisations')
+    .select('*')
+    .eq('featured', true)
+    .order('display_order', { ascending: true });
+  if (error) { console.error(error); return []; }
+  return data ?? [];
 }
 
-export async function getRealisationsAccueil(): Promise<Realisation[]> {
-  try {
-    const { data, error } = await supabase
-      .from('realisations')
-      .select('*')
-      .eq('afficher_accueil', true)
-      .order('ordre', { ascending: true });
-    if (error) throw error;
-    return data || [];
-  } catch {
-    return [];
-  }
+export async function getRealisationBySlug(slug: string): Promise<Realisation | null> {
+  const { data, error } = await supabase
+    .from('realisations')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
 }
 
-export async function getAllRealisations(): Promise<Realisation[]> {
-  try {
-    const { data, error } = await supabase
-      .from('realisations')
-      .select('*')
-      .order('ordre', { ascending: true });
-    if (error) throw error;
-    return data || [];
-  } catch {
-    return [];
-  }
+// ─────────────────────────────────────────
+// ARTICLES
+// ─────────────────────────────────────────
+
+export async function getArticles(): Promise<Article[]> {
+  const { data, error } = await supabase
+    .from('articles')
+    .select('*')
+    .eq('published', true)
+    .order('created_at', { ascending: false });
+  if (error) { console.error(error); return []; }
+  return data ?? [];
+}
+
+export async function getArticleBySlug(slug: string): Promise<Article | null> {
+  const { data, error } = await supabase
+    .from('articles')
+    .select('*')
+    .eq('slug', slug)
+    .eq('published', true)
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+
+export async function getAllArticleSlugs(): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('articles')
+    .select('slug')
+    .eq('published', true);
+  if (error) { console.error(error); return []; }
+  return (data ?? []).map((a) => a.slug);
+}
+
+// ─────────────────────────────────────────
+// STORAGE (upload images)
+// ─────────────────────────────────────────
+
+export async function uploadImage(file: File, folder: 'realisations' | 'articles'): Promise<string | null> {
+  const ext = file.name.split('.').pop();
+  const filename = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from('images')
+    .upload(filename, file, { upsert: true });
+
+  if (error) { console.error(error); return null; }
+
+  const { data } = supabase.storage.from('images').getPublicUrl(filename);
+  return data.publicUrl;
+}
+
+export async function deleteImage(url: string): Promise<void> {
+  // Extraire le path depuis l'URL publique
+  const path = url.split('/storage/v1/object/public/images/')[1];
+  if (!path) return;
+  await supabase.storage.from('images').remove([path]);
+}
+
+// ─────────────────────────────────────────
+// AUTH ADMIN
+// ─────────────────────────────────────────
+
+export async function signIn(email: string, password: string) {
+  return supabase.auth.signInWithPassword({ email, password });
+}
+
+export async function signOut() {
+  return supabase.auth.signOut();
+}
+
+export async function getSession() {
+  const { data } = await supabase.auth.getSession();
+  return data.session;
 }

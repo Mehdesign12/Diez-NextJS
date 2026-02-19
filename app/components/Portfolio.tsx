@@ -2,7 +2,10 @@
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useLang } from '../context/LangContext';
-import { getRealisationsAccueil, normalizeRealisation, Realisation } from '../../lib/supabase';
+import { getRealisationsFeatured } from '../../lib/supabase';
+import type { Realisation } from '../../lib/types';
+
+const FALLBACK_BG = '#1f2937';
 
 export default function Portfolio() {
   const { t } = useLang();
@@ -11,7 +14,7 @@ export default function Portfolio() {
   const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    getRealisationsAccueil().then((data) => {
+    getRealisationsFeatured().then((data) => {
       setProjects(data);
       setLoading(false);
     });
@@ -50,27 +53,39 @@ export default function Portfolio() {
                 </div>
               ) : (
                 projects.map((r, index) => {
-                  const p = normalizeRealisation(r);
-                  const textColorClass = p.couleurTexte === 'white' ? 'text-white' : 'text-gray-900';
-                  const descColorClass = p.couleurTexte === 'white' ? 'text-gray-400' : 'text-gray-600';
                   const marginTop = index % 2 === 1 ? 'md:mt-16' : '';
                   return (
                     <div
-                      key={p.id}
+                      key={r.id}
                       className={`min-w-[85vw] md:min-w-0 snap-center group cursor-pointer ${marginTop} reveal ${index % 2 === 0 ? 'delay-100' : 'delay-200'} overflow-hidden rounded-3xl shadow-lg mb-0 md:mb-6 aspect-[4/3] relative active:scale-95 transition-transform duration-300`}
-                      onClick={() => window.location.href = `/work?open=${p.id}`}
+                      onClick={() => r.link && window.open(r.link, '_blank')}
                     >
-                      <div className="absolute inset-0 w-full h-full flex items-center justify-center" style={{ backgroundColor: p.couleurFond }}>
-                        {p.images && p.images.length > 0 ? (
-                          <img src={p.images[0]} alt={p.nom} className="w-full h-full object-cover" />
+                      {/* Background */}
+                      <div className="absolute inset-0 w-full h-full" style={{ backgroundColor: FALLBACK_BG }}>
+                        {r.image_url ? (
+                          <img src={r.image_url} alt={r.title} className="w-full h-full object-cover" />
                         ) : (
-                          <i className={`fas ${p.icone} text-7xl md:text-9xl opacity-30 ${textColorClass} transform scale-90 group-hover:scale-100 transition-transform duration-700`}></i>
+                          <div className="w-full h-full flex items-center justify-center">
+                            <i className="fas fa-chart-line text-7xl md:text-9xl opacity-20 text-white"></i>
+                          </div>
                         )}
                       </div>
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors z-10"></div>
-                      <div className="absolute bottom-0 left-0 right-0 p-8 z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                        <h3 className={`text-2xl font-bold ${textColorClass} mb-1`}>{p.nom}</h3>
-                        <p className={`${descColorClass} text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100`}>{p.categorie}</p>
+
+                      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors z-10"></div>
+
+                      {/* Info overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 p-6 z-20 translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                        <h3 className="text-xl font-extrabold text-white mb-1">{r.title}</h3>
+                        <p className="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 line-clamp-2">
+                          {r.description}
+                        </p>
+                        {r.tags.length > 0 && (
+                          <div className="flex gap-1.5 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-150 flex-wrap">
+                            {r.tags.slice(0, 3).map((tag) => (
+                              <span key={tag} className="px-2 py-0.5 bg-white/20 text-white text-xs rounded-full backdrop-blur-sm">{tag}</span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -80,12 +95,11 @@ export default function Portfolio() {
           </div>
 
           {/* Mobile arrow */}
-          <button onClick={scrollSlider} className="md:hidden absolute right-0 top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white/30 backdrop-blur-md border border-white/50 rounded-full flex items-center justify-center text-[#0F0F0F] shadow-lg animate-pulse hover:bg-white transition-all active:scale-95">
+          <button onClick={scrollSlider} className="md:hidden absolute right-0 top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-white/30 backdrop-blur-md border border-white/50 rounded-full flex items-center justify-center text-[#0F0F0F] shadow-lg hover:bg-white transition-all active:scale-95">
             <i className="fas fa-arrow-right"></i>
           </button>
         </div>
 
-        {/* Mobile indicators */}
         {projects.length > 0 && (
           <div className="md:hidden flex justify-center gap-2 mt-4 mb-8 opacity-50">
             {projects.map((_, i) => (
