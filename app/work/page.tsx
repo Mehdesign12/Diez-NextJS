@@ -1,5 +1,4 @@
-import { Metadata } from 'next';
-import { getRealisations } from '@/lib/supabase';
+import type { Metadata } from 'next';
 import WorkClient from './WorkClient';
 
 export const metadata: Metadata = {
@@ -12,8 +11,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function WorkPage() {
-  const realisations = await getRealisations();
-
-  return <WorkClient realisations={realisations} />;
+export default function WorkPage() {
+  return <WorkClient />;
 }

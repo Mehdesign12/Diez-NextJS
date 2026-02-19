@@ -174,3 +174,10 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-fadeIn { animation: fadeIn 0.3s ease forwards; }
+
+/* ── Modal slide-up ── */
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.animate-slideUp { animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
