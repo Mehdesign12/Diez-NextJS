@@ -5,8 +5,15 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Realisation, Article } from './types';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Fallback hardcodé pour garantir le fonctionnement même si les env vars
+// ne sont pas injectées au build time (Vercel cold build sans cache)
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  'https://qegewzvyjiijozioqsgq.supabase.co';
+
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlZ2V3enZ5amlpam96aW9xc2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxODExNTMsImV4cCI6MjA3OTc1NzE1M30.2Q84Q6aTfU--ShAa4VzRgEmzzkhdTFb6TZD73mqaar0';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
