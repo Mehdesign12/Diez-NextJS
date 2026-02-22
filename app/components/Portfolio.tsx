@@ -151,7 +151,7 @@ function ProjectCard({ r, onClick }: { r: Realisation; onClick: () => void }) {
    SECTION PORTFOLIO (homepage)
 ══════════════════════════════════════════ */
 export default function Portfolio() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [projects, setProjects] = useState<Realisation[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Realisation | null>(null);
@@ -176,7 +176,7 @@ export default function Portfolio() {
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-[#0F0F0F]">{t('work-title')}</h2>
             <p className="text-gray-600 text-lg">{t('work-subtitle')}</p>
           </div>
-          <Link href="/work" className="hidden md:inline-flex items-center gap-2 font-semibold text-[#FF4D29] mt-4 md:mt-0 hover:gap-4 transition-all">
+          <Link href={`/${lang}/work`} className="hidden md:inline-flex items-center gap-2 font-semibold text-[#FF4D29] mt-4 md:mt-0 hover:gap-4 transition-all">
             {t('work-link')} <i className="fas fa-arrow-right" />
           </Link>
         </div>
@@ -202,7 +202,7 @@ export default function Portfolio() {
 
         {/* Lien mobile */}
         <div className="mt-10 text-center md:hidden">
-          <Link href="/work" className="inline-flex items-center gap-2 font-semibold text-[#FF4D29]">
+          <Link href={`/${lang}/work`} className="inline-flex items-center gap-2 font-semibold text-[#FF4D29]">
             {t('work-link')} <i className="fas fa-arrow-right" />
           </Link>
         </div>

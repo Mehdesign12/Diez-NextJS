@@ -1,12 +1,13 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
-type Lang = 'fr' | 'en';
+export type Lang = 'fr' | 'en';
 
 interface LangContextType {
   lang: Lang;
-  toggleLanguage: () => void;
+  setLang: (lang: Lang) => void;
   t: (key: string) => string;
 }
 
@@ -16,6 +17,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'nav-services': 'Expertise',
     'nav-process': 'Process',
     'nav-portfolio': 'Réalisations',
+    'nav-blog': 'Blog',
     'nav-testimonials': 'Avis',
     'nav-contact': 'Contact',
     'hero-badge': 'Agence Mieux Notée 2025',
@@ -110,12 +112,32 @@ const translations: Record<Lang, Record<string, string>> = {
     'footer-news-text': 'Recevez les dernières tendances.',
     'footer-email-ph': 'Votre email',
     'contact-id': 'contact',
+    'work-page-label': 'Portfolio complet',
+    'work-page-title': 'Tous nos',
+    'work-page-title-accent': 'projets',
+    'work-page-subtitle': 'Des écosystèmes digitaux qui scalent. Chaque projet est conçu pour durer et performer.',
+    'work-filter-all': 'Tous',
+    'work-empty': 'Aucun projet pour ce filtre.',
+    'work-cta-title': 'Votre projet,',
+    'work-cta-accent': 'notre prochain succès',
+    'work-cta-sub': 'Audit gratuit · Délais garantis · Budget respecté',
+    'work-cta-btn': 'Démarrer mon projet',
+    'work-back': 'Retour',
+    'blog-label': 'Nos Articles',
+    'blog-title': 'Le Blog',
+    'blog-title-accent': 'Diez',
+    'blog-subtitle': 'Conseils pratiques sur la transformation digitale, l\'automatisation et le développement.',
+    'blog-read': 'Lire l\'article',
+    'blog-back': 'Retour',
+    'blog-empty': 'Aucun article pour le moment.',
+    'blog-share': 'Partager',
   },
   en: {
     'nav-home': 'Home',
     'nav-services': 'Expertise',
     'nav-process': 'Process',
     'nav-portfolio': 'Portfolio',
+    'nav-blog': 'Blog',
     'nav-testimonials': 'Reviews',
     'nav-contact': 'Contact',
     'hero-badge': 'Top Rated Agency 2025',
@@ -183,7 +205,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'price-3-btn': 'Contact Sales',
     'faq-title': 'Frequently Asked Questions',
     'faq-q1': 'How long does a typical project take?',
-    'faq-a1': 'Timelines vary depending on complexity. A simple landing page might take 2 weeks, while a full SaaS MVP usually takes 8-12 weeks. We work in 2-week sprints to show consistent progress.',
+    'faq-a1': 'Timelines vary depending on complexity. A landing page might take 2 weeks, while a full SaaS MVP usually takes 8-12 weeks. We work in 2-week sprints to show consistent progress.',
     'faq-q2': 'Do you provide post-launch support?',
     'faq-a2': 'Absolutely. We offer various maintenance packages to ensure your product stays secure, updated, and bug-free after launch.',
     'faq-q3': 'What technologies do you use?',
@@ -210,23 +232,58 @@ const translations: Record<Lang, Record<string, string>> = {
     'footer-news-text': 'Get the latest trends in your inbox.',
     'footer-email-ph': 'Enter email',
     'contact-id': 'contact',
+    'work-page-label': 'Full Portfolio',
+    'work-page-title': 'All our',
+    'work-page-title-accent': 'projects',
+    'work-page-subtitle': 'Digital ecosystems that scale. Every project is built to last and perform.',
+    'work-filter-all': 'All',
+    'work-empty': 'No projects for this filter.',
+    'work-cta-title': 'Your project,',
+    'work-cta-accent': 'our next success',
+    'work-cta-sub': 'Free audit · Guaranteed deadlines · Respected budget',
+    'work-cta-btn': 'Start my project',
+    'work-back': 'Back',
+    'blog-label': 'Our Articles',
+    'blog-title': 'The Diez',
+    'blog-title-accent': 'Blog',
+    'blog-subtitle': 'Practical advice on digital transformation, automation and development.',
+    'blog-read': 'Read article',
+    'blog-back': 'Back',
+    'blog-empty': 'No articles yet.',
+    'blog-share': 'Share',
   },
 };
 
 const LangContext = createContext<LangContextType>({
   lang: 'fr',
-  toggleLanguage: () => {},
+  setLang: () => {},
   t: (key: string) => key,
 });
 
-export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>('fr');
+export function LangProvider({
+  children,
+  initialLang = 'fr',
+}: {
+  children: ReactNode;
+  initialLang?: Lang;
+}) {
+  const [lang, setLangState] = useState<Lang>(initialLang);
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const toggleLanguage = () => setLang((l) => (l === 'fr' ? 'en' : 'fr'));
+  const setLang = (newLang: Lang) => {
+    // Sauvegarde cookie 1 an
+    document.cookie = `lang=${newLang};path=/;max-age=31536000;SameSite=Lax`;
+    setLangState(newLang);
+    // Redirect vers la même page dans l'autre langue
+    const newPath = pathname.replace(/^\/(fr|en)/, `/${newLang}`);
+    router.push(newPath);
+  };
+
   const t = (key: string) => translations[lang][key] ?? key;
 
   return (
-    <LangContext.Provider value={{ lang, toggleLanguage, t }}>
+    <LangContext.Provider value={{ lang, setLang, t }}>
       {children}
     </LangContext.Provider>
   );

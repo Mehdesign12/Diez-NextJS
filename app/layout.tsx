@@ -9,24 +9,9 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Diez Agency | Expert en Transformation Digitale & Automatisation",
-  description: "Boostez votre croissance avec Diez Agency. Nous créons des outils sur-mesure, automatisons vos processus et transformons votre business. Audit gratuit.",
-  keywords: "agence digitale, automatisation, développement web, transformation numérique, audit business, saas, ui/ux design",
-  authors: [{ name: "Diez Agency" }],
+  title: "Diez Agency | Custom Automation & Digital Agency",
+  description: "Automate your business, build custom tools and transform your digital operations. Free audit available.",
   metadataBase: new URL("https://diez-agency.com"),
-  openGraph: {
-    type: "website",
-    url: "https://diez-agency.com/",
-    title: "Diez Agency | Votre Transformation Digitale, Sereine & Maîtrisée",
-    description: "Arrêtez de perdre du temps sur des tâches manuelles. Découvrez nos solutions d'automatisation et de développement sur-mesure.",
-    images: [{ url: "/images/og-image.jpg" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Diez Agency | Expert Transformation Digitale",
-    description: "Boostez votre croissance avec Diez Agency. Audit gratuit disponible.",
-    images: ["/images/og-image.jpg"],
-  },
 };
 
 export default function RootLayout({
