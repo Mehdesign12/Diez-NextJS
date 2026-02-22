@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useLang } from '../context/LangContext';
+import { WarpBackground } from './ui/WarpBackground';
 
 /* ── Données des formules ─────────────────────────────────── */
 const PLANS = {
@@ -166,25 +167,25 @@ export default function Pricing() {
 
         {/* ── Cards ── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
-          {plans.map((plan, i) => (
-            <div
-              key={plan.id}
-              className={`reveal relative flex flex-col rounded-2xl transition-all duration-300 ${
-                i === 0 ? 'delay-100' : i === 1 ? 'delay-200' : 'delay-300'
-              } ${
-                plan.dark
-                  ? 'bg-[#0F0F0F] shadow-2xl ring-2 ring-[#FF4D29]/40 md:scale-105'
-                  : 'bg-white border border-gray-100 shadow-sm hover:shadow-xl'
-              }`}
-            >
-              {/* Badge populaire — au-dessus de la carte, pas coupé par overflow */}
-              {plan.badge && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
-                  <span className="bg-[#FF4D29] text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg shadow-[#FF4D29]/30 uppercase tracking-wide whitespace-nowrap">
-                    {plan.badge}
-                  </span>
-                </div>
-              )}
+          {plans.map((plan, i) => {
+            const delayClass = i === 0 ? 'delay-100' : i === 1 ? 'delay-200' : 'delay-300';
+            const cardClass = `reveal relative flex flex-col rounded-2xl transition-all duration-300 ${delayClass} ${
+              plan.dark
+                ? 'bg-[#0F0F0F] shadow-2xl ring-2 ring-[#FF4D29]/40 md:scale-105'
+                : 'bg-white border border-gray-100 shadow-sm hover:shadow-xl'
+            }`;
+
+            const badge = plan.badge ? (
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20">
+                <span className="bg-[#FF4D29] text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg shadow-[#FF4D29]/30 uppercase tracking-wide whitespace-nowrap">
+                  {plan.badge}
+                </span>
+              </div>
+            ) : null;
+
+            const cardInner = (
+              <>
+                {badge}
 
               <div className={`flex flex-col flex-1 p-6 ${plan.badge ? 'pt-7' : 'pt-6'}`}>
 
@@ -247,8 +248,33 @@ export default function Pricing() {
                 </Link>
 
               </div>
-            </div>
-          ))}
+            </>
+            );
+
+            // Carte Croissance : enveloppée dans WarpBackground
+            if (plan.featured) {
+              return (
+                <WarpBackground
+                  key={plan.id}
+                  className={cardClass}
+                  beamsPerSide={2}
+                  beamSize={8}
+                  beamDuration={5}
+                  beamDelayMax={3}
+                  gridColor="rgba(255, 77, 41, 0.07)"
+                >
+                  {cardInner}
+                </WarpBackground>
+              );
+            }
+
+            // Cartes standard
+            return (
+              <div key={plan.id} className={cardClass}>
+                {cardInner}
+              </div>
+            );
+          })}
         </div>
 
         {/* ── Ligne de réassurance ── */}
