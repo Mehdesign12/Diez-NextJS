@@ -50,7 +50,7 @@ export default function Hero() {
         </div>
 
         {/* Main Headline */}
-        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] md:leading-[1.15] mb-4 md:mb-6 max-w-6xl mx-auto flex flex-col items-center gap-1 md:gap-2">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] md:leading-[1.15] mb-4 md:mb-6 max-w-6xl mx-auto flex flex-col items-center gap-1 md:gap-2">
           {/* Line 1 */}
           <div className="flex flex-wrap justify-center gap-x-2 md:gap-x-6">
             {lang === 'fr' ? (
