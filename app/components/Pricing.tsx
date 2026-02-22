@@ -155,16 +155,6 @@ export default function Pricing() {
           </p>
         </div>
 
-        {/* ── Stats bar ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8 reveal">
-          {stats.map((s) => (
-            <div key={s.label} className="text-center bg-white rounded-xl py-3 px-3 border border-gray-100 shadow-sm">
-              <div className="text-xl font-extrabold text-[#FF4D29]">{s.value}</div>
-              <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
-            </div>
-          ))}
-        </div>
-
         {/* ── Cards ── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
           {plans.map((plan, i) => {
@@ -277,8 +267,18 @@ export default function Pricing() {
           })}
         </div>
 
+        {/* ── Stats bar ── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8 reveal">
+          {stats.map((s) => (
+            <div key={s.label} className="text-center bg-white rounded-xl py-3 px-3 border border-gray-100 shadow-sm">
+              <div className="text-xl font-extrabold text-[#FF4D29]">{s.value}</div>
+              <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
+            </div>
+          ))}
+        </div>
+
         {/* ── Ligne de réassurance ── */}
-        <div className="mt-8 text-center reveal">
+        <div className="mt-6 text-center reveal">
           <p className={`text-xs text-gray-400 flex items-center justify-center gap-2 flex-wrap`}>
             <i className="fas fa-lock text-[#FF4D29]"></i>
             {l === 'fr'
