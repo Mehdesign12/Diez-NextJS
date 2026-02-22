@@ -140,7 +140,7 @@ export default function Pricing() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Header ── */}
-        <div className="text-center mb-6 reveal">
+        <div className="text-center mb-12 reveal">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF4D29]/10 text-[#FF4D29] text-xs font-bold uppercase tracking-widest mb-3">
             <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D29] animate-pulse"></span>
             {l === 'fr' ? 'Nos formules' : 'Our plans'}
