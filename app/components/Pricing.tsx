@@ -1,84 +1,266 @@
 'use client';
-import { useRef } from 'react';
+import Link from 'next/link';
 import { useLang } from '../context/LangContext';
 
-export default function Pricing() {
-  const { t, lang } = useLang();
-  const sliderRef = useRef<HTMLDivElement>(null);
+/* ── Données des formules ─────────────────────────────────── */
+const PLANS = {
+  fr: [
+    {
+      id: 'starter',
+      badge: null,
+      title: 'Lancement',
+      tagline: 'Partez du bon pied',
+      description: 'Idéal pour les entrepreneurs et startups qui veulent une présence digitale solide et rapide.',
+      features: [
+        { icon: 'fa-palette', label: 'Identité visuelle & Design System' },
+        { icon: 'fa-globe', label: 'Site web jusqu\'à 5 pages' },
+        { icon: 'fa-magnifying-glass', label: 'SEO technique de base' },
+        { icon: 'fa-mobile-alt', label: 'Responsive mobile-first' },
+      ],
+      result: { metric: '2×', label: 'plus de visibilité en ligne' },
+      cta: 'Démarrer mon projet',
+      dark: false,
+      featured: false,
+    },
+    {
+      id: 'growth',
+      badge: 'Le plus choisi',
+      title: 'Croissance',
+      tagline: 'Scalez votre activité',
+      description: 'Pour les équipes qui veulent automatiser, convertir davantage et mesurer chaque euro investi.',
+      features: [
+        { icon: 'fa-wand-magic-sparkles', label: 'UX/UI sur-mesure complète' },
+        { icon: 'fa-code', label: 'Application web React/Next.js' },
+        { icon: 'fa-plug', label: 'Intégrations API & automatisations' },
+        { icon: 'fa-chart-line', label: 'Dashboard analytics & reporting' },
+      ],
+      result: { metric: '+340%', label: 'de trafic qualifié en 90 jours' },
+      cta: 'Obtenir un devis',
+      dark: true,
+      featured: true,
+    },
+    {
+      id: 'enterprise',
+      badge: null,
+      title: 'Entreprise',
+      tagline: 'Transformation complète',
+      description: 'Accompagnement stratégique et technique complet pour les organisations qui veulent dominer leur marché.',
+      features: [
+        { icon: 'fa-users', label: 'Équipe dédiée 5+ experts' },
+        { icon: 'fa-shield-alt', label: 'Architecture cloud & sécurité' },
+        { icon: 'fa-headset', label: 'Support prioritaire 24/7' },
+        { icon: 'fa-rocket', label: 'Roadmap produit & sprints agiles' },
+      ],
+      result: { metric: '12', label: 'entreprises transformées en 2024' },
+      cta: 'Parlons stratégie',
+      dark: false,
+      featured: false,
+    },
+  ],
+  en: [
+    {
+      id: 'starter',
+      badge: null,
+      title: 'Launch',
+      tagline: 'Start on the right foot',
+      description: 'Perfect for entrepreneurs and startups who want a solid and fast digital presence.',
+      features: [
+        { icon: 'fa-palette', label: 'Visual identity & Design System' },
+        { icon: 'fa-globe', label: 'Website up to 5 pages' },
+        { icon: 'fa-magnifying-glass', label: 'Technical SEO basics' },
+        { icon: 'fa-mobile-alt', label: 'Mobile-first responsive' },
+      ],
+      result: { metric: '2×', label: 'more online visibility' },
+      cta: 'Start my project',
+      dark: false,
+      featured: false,
+    },
+    {
+      id: 'growth',
+      badge: 'Most popular',
+      title: 'Growth',
+      tagline: 'Scale your business',
+      description: 'For teams that want to automate, convert more and measure every euro invested.',
+      features: [
+        { icon: 'fa-wand-magic-sparkles', label: 'Full custom UX/UI design' },
+        { icon: 'fa-code', label: 'React/Next.js web application' },
+        { icon: 'fa-plug', label: 'API integrations & automations' },
+        { icon: 'fa-chart-line', label: 'Analytics dashboard & reporting' },
+      ],
+      result: { metric: '+340%', label: 'qualified traffic in 90 days' },
+      cta: 'Get a quote',
+      dark: true,
+      featured: true,
+    },
+    {
+      id: 'enterprise',
+      badge: null,
+      title: 'Enterprise',
+      tagline: 'Full transformation',
+      description: 'Complete strategic and technical support for organizations that want to dominate their market.',
+      features: [
+        { icon: 'fa-users', label: 'Dedicated team 5+ experts' },
+        { icon: 'fa-shield-alt', label: 'Cloud architecture & security' },
+        { icon: 'fa-headset', label: '24/7 priority support' },
+        { icon: 'fa-rocket', label: 'Product roadmap & agile sprints' },
+      ],
+      result: { metric: '12', label: 'companies transformed in 2024' },
+      cta: 'Let\'s talk strategy',
+      dark: false,
+      featured: false,
+    },
+  ],
+} as const;
 
-  const scrollSlider = () => {
-    if (sliderRef.current) {
-      sliderRef.current.scrollBy({ left: window.innerWidth * 0.85, behavior: 'smooth' });
-    }
-  };
+/* ── Stats globales ───────────────────────────────────────── */
+const STATS = {
+  fr: [
+    { value: '98%', label: 'clients satisfaits' },
+    { value: '72h', label: 'pour un premier livrable' },
+    { value: '0€', label: 'de frais cachés' },
+    { value: '∞', label: 'révisions incluses' },
+  ],
+  en: [
+    { value: '98%', label: 'satisfied clients' },
+    { value: '72h', label: 'for a first deliverable' },
+    { value: '0€', label: 'hidden fees' },
+    { value: '∞', label: 'revisions included' },
+  ],
+} as const;
+
+export default function Pricing() {
+  const { lang } = useLang();
+  const l = lang as 'fr' | 'en';
+  const plans = PLANS[l];
+  const stats = STATS[l];
 
   return (
-    <section id="pricing" className="py-24 bg-[#FFF8F3]">
+    <section id="pricing" className="py-24 bg-[#FFF8F3] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16 reveal">
-          <h2 className="text-4xl md:text-5xl font-bold text-[#0F0F0F] mb-6">{t('pricing-title')}</h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">{t('pricing-subtitle')}</p>
+
+        {/* ── Header ── */}
+        <div className="text-center mb-6 reveal">
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF4D29]/10 text-[#FF4D29] text-xs font-bold uppercase tracking-widest mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D29] animate-pulse"></span>
+            {l === 'fr' ? 'Nos formules' : 'Our plans'}
+          </span>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F0F0F] mb-4">
+            {l === 'fr' ? 'Votre investissement, votre rythme.' : 'Your investment, your pace.'}
+          </h2>
+          <p className="text-gray-500 text-base max-w-xl mx-auto">
+            {l === 'fr'
+              ? 'Chaque formule est conçue pour générer un retour mesurable. Les tarifs sont personnalisés selon votre projet.'
+              : 'Every plan is designed to generate measurable returns. Pricing is tailored to your project.'}
+          </p>
         </div>
 
-        <div className="relative group/slider">
-          <div ref={sliderRef} className="flex overflow-x-auto snap-x snap-mandatory md:grid md:grid-cols-3 gap-8 items-center pb-8 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 no-scrollbar scroll-smooth">
-
-            {/* Starter */}
-            <div className="min-w-[85vw] md:min-w-0 snap-center bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition-shadow duration-300 reveal delay-100">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">{t('price-1-title')}</h3>
-              <div className="text-4xl font-bold mb-6">2 900€<span className="text-base font-normal text-gray-500">{t('price-1-period')}</span></div>
-              <p className="text-gray-500 mb-8 text-sm">{t('price-1-desc')}</p>
-              <ul className="space-y-4 mb-8 text-gray-600">
-                <li className="flex items-center gap-3"><i className="fas fa-check text-green-500"></i> {t('price-1-f1')}</li>
-                <li className="flex items-center gap-3"><i className="fas fa-check text-green-500"></i> {t('price-1-f2')}</li>
-                <li className="flex items-center gap-3"><i className="fas fa-check text-green-500"></i> {t('price-1-f3')}</li>
-                <li className="flex items-center gap-3 text-gray-300"><i className="fas fa-times"></i> {t('price-1-f4')}</li>
-              </ul>
-              <a href={`/${lang}/contact`} className="block w-full py-3 px-6 text-center rounded-xl border-2 border-gray-900 text-gray-900 font-bold hover:bg-gray-900 hover:text-white transition-colors">{t('price-1-btn')}</a>
+        {/* ── Stats bar ── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 reveal">
+          {stats.map((s) => (
+            <div key={s.label} className="text-center bg-white rounded-2xl py-4 px-3 border border-gray-100 shadow-sm">
+              <div className="text-2xl font-extrabold text-[#FF4D29]">{s.value}</div>
+              <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
             </div>
-
-            {/* Pro (featured) */}
-            <div className="min-w-[85vw] md:min-w-0 snap-center bg-[#0F0F0F] p-8 rounded-3xl shadow-2xl border border-gray-800 transform scale-100 md:scale-105 relative z-10 reveal delay-200">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#FF4D29] text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide">{t('price-2-badge')}</div>
-              <h3 className="text-xl font-bold text-white mb-2">{t('price-2-title')}</h3>
-              <div className="text-4xl font-bold text-white mb-6">5 500€<span className="text-base font-normal text-gray-400">{t('price-2-period')}</span></div>
-              <p className="text-gray-400 mb-8 text-sm">{t('price-2-desc')}</p>
-              <ul className="space-y-4 mb-8 text-gray-300">
-                <li className="flex items-center gap-3"><i className="fas fa-check text-[#FF4D29]"></i> {t('price-2-f1')}</li>
-                <li className="flex items-center gap-3"><i className="fas fa-check text-[#FF4D29]"></i> {t('price-2-f2')}</li>
-                <li className="flex items-center gap-3"><i className="fas fa-check text-[#FF4D29]"></i> {t('price-2-f3')}</li>
-                <li className="flex items-center gap-3"><i className="fas fa-check text-[#FF4D29]"></i> {t('price-2-f4')}</li>
-              </ul>
-              <a href={`/${lang}/contact`} className="block w-full py-3 px-6 text-center rounded-xl bg-[#FF4D29] text-white font-bold hover:bg-white hover:text-[#FF4D29] transition-colors">{t('price-2-btn')}</a>
-            </div>
-
-            {/* Enterprise */}
-            <div className="min-w-[85vw] md:min-w-0 snap-center bg-white p-8 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition-shadow duration-300 reveal delay-300">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">{t('price-3-title')}</h3>
-              <div className="text-4xl font-bold mb-6">Sur mesure<span className="text-base font-normal text-gray-500">{t('price-3-period')}</span></div>
-              <p className="text-gray-500 mb-8 text-sm">{t('price-3-desc')}</p>
-              <ul className="space-y-4 mb-8 text-gray-600">
-                <li className="flex items-center gap-3"><i className="fas fa-check text-green-500"></i> {t('price-3-f1')}</li>
-                <li className="flex items-center gap-3"><i className="fas fa-check text-green-500"></i> {t('price-3-f2')}</li>
-                <li className="flex items-center gap-3"><i className="fas fa-check text-green-500"></i> {t('price-3-f3')}</li>
-                <li className="flex items-center gap-3"><i className="fas fa-check text-green-500"></i> {t('price-3-f4')}</li>
-              </ul>
-              <a href={`/${lang}/contact`} className="block w-full py-3 px-6 text-center rounded-xl border-2 border-gray-900 text-gray-900 font-bold hover:bg-gray-900 hover:text-white transition-colors">{t('price-3-btn')}</a>
-            </div>
-          </div>
-
-          {/* Mobile Arrow */}
-          <button onClick={scrollSlider} className="md:hidden absolute right-0 top-1/2 -translate-y-1/2 z-30 w-12 h-12 bg-[#FF4D29]/80 backdrop-blur-md border border-white/50 rounded-full flex items-center justify-center text-white shadow-lg animate-pulse hover:bg-[#FF4D29] transition-all active:scale-95">
-            <i className="fas fa-arrow-right"></i>
-          </button>
+          ))}
         </div>
 
-        {/* Mobile indicators */}
-        <div className="md:hidden flex justify-center gap-2 mt-4 opacity-50">
-          <div className="w-2 h-2 rounded-full bg-[#FF4D29]"></div>
-          <div className="w-2 h-2 rounded-full bg-gray-300"></div>
-          <div className="w-2 h-2 rounded-full bg-gray-300"></div>
+        {/* ── Cards ── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+          {plans.map((plan, i) => (
+            <div
+              key={plan.id}
+              className={`reveal relative flex flex-col rounded-3xl overflow-hidden transition-all duration-300 ${
+                i === 0 ? 'delay-100' : i === 1 ? 'delay-200' : 'delay-300'
+              } ${
+                plan.dark
+                  ? 'bg-[#0F0F0F] shadow-2xl ring-2 ring-[#FF4D29]/40 md:scale-105'
+                  : 'bg-white border border-gray-100 shadow-sm hover:shadow-xl'
+              }`}
+            >
+              {/* Badge populaire */}
+              {plan.badge && (
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                  <span className="bg-[#FF4D29] text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg shadow-[#FF4D29]/30 uppercase tracking-wide">
+                    {plan.badge}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex flex-col flex-1 p-8 pt-10">
+
+                {/* Titre + tagline */}
+                <div className="mb-6">
+                  <h3 className={`text-xl font-extrabold mb-1 ${plan.dark ? 'text-white' : 'text-[#0F0F0F]'}`}>
+                    {plan.title}
+                  </h3>
+                  <p className={`text-sm font-medium ${plan.dark ? 'text-[#FF4D29]' : 'text-[#FF4D29]'}`}>
+                    {plan.tagline}
+                  </p>
+                  <p className={`text-sm mt-2 leading-relaxed ${plan.dark ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {plan.description}
+                  </p>
+                </div>
+
+                {/* Séparateur */}
+                <div className={`h-px mb-6 ${plan.dark ? 'bg-white/10' : 'bg-gray-100'}`} />
+
+                {/* Features */}
+                <ul className="space-y-3 mb-6 flex-1">
+                  {plan.features.map((f) => (
+                    <li key={f.label} className="flex items-start gap-3">
+                      <div className={`mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        plan.dark ? 'bg-[#FF4D29]/15' : 'bg-[#FF4D29]/8'
+                      }`}>
+                        <i className={`fas ${f.icon} text-[10px] text-[#FF4D29]`}></i>
+                      </div>
+                      <span className={`text-sm leading-relaxed ${plan.dark ? 'text-gray-300' : 'text-gray-600'}`}>
+                        {f.label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Séparateur */}
+                <div className={`h-px mb-6 ${plan.dark ? 'bg-white/10' : 'bg-gray-100'}`} />
+
+                {/* Résultat client */}
+                <div className={`rounded-2xl px-4 py-3 mb-6 flex items-center gap-3 ${
+                  plan.dark ? 'bg-white/5 border border-white/10' : 'bg-[#FF4D29]/5 border border-[#FF4D29]/10'
+                }`}>
+                  <span className="text-2xl font-extrabold text-[#FF4D29] leading-none">{plan.result.metric}</span>
+                  <span className={`text-xs leading-snug ${plan.dark ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {plan.result.label}
+                  </span>
+                </div>
+
+                {/* CTA */}
+                <Link
+                  href={`/${lang}/contact`}
+                  className={`block w-full py-3.5 px-6 text-center rounded-2xl text-sm font-bold transition-all duration-300 active:scale-95 ${
+                    plan.dark
+                      ? 'bg-[#FF4D29] text-white hover:bg-orange-500 shadow-lg shadow-[#FF4D29]/30 hover:shadow-[#FF4D29]/50 hover:-translate-y-0.5'
+                      : 'border-2 border-[#0F0F0F] text-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white'
+                  }`}
+                >
+                  {plan.cta}
+                  <i className="fas fa-arrow-right ml-2 text-xs"></i>
+                </Link>
+
+              </div>
+            </div>
+          ))}
         </div>
+
+        {/* ── Ligne de réassurance ── */}
+        <div className="mt-12 text-center reveal">
+          <p className={`text-sm text-gray-400 flex items-center justify-center gap-2 flex-wrap`}>
+            <i className="fas fa-lock text-[#FF4D29]"></i>
+            {l === 'fr'
+              ? 'Devis gratuit et sans engagement · Réponse sous 24h · Budget fixé dès le départ'
+              : 'Free no-obligation quote · Reply within 24h · Budget set from the start'}
+          </p>
+        </div>
+
       </div>
     </section>
   );
