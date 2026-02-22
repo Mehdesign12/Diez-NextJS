@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useLang } from '@/app/context/LangContext';
@@ -101,6 +102,9 @@ export default function ContactClient() {
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const [countdown, setCountdown] = useState(8);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const router = useRouter();
 
   const [form, setForm] = useState<FormData>({
     first_name: '',
@@ -187,12 +191,125 @@ export default function ContactClient() {
     : 'opacity-100 translate-x-0';
 
   /* ═══════════════════════════════════════════
+     CONFETTIS + COMPTE À REBOURS
+  ═══════════════════════════════════════════ */
+  useEffect(() => {
+    if (!submitted) return;
+
+    // ── Compte à rebours + redirect ──
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          router.push(`/${currentLang}`);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    // ── Animation confettis Canvas ──
+    const canvas = canvasRef.current;
+    if (!canvas) return () => clearInterval(timer);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return () => clearInterval(timer);
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    type Particle = {
+      x: number; y: number;
+      vx: number; vy: number;
+      color: string;
+      size: number;
+      rotation: number;
+      rotSpeed: number;
+      shape: 'rect' | 'circle';
+      opacity: number;
+    };
+
+    const COLORS = ['#FF4D29','#FF7A5C','#FFB347','#FFF3E0','#ffffff','#FF6B35','#FFD700'];
+    const particles: Particle[] = [];
+
+    // Burst initial
+    for (let i = 0; i < 160; i++) {
+      const angle = (Math.random() * Math.PI * 2);
+      const speed = 4 + Math.random() * 12;
+      particles.push({
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 6,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        size: 6 + Math.random() * 10,
+        rotation: Math.random() * 360,
+        rotSpeed: (Math.random() - 0.5) * 8,
+        shape: Math.random() > 0.4 ? 'rect' : 'circle',
+        opacity: 1,
+      });
+    }
+
+    let rafId: number;
+    let startTime: number | null = null;
+    const DURATION = 3500; // ms
+
+    const animate = (ts: number) => {
+      if (!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.3; // gravity
+        p.vx *= 0.99;
+        p.rotation += p.rotSpeed;
+        p.opacity = Math.max(0, 1 - elapsed / DURATION);
+
+        ctx.save();
+        ctx.globalAlpha = p.opacity;
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        if (p.shape === 'rect') {
+          ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+        } else {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      if (elapsed < DURATION) {
+        rafId = requestAnimationFrame(animate);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    };
+
+    rafId = requestAnimationFrame(animate);
+
+    return () => {
+      clearInterval(timer);
+      cancelAnimationFrame(rafId);
+    };
+  }, [submitted, currentLang, router]);
+
+  /* ═══════════════════════════════════════════
      ÉCRAN SUCCÈS
   ═══════════════════════════════════════════ */
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[#FFF8F3] flex items-center justify-center px-4">
-        <div className="text-center max-w-md mx-auto">
+      <div className="min-h-screen bg-[#FFF8F3] flex items-center justify-center px-4 relative overflow-hidden">
+        {/* Canvas confettis — full screen, pointer-events none */}
+        <canvas
+          ref={canvasRef}
+          className="fixed inset-0 w-full h-full pointer-events-none z-50"
+        />
+
+        <div className="text-center max-w-md mx-auto relative z-10">
           {/* Cercle animé */}
           <div className="w-24 h-24 mx-auto mb-8 rounded-full bg-[#FF4D29]/10 flex items-center justify-center animate-bounce-slow">
             <div className="w-16 h-16 rounded-full bg-[#FF4D29] flex items-center justify-center shadow-xl shadow-[#FF4D29]/30">
@@ -204,8 +321,14 @@ export default function ContactClient() {
           <h1 className="text-3xl font-extrabold text-[#0F0F0F] mb-3">
             {t('contact-success-title')}
           </h1>
-          <p className="text-gray-500 mb-10 leading-relaxed">
+          <p className="text-gray-500 mb-3 leading-relaxed">
             {t('contact-success-sub')}
+          </p>
+          {/* Compte à rebours */}
+          <p className="text-sm text-gray-400 mb-8">
+            {currentLang === 'fr'
+              ? `Redirection automatique dans ${countdown}s…`
+              : `Redirecting in ${countdown}s…`}
           </p>
           <Link
             href={`/${currentLang}`}
