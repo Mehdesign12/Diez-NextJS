@@ -171,10 +171,10 @@ export default function Portfolio() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-16">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 md:mb-12">
           <div className="max-w-2xl">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-[#0F0F0F]">{t('work-title')}</h2>
-            <p className="text-gray-600 text-lg">{t('work-subtitle')}</p>
+            <h2 className="text-2xl md:text-3xl font-bold mb-2 text-[#0F0F0F]">{t('work-title')}</h2>
+            <p className="text-gray-500 text-sm md:text-base">{t('work-subtitle')}</p>
           </div>
           <Link href={`/${lang}/work`} className="hidden md:inline-flex items-center gap-2 font-semibold text-[#FF4D29] mt-4 md:mt-0 hover:gap-4 transition-all">
             {t('work-link')} <i className="fas fa-arrow-right" />
