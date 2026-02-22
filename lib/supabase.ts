@@ -133,9 +133,29 @@ export async function getSession() {
 export async function saveContact(
   data: ContactInsert
 ): Promise<{ error: Error | null }> {
-  const { error } = await supabase.from('contacts').insert([data]);
-  if (error) { console.error(error); return { error: new Error(error.message) }; }
-  return { error: null };
+  // Utilise fetch direct vers l'API REST Supabase pour contourner
+  // les problèmes de RLS avec le client JS côté browser
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/contacts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      console.error('saveContact error:', err);
+      return { error: new Error(err) };
+    }
+    return { error: null };
+  } catch (e) {
+    console.error('saveContact fetch error:', e);
+    return { error: e as Error };
+  }
 }
 
 export async function getContacts(): Promise<Contact[]> {

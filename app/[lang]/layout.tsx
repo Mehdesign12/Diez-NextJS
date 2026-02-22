@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { LangProvider } from '../context/LangContext';
+import { SUPPORTED_LANGS, type SupportedLang } from '@/lib/i18n';
 
-export const SUPPORTED_LANGS = ['fr', 'en'] as const;
-export type SupportedLang = typeof SUPPORTED_LANGS[number];
+// Ré-exporter pour les pages enfants qui importent depuis './layout'
+export { SUPPORTED_LANGS, type SupportedLang };
 
 const META: Record<SupportedLang, { title: string; description: string; url: string }> = {
   fr: {

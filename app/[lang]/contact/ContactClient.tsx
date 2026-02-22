@@ -285,7 +285,7 @@ export default function ContactClient() {
         </div>
 
         {/* ── Colonne droite — formulaire ── */}
-        <div className="flex-1 flex items-center justify-center px-4 py-32 lg:py-16 lg:px-16">
+        <div className="flex-1 flex items-center justify-center px-4 py-32 lg:py-12 lg:px-16">
           <div className="w-full max-w-lg">
 
             {/* Barre de progression */}
