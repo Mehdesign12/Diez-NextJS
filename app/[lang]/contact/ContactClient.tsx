@@ -259,37 +259,37 @@ export default function ContactClient() {
       <div className="min-h-screen flex flex-col lg:flex-row">
 
         {/* ── Colonne gauche — branding ── */}
-        <div className="hidden lg:flex lg:w-2/5 bg-[#0F0F0F] flex-col justify-between p-16 relative overflow-hidden">
+        <div className="hidden lg:flex lg:w-2/5 bg-[#0F0F0F] flex-col justify-center p-16 relative overflow-hidden">
           {/* Cercles déco */}
           <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#FF4D29]/5 -translate-y-1/2 translate-x-1/2 pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-[#FF4D29]/8 translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
-          <div className="relative z-10 mt-20">
+          <div className="relative z-10">
             <div className="w-12 h-12 rounded-full overflow-hidden mb-10">
               <img src="/images/logo_clean.png" alt="Diez Agency" className="w-full h-full object-cover" />
             </div>
             <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
               {t('contact-page-title')}
             </h2>
-            <p className="text-gray-400 text-lg leading-relaxed">
+            <p className="text-gray-400 text-lg leading-relaxed mb-10">
               {t('contact-page-subtitle')}
             </p>
-          </div>
 
-          {/* Garanties */}
-          <div className="relative z-10 space-y-4">
-            {[
-              { icon: 'fa-clock', text: currentLang === 'fr' ? 'Réponse sous 24h' : 'Reply within 24h' },
-              { icon: 'fa-shield-alt', text: currentLang === 'fr' ? 'Données confidentielles' : 'Confidential data' },
-              { icon: 'fa-star', text: currentLang === 'fr' ? 'Audit gratuit offert' : 'Free audit included' },
-            ].map(({ icon, text }) => (
-              <div key={text} className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[#FF4D29]/15 flex items-center justify-center flex-shrink-0">
-                  <i className={`fas ${icon} text-[#FF4D29] text-xs`}></i>
+            {/* Garanties — juste sous le sous-titre */}
+            <div className="space-y-4">
+              {[
+                { icon: 'fa-clock', text: currentLang === 'fr' ? 'Réponse sous 24h' : 'Reply within 24h' },
+                { icon: 'fa-shield-alt', text: currentLang === 'fr' ? 'Données confidentielles' : 'Confidential data' },
+                { icon: 'fa-star', text: currentLang === 'fr' ? 'Audit gratuit offert' : 'Free audit included' },
+              ].map(({ icon, text }) => (
+                <div key={text} className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#FF4D29]/15 flex items-center justify-center flex-shrink-0">
+                    <i className={`fas ${icon} text-[#FF4D29] text-xs`}></i>
+                  </div>
+                  <span className="text-gray-300 text-sm">{text}</span>
                 </div>
-                <span className="text-gray-300 text-sm">{text}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
