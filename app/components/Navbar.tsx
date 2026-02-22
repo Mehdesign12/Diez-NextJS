@@ -9,10 +9,17 @@ export default function Navbar() {
   const { t, lang, setLang } = useLang();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setScrolled(scrollY > 50);
+      // Progression : 0% en haut, 100% en bas
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(docHeight > 0 ? Math.min((scrollY / docHeight) * 100, 100) : 0);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -47,13 +54,31 @@ export default function Navbar() {
 
   return (
     <div className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'top-3' : 'top-4'}`}>
-      <nav className={`relative z-50 mx-4 md:mx-auto px-4 transition-all duration-300 ease-in-out bg-white/90 backdrop-blur-md border border-gray-100 shadow-lg rounded-full ${scrolled ? 'max-w-4xl shadow-xl' : 'max-w-5xl'}`}>
+      <nav className={`relative z-50 mx-4 md:mx-auto px-4 transition-all duration-300 ease-in-out bg-white/90 backdrop-blur-md border border-gray-100 rounded-full overflow-hidden ${
+        scrolled
+          ? 'max-w-4xl shadow-[0_8px_30px_rgba(255,77,41,0.18)]'
+          : 'max-w-5xl shadow-[0_4px_20px_rgba(255,77,41,0.10)]'
+      }`}>
         <div className={`flex justify-between items-center transition-all duration-300 ${scrolled ? 'h-12 md:h-14' : 'h-14 md:h-16'}`}>
+
+          {/* Barre de progression — absolue en bas du nav */}
+          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-transparent rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#FF4D29] transition-all duration-100 ease-out rounded-full"
+              style={{ width: `${scrollProgress}%` }}
+            />
+          </div>
 
           {/* Logo */}
           <Link href={`/${lang}`} className="flex-shrink-0 flex items-center gap-3 pl-2 md:pl-4">
             <div className="w-8 h-8 md:w-9 md:h-9 rounded-full overflow-hidden hover:scale-105 transition-transform">
-              <Image src="/images/logo_clean.png" alt="Diez Agency" width={48} height={48} className="w-full h-full object-cover" />
+              <Image
+                src="https://qegewzvyjiijozioqsgq.supabase.co/storage/v1/object/public/logo/logo%20diez.png"
+                alt="Diez Agency"
+                width={48}
+                height={48}
+                className="w-full h-full object-cover"
+              />
             </div>
           </Link>
 
