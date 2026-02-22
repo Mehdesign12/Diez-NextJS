@@ -45,13 +45,13 @@ export default function Navbar() {
   ];
 
   return (
-    <div className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'top-4' : 'top-6'}`}>
+    <div className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'top-3' : 'top-4'}`}>
       <nav className={`relative z-50 mx-4 md:mx-auto px-4 transition-all duration-300 ease-in-out bg-white/90 backdrop-blur-md border border-gray-100 shadow-lg rounded-full ${scrolled ? 'max-w-4xl shadow-xl' : 'max-w-5xl'}`}>
-        <div className={`flex justify-between items-center transition-all duration-300 ${scrolled ? 'h-14 md:h-16' : 'h-16 md:h-20'}`}>
+        <div className={`flex justify-between items-center transition-all duration-300 ${scrolled ? 'h-12 md:h-14' : 'h-14 md:h-16'}`}>
 
           {/* Logo */}
           <Link href={`/${lang}`} className="flex-shrink-0 flex items-center gap-3 pl-2 md:pl-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden hover:scale-105 transition-transform">
+            <div className="w-8 h-8 md:w-9 md:h-9 rounded-full overflow-hidden hover:scale-105 transition-transform">
               <Image src="/images/logo_clean.png" alt="Diez Agency" width={48} height={48} className="w-full h-full object-cover" />
             </div>
           </Link>
