@@ -32,6 +32,7 @@ export async function generateMetadata({
       description: m.description,
       url: m.url,
       locale: lang === 'fr' ? 'fr_FR' : 'en_US',
+      images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Diez Agency – Présence digitale, Profit mesurable.' }],
     },
     alternates: {
       canonical: m.url,

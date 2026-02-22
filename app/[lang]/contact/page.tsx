@@ -5,13 +5,13 @@ import ContactClient from './ContactClient';
 
 const META: Record<SupportedLang, { title: string; description: string; url: string }> = {
   fr: {
-    title: 'Contact | Démarrez votre projet — Diez Agency',
-    description: 'Décrivez votre projet en 2 minutes. Audit gratuit, réponse sous 24h. Automatisation, outils sur-mesure, applications web.',
+    title: 'Contact – Démarrez votre projet | Diez Agency',
+    description: 'Parlez-nous de votre projet en 2 minutes. Audit gratuit, réponse sous 24h. Présence digitale, profit mesurable.',
     url: 'https://diez-agency.com/fr/contact',
   },
   en: {
-    title: 'Contact | Start your project — Diez Agency',
-    description: 'Describe your project in 2 minutes. Free audit, reply within 24h. Automation, custom tools, web applications.',
+    title: 'Contact – Start your project | Diez Agency',
+    description: 'Tell us about your project in 2 minutes. Free audit, reply within 24h. Digital presence, measurable profit.',
     url: 'https://diez-agency.com/en/contact',
   },
 };
@@ -30,6 +30,7 @@ export async function generateMetadata({
       description: m.description,
       url: m.url,
       locale: lang === 'fr' ? 'fr_FR' : 'en_US',
+      images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Diez Agency – Présence digitale, Profit mesurable.' }],
     },
     alternates: {
       canonical: m.url,

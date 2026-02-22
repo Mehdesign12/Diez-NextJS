@@ -8,13 +8,13 @@ export { SUPPORTED_LANGS, type SupportedLang };
 
 const META: Record<SupportedLang, { title: string; description: string; url: string }> = {
   fr: {
-    title: 'Diez Agency | Expert en Automatisation & Développement Sur-Mesure',
-    description: 'Automatisez vos processus, créez des outils internes sur-mesure et transformez votre business. Audit gratuit. Délais garantis. Budget respecté.',
+    title: 'Diez Agency – Présence digitale, Profit mesurable.',
+    description: 'Diez Agency – Présence digitale, Profit mesurable. Création de sites web, identité visuelle et stratégie digitale sur-mesure. Audit gratuit.',
     url: 'https://diez-agency.com/fr',
   },
   en: {
-    title: 'Diez Agency | Custom Automation & Development Agency',
-    description: 'Automate your processes, build custom internal tools and transform your business. Free audit. Guaranteed deadlines. Respected budget.',
+    title: 'Diez Agency – Digital Presence, Measurable Profit.',
+    description: 'Diez Agency – Digital Presence, Measurable Profit. Custom website creation, visual identity and digital strategy. Free audit.',
     url: 'https://diez-agency.com/en',
   },
 };
@@ -49,14 +49,14 @@ export async function generateMetadata({
       url: m.url,
       title: m.title,
       description: m.description,
-      images: [{ url: '/images/og-image.jpg', width: 1200, height: 630 }],
+      images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Diez Agency – Présence digitale, Profit mesurable.' }],
       locale: l === 'fr' ? 'fr_FR' : 'en_US',
     },
     twitter: {
       card: 'summary_large_image',
       title: m.title,
       description: m.description,
-      images: ['/images/og-image.jpg'],
+      images: ['/og-image.jpg'],
     },
   };
 }
