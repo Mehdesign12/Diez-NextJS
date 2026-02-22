@@ -9,12 +9,14 @@ interface Stats {
   realisations: number;
   articles: number;
   published: number;
+  contacts: number;
+  new_contacts: number;
 }
 
 export default function DashboardPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<Stats>({ realisations: 0, articles: 0, published: 0 });
+  const [stats, setStats] = useState<Stats>({ realisations: 0, articles: 0, published: 0, contacts: 0, new_contacts: 0 });
 
   useEffect(() => {
     const init = async () => {
@@ -22,16 +24,20 @@ export default function DashboardPage() {
       if (!session) { router.push('/admin'); return; }
 
       // Charger les stats
-      const [{ count: rCount }, { count: aCount }, { count: pCount }] = await Promise.all([
+      const [{ count: rCount }, { count: aCount }, { count: pCount }, { count: cCount }, { count: ncCount }] = await Promise.all([
         supabase.from('realisations').select('*', { count: 'exact', head: true }),
         supabase.from('articles').select('*', { count: 'exact', head: true }),
         supabase.from('articles').select('*', { count: 'exact', head: true }).eq('published', true),
+        supabase.from('contacts').select('*', { count: 'exact', head: true }),
+        supabase.from('contacts').select('*', { count: 'exact', head: true }).eq('status', 'new'),
       ]);
 
       setStats({
         realisations: rCount ?? 0,
         articles: aCount ?? 0,
         published: pCount ?? 0,
+        contacts: cCount ?? 0,
+        new_contacts: ncCount ?? 0,
       });
       setLoading(false);
     };
@@ -79,13 +85,19 @@ export default function DashboardPage() {
       <main className="max-w-5xl mx-auto px-6 py-10">
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
           {[
             { label: 'Réalisations', value: stats.realisations, icon: 'fa-briefcase', color: 'text-blue-500', bg: 'bg-blue-50' },
             { label: 'Articles total', value: stats.articles, icon: 'fa-newspaper', color: 'text-purple-500', bg: 'bg-purple-50' },
             { label: 'Articles publiés', value: stats.published, icon: 'fa-check-circle', color: 'text-green-500', bg: 'bg-green-50' },
+            { label: 'Contacts reçus', value: stats.contacts, icon: 'fa-envelope', color: 'text-[#FF4D29]', bg: 'bg-orange-50', badge: stats.new_contacts > 0 ? stats.new_contacts : undefined },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4">
+            <div key={s.label} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-4 relative">
+              {'badge' in s && s.badge ? (
+                <span className="absolute -top-2 -right-2 w-6 h-6 bg-[#FF4D29] text-white text-xs font-extrabold rounded-full flex items-center justify-center shadow-md shadow-[#FF4D29]/30">
+                  {s.badge}
+                </span>
+              ) : null}
               <div className={`w-12 h-12 ${s.bg} rounded-xl flex items-center justify-center`}>
                 <i className={`fas ${s.icon} ${s.color} text-lg`}></i>
               </div>
@@ -132,6 +144,31 @@ export default function DashboardPage() {
               <div className="mt-4 pt-4 border-t border-gray-50 flex items-center gap-2">
                 <span className="text-xs font-semibold text-purple-500">{stats.published} publiés</span>
                 <span className="text-xs text-gray-400">/ {stats.articles} total</span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Contacts */}
+          <Link href="/admin/dashboard/contacts" className="group block relative">
+            {stats.new_contacts > 0 && (
+              <span className="absolute -top-2 -right-2 z-10 px-2 py-0.5 bg-[#FF4D29] text-white text-xs font-extrabold rounded-full shadow-md shadow-[#FF4D29]/30">
+                {stats.new_contacts} nouveau{stats.new_contacts > 1 ? 'x' : ''}
+              </span>
+            )}
+            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-lg hover:border-[#FF4D29]/20 transition-all duration-300">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
+                  <i className="fas fa-envelope text-[#FF4D29] text-lg"></i>
+                </div>
+                <i className="fas fa-arrow-right text-gray-300 group-hover:text-[#FF4D29] group-hover:translate-x-1 transition-all"></i>
+              </div>
+              <h3 className="text-lg font-extrabold text-[#0F0F0F] mb-1">Demandes Contact</h3>
+              <p className="text-sm text-gray-500">Consultez et gérez les demandes reçues via le formulaire.</p>
+              <div className="mt-4 pt-4 border-t border-gray-50 flex items-center gap-2">
+                <span className="text-xs font-semibold text-[#FF4D29]">{stats.contacts} demandes</span>
+                {stats.new_contacts > 0 && (
+                  <span className="text-xs text-gray-400">dont {stats.new_contacts} non lue{stats.new_contacts > 1 ? 's' : ''}</span>
+                )}
               </div>
             </div>
           </Link>

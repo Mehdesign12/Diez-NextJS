@@ -3,7 +3,7 @@
 // ============================================================
 
 import { createClient } from '@supabase/supabase-js';
-import type { Realisation, Article } from './types';
+import type { Realisation, Article, Contact, ContactInsert } from './types';
 
 // Fallback hardcodé pour garantir le fonctionnement même si les env vars
 // ne sont pas injectées au build time (Vercel cold build sans cache)
@@ -124,4 +124,32 @@ export async function signOut() {
 export async function getSession() {
   const { data } = await supabase.auth.getSession();
   return data.session;
+}
+
+// ─────────────────────────────────────────
+// CONTACTS
+// ─────────────────────────────────────────
+
+export async function saveContact(
+  data: ContactInsert
+): Promise<{ error: Error | null }> {
+  const { error } = await supabase.from('contacts').insert([data]);
+  if (error) { console.error(error); return { error: new Error(error.message) }; }
+  return { error: null };
+}
+
+export async function getContacts(): Promise<Contact[]> {
+  const { data, error } = await supabase
+    .from('contacts')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) { console.error(error); return []; }
+  return data ?? [];
+}
+
+export async function updateContactStatus(
+  id: number,
+  status: Contact['status']
+): Promise<void> {
+  await supabase.from('contacts').update({ status }).eq('id', id);
 }

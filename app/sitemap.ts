@@ -4,7 +4,7 @@ const BASE_URL = 'https://diez-agency.com';
 const LANGS = ['fr', 'en'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = ['', '/work', '/blog'];
+  const staticRoutes = ['', '/work', '/blog', '/contact'];
 
   const entries: MetadataRoute.Sitemap = [];
 

@@ -33,3 +33,19 @@ export interface Article {
 // Formulaires (sans id/timestamps)
 export type RealisationForm = Omit<Realisation, 'id' | 'created_at' | 'updated_at'>;
 export type ArticleForm = Omit<Article, 'id' | 'created_at' | 'updated_at'>;
+
+export interface Contact {
+  id: number;
+  first_name: string;
+  need: string;
+  description: string;
+  budget: string;
+  timeline: string;
+  email: string;
+  phone: string | null;
+  lang: string;
+  status: 'new' | 'read' | 'replied';
+  created_at: string;
+}
+
+export type ContactInsert = Omit<Contact, 'id' | 'status' | 'created_at'>;
