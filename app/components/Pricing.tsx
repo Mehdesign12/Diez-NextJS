@@ -135,19 +135,19 @@ export default function Pricing() {
   const stats = STATS[l];
 
   return (
-    <section id="pricing" className="py-24 bg-[#FFF8F3] overflow-hidden">
+    <section id="pricing" className="py-10 bg-[#FFF8F3]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Header ── */}
-        <div className="text-center mb-6 reveal">
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF4D29]/10 text-[#FF4D29] text-xs font-bold uppercase tracking-widest mb-4">
+        <div className="text-center mb-4 reveal">
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF4D29]/10 text-[#FF4D29] text-xs font-bold uppercase tracking-widest mb-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D29] animate-pulse"></span>
             {l === 'fr' ? 'Nos formules' : 'Our plans'}
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-[#0F0F0F] mb-4">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-[#0F0F0F] mb-2">
             {l === 'fr' ? 'Votre investissement, votre rythme.' : 'Your investment, your pace.'}
           </h2>
-          <p className="text-gray-500 text-base max-w-xl mx-auto">
+          <p className="text-gray-500 text-sm max-w-xl mx-auto">
             {l === 'fr'
               ? 'Chaque formule est conçue pour générer un retour mesurable. Les tarifs sont personnalisés selon votre projet.'
               : 'Every plan is designed to generate measurable returns. Pricing is tailored to your project.'}
@@ -155,21 +155,21 @@ export default function Pricing() {
         </div>
 
         {/* ── Stats bar ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 reveal">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 reveal">
           {stats.map((s) => (
-            <div key={s.label} className="text-center bg-white rounded-2xl py-4 px-3 border border-gray-100 shadow-sm">
-              <div className="text-2xl font-extrabold text-[#FF4D29]">{s.value}</div>
+            <div key={s.label} className="text-center bg-white rounded-xl py-2.5 px-3 border border-gray-100 shadow-sm">
+              <div className="text-xl font-extrabold text-[#FF4D29]">{s.value}</div>
               <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
             </div>
           ))}
         </div>
 
         {/* ── Cards ── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 items-stretch">
           {plans.map((plan, i) => (
             <div
               key={plan.id}
-              className={`reveal relative flex flex-col rounded-3xl overflow-hidden transition-all duration-300 ${
+              className={`reveal relative flex flex-col rounded-2xl transition-all duration-300 ${
                 i === 0 ? 'delay-100' : i === 1 ? 'delay-200' : 'delay-300'
               } ${
                 plan.dark
@@ -177,43 +177,43 @@ export default function Pricing() {
                   : 'bg-white border border-gray-100 shadow-sm hover:shadow-xl'
               }`}
             >
-              {/* Badge populaire */}
+              {/* Badge populaire — au-dessus de la carte, pas coupé par overflow */}
               {plan.badge && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-                  <span className="bg-[#FF4D29] text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg shadow-[#FF4D29]/30 uppercase tracking-wide">
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
+                  <span className="bg-[#FF4D29] text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg shadow-[#FF4D29]/30 uppercase tracking-wide whitespace-nowrap">
                     {plan.badge}
                   </span>
                 </div>
               )}
 
-              <div className="flex flex-col flex-1 p-8 pt-10">
+              <div className={`flex flex-col flex-1 p-5 ${plan.badge ? 'pt-6' : 'pt-5'}`}>
 
                 {/* Titre + tagline */}
-                <div className="mb-6">
-                  <h3 className={`text-xl font-extrabold mb-1 ${plan.dark ? 'text-white' : 'text-[#0F0F0F]'}`}>
+                <div className="mb-3">
+                  <h3 className={`text-base font-extrabold mb-0.5 ${plan.dark ? 'text-white' : 'text-[#0F0F0F]'}`}>
                     {plan.title}
                   </h3>
-                  <p className={`text-sm font-medium ${plan.dark ? 'text-[#FF4D29]' : 'text-[#FF4D29]'}`}>
+                  <p className="text-xs font-semibold text-[#FF4D29]">
                     {plan.tagline}
                   </p>
-                  <p className={`text-sm mt-2 leading-relaxed ${plan.dark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p className={`text-xs mt-1 leading-relaxed ${plan.dark ? 'text-gray-400' : 'text-gray-500'}`}>
                     {plan.description}
                   </p>
                 </div>
 
                 {/* Séparateur */}
-                <div className={`h-px mb-6 ${plan.dark ? 'bg-white/10' : 'bg-gray-100'}`} />
+                <div className={`h-px mb-3 ${plan.dark ? 'bg-white/10' : 'bg-gray-100'}`} />
 
                 {/* Features */}
-                <ul className="space-y-3 mb-6 flex-1">
+                <ul className="space-y-2 mb-3 flex-1">
                   {plan.features.map((f) => (
-                    <li key={f.label} className="flex items-start gap-3">
-                      <div className={`mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    <li key={f.label} className="flex items-center gap-2.5">
+                      <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 ${
                         plan.dark ? 'bg-[#FF4D29]/15' : 'bg-[#FF4D29]/8'
                       }`}>
-                        <i className={`fas ${f.icon} text-[10px] text-[#FF4D29]`}></i>
+                        <i className={`fas ${f.icon} text-[9px] text-[#FF4D29]`}></i>
                       </div>
-                      <span className={`text-sm leading-relaxed ${plan.dark ? 'text-gray-300' : 'text-gray-600'}`}>
+                      <span className={`text-xs leading-relaxed ${plan.dark ? 'text-gray-300' : 'text-gray-600'}`}>
                         {f.label}
                       </span>
                     </li>
@@ -221,13 +221,13 @@ export default function Pricing() {
                 </ul>
 
                 {/* Séparateur */}
-                <div className={`h-px mb-6 ${plan.dark ? 'bg-white/10' : 'bg-gray-100'}`} />
+                <div className={`h-px mb-3 ${plan.dark ? 'bg-white/10' : 'bg-gray-100'}`} />
 
                 {/* Résultat client */}
-                <div className={`rounded-2xl px-4 py-3 mb-6 flex items-center gap-3 ${
+                <div className={`rounded-xl px-3 py-2 mb-3 flex items-center gap-2.5 ${
                   plan.dark ? 'bg-white/5 border border-white/10' : 'bg-[#FF4D29]/5 border border-[#FF4D29]/10'
                 }`}>
-                  <span className="text-2xl font-extrabold text-[#FF4D29] leading-none">{plan.result.metric}</span>
+                  <span className="text-lg font-extrabold text-[#FF4D29] leading-none">{plan.result.metric}</span>
                   <span className={`text-xs leading-snug ${plan.dark ? 'text-gray-400' : 'text-gray-500'}`}>
                     {plan.result.label}
                   </span>
@@ -236,14 +236,14 @@ export default function Pricing() {
                 {/* CTA */}
                 <Link
                   href={`/${lang}/contact`}
-                  className={`block w-full py-3.5 px-6 text-center rounded-2xl text-sm font-bold transition-all duration-300 active:scale-95 ${
+                  className={`block w-full py-3 px-5 text-center rounded-xl text-xs font-bold transition-all duration-300 active:scale-95 ${
                     plan.dark
                       ? 'bg-[#FF4D29] text-white hover:bg-orange-500 shadow-lg shadow-[#FF4D29]/30 hover:shadow-[#FF4D29]/50 hover:-translate-y-0.5'
                       : 'border-2 border-[#0F0F0F] text-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white'
                   }`}
                 >
                   {plan.cta}
-                  <i className="fas fa-arrow-right ml-2 text-xs"></i>
+                  <i className="fas fa-arrow-right ml-2 text-[10px]"></i>
                 </Link>
 
               </div>
@@ -252,8 +252,8 @@ export default function Pricing() {
         </div>
 
         {/* ── Ligne de réassurance ── */}
-        <div className="mt-12 text-center reveal">
-          <p className={`text-sm text-gray-400 flex items-center justify-center gap-2 flex-wrap`}>
+        <div className="mt-6 text-center reveal">
+          <p className={`text-xs text-gray-400 flex items-center justify-center gap-2 flex-wrap`}>
             <i className="fas fa-lock text-[#FF4D29]"></i>
             {l === 'fr'
               ? 'Devis gratuit et sans engagement · Réponse sous 24h · Budget fixé dès le départ'
