@@ -6,7 +6,7 @@ export default function Hero() {
   const { t, lang } = useLang();
 
   return (
-    <header className="relative pt-36 pb-16 md:pt-32 md:pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+    <header className="relative pt-36 pb-16 md:pt-32 md:pb-16 lg:pt-36 lg:pb-20 overflow-hidden">
       {/* Decorative blobs */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none z-0">
         <div className="absolute top-20 left-10 w-48 h-48 md:w-72 md:h-72 bg-[#FF4D29]/10 rounded-full blur-3xl mix-blend-multiply filter opacity-70 animate-blob"></div>
@@ -49,7 +49,7 @@ export default function Hero() {
         </div>
 
         {/* Main Headline */}
-        <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-[1.1] md:leading-[1.2] mb-6 md:mb-8 max-w-6xl mx-auto flex flex-col items-center gap-1 md:gap-3">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] md:leading-[1.15] mb-4 md:mb-6 max-w-6xl mx-auto flex flex-col items-center gap-1 md:gap-2">
           {/* Line 1 */}
           <div className="flex flex-wrap justify-center gap-x-2 md:gap-x-6">
             {lang === 'fr' ? (
@@ -84,7 +84,7 @@ export default function Hero() {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-sm sm:text-base md:text-xl text-gray-600 mb-6 md:mb-10 max-w-2xl mx-auto leading-relaxed px-4">
+        <p className="text-sm sm:text-base md:text-lg text-gray-600 mb-5 md:mb-8 max-w-2xl mx-auto leading-relaxed px-4">
           {t('hero-subtitle')}
           <br className="hidden md:block" />
           <strong>{t('hero-subtitle-strong')}</strong>
