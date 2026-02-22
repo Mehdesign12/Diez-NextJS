@@ -225,8 +225,8 @@ export default function ContactClient() {
   return (
     <div className="min-h-screen bg-[#FFF8F3]">
 
-      {/* ── Navbar ── */}
-      <nav className="fixed w-full z-50 top-6 px-4">
+      {/* ── Navbar mobile uniquement ── */}
+      <nav className="lg:hidden fixed w-full z-50 top-6 px-4">
         <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-md border border-gray-100 shadow-lg rounded-full px-6 h-16 flex items-center justify-between">
           <Link href={`/${currentLang}`} className="flex items-center gap-3 group">
             <div className="w-9 h-9 rounded-full overflow-hidden">
@@ -245,6 +245,15 @@ export default function ContactClient() {
           </Link>
         </div>
       </nav>
+
+      {/* ── Bouton Fermer desktop — bas gauche ── */}
+      <Link
+        href={`/${currentLang}`}
+        className="hidden lg:flex fixed bottom-8 left-8 z-50 items-center gap-2 bg-white/90 backdrop-blur-md border border-gray-200 shadow-md rounded-full px-5 py-3 text-sm font-medium text-gray-500 hover:text-[#FF4D29] hover:border-[#FF4D29]/30 transition-all duration-200 group"
+      >
+        <i className="fas fa-arrow-left text-xs group-hover:-translate-x-0.5 transition-transform duration-200"></i>
+        {currentLang === 'fr' ? 'Retour au site' : 'Back to site'}
+      </Link>
 
       {/* ── Layout deux colonnes ── */}
       <div className="min-h-screen flex flex-col lg:flex-row">
@@ -285,7 +294,7 @@ export default function ContactClient() {
         </div>
 
         {/* ── Colonne droite — formulaire ── */}
-        <div className="flex-1 flex items-center justify-center px-4 py-32 lg:py-12 lg:px-16">
+        <div className="flex-1 flex items-center justify-center px-4 py-28 lg:py-0 lg:px-16">
           <div className="w-full max-w-lg">
 
             {/* Barre de progression */}
