@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLang } from '../context/LangContext';
 
 export default function Hero() {
@@ -16,7 +17,7 @@ export default function Hero() {
       {/* Floating Avatars */}
       <div className="absolute top-32 left-[10%] md:left-[20%] lg:left-[25%] animate-hover-card z-20 hidden md:block" style={{ animationDelay: '0s' }}>
         <div className="relative">
-          <img src="https://i.pravatar.cc/150?img=32" alt="Collaborator" className="w-12 h-12 rounded-full border-2 border-white shadow-lg" />
+          <img src="https://i.pravatar.cc/150?img=32" alt="Collaborator" className="w-12 h-12 rounded-full border-2 border-white shadow-lg" loading="lazy" />
           <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center border-2 border-white shadow-sm text-[10px]">
             <i className="fas fa-mouse-pointer transform -rotate-12"></i>
           </div>
@@ -25,7 +26,7 @@ export default function Hero() {
 
       <div className="absolute top-48 right-[5%] md:right-[15%] lg:right-[22%] animate-hover-card z-20 hidden md:block" style={{ animationDelay: '1.5s' }}>
         <div className="relative">
-          <img src="https://i.pravatar.cc/150?img=11" alt="Collaborator" className="w-14 h-14 rounded-full border-2 border-white shadow-lg" />
+          <img src="https://i.pravatar.cc/150?img=11" alt="Collaborator" className="w-14 h-14 rounded-full border-2 border-white shadow-lg" loading="lazy" />
           <div className="absolute -bottom-1 -left-2 w-7 h-7 bg-[#FF4D29] text-white rounded-full flex items-center justify-center border-2 border-white shadow-sm text-xs">
             <i className="fas fa-pen"></i>
           </div>
@@ -34,7 +35,7 @@ export default function Hero() {
 
       <div className="absolute bottom-48 left-[15%] md:left-[25%] animate-hover-card z-20 hidden md:block" style={{ animationDelay: '2.5s' }}>
         <div className="relative">
-          <img src="https://i.pravatar.cc/150?img=5" alt="Collaborator" className="w-10 h-10 rounded-full border-2 border-white shadow-lg" />
+          <img src="https://i.pravatar.cc/150?img=5" alt="Collaborator" className="w-10 h-10 rounded-full border-2 border-white shadow-lg" loading="lazy" />
           <div className="absolute -top-2 -right-2 w-5 h-5 bg-green-500 text-white rounded-full flex items-center justify-center border-2 border-white shadow-sm text-[8px]">
             <i className="fas fa-check"></i>
           </div>

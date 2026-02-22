@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { CursorProvider } from "@/app/components/ui/CursorProvider";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -84,10 +85,6 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <head>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        />
         <meta name="theme-color" content="#FF4D29" />
       </head>
       <body
