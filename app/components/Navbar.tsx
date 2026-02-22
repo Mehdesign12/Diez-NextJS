@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLang } from '../context/LangContext';
+import { ShinyButton } from './ui/ShinyButton';
 
 export default function Navbar() {
   const { t, lang, setLang } = useLang();
@@ -78,8 +79,10 @@ export default function Navbar() {
               <i className="fas fa-chevron-down text-[8px] text-gray-400"></i>
             </button>
 
-            <Link href={`/${lang}/contact`} className="hidden md:block px-6 py-2.5 bg-[#FF4D29] text-white text-sm font-bold rounded-full shadow-lg shadow-[#FF4D29]/20 hover:bg-orange-600 transition-all duration-300 hover:-translate-y-0.5">
-              {t('nav-contact')}
+            <Link href={`/${lang}/contact`} className="hidden md:block">
+              <ShinyButton>
+                {t('nav-contact')}
+              </ShinyButton>
             </Link>
 
             {/* Mobile Header Actions */}
