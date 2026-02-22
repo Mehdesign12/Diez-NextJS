@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { useLang } from '../context/LangContext';
 
 export default function Pricing() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const sliderRef = useRef<HTMLDivElement>(null);
 
   const scrollSlider = () => {
@@ -34,7 +34,7 @@ export default function Pricing() {
                 <li className="flex items-center gap-3"><i className="fas fa-check text-green-500"></i> {t('price-1-f3')}</li>
                 <li className="flex items-center gap-3 text-gray-300"><i className="fas fa-times"></i> {t('price-1-f4')}</li>
               </ul>
-              <a href="#contact" className="block w-full py-3 px-6 text-center rounded-xl border-2 border-gray-900 text-gray-900 font-bold hover:bg-gray-900 hover:text-white transition-colors">{t('price-1-btn')}</a>
+              <a href={`/${lang}/contact`} className="block w-full py-3 px-6 text-center rounded-xl border-2 border-gray-900 text-gray-900 font-bold hover:bg-gray-900 hover:text-white transition-colors">{t('price-1-btn')}</a>
             </div>
 
             {/* Pro (featured) */}
@@ -49,7 +49,7 @@ export default function Pricing() {
                 <li className="flex items-center gap-3"><i className="fas fa-check text-[#FF4D29]"></i> {t('price-2-f3')}</li>
                 <li className="flex items-center gap-3"><i className="fas fa-check text-[#FF4D29]"></i> {t('price-2-f4')}</li>
               </ul>
-              <a href="#contact" className="block w-full py-3 px-6 text-center rounded-xl bg-[#FF4D29] text-white font-bold hover:bg-white hover:text-[#FF4D29] transition-colors">{t('price-2-btn')}</a>
+              <a href={`/${lang}/contact`} className="block w-full py-3 px-6 text-center rounded-xl bg-[#FF4D29] text-white font-bold hover:bg-white hover:text-[#FF4D29] transition-colors">{t('price-2-btn')}</a>
             </div>
 
             {/* Enterprise */}
@@ -63,7 +63,7 @@ export default function Pricing() {
                 <li className="flex items-center gap-3"><i className="fas fa-check text-green-500"></i> {t('price-3-f3')}</li>
                 <li className="flex items-center gap-3"><i className="fas fa-check text-green-500"></i> {t('price-3-f4')}</li>
               </ul>
-              <a href="#contact" className="block w-full py-3 px-6 text-center rounded-xl border-2 border-gray-900 text-gray-900 font-bold hover:bg-gray-900 hover:text-white transition-colors">{t('price-3-btn')}</a>
+              <a href={`/${lang}/contact`} className="block w-full py-3 px-6 text-center rounded-xl border-2 border-gray-900 text-gray-900 font-bold hover:bg-gray-900 hover:text-white transition-colors">{t('price-3-btn')}</a>
             </div>
           </div>
 

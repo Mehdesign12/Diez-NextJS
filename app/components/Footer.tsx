@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useLang } from '../context/LangContext';
 
 export default function Footer() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [email, setEmail] = useState('');
 
   return (
@@ -39,7 +39,7 @@ export default function Footer() {
               <li><Link href="#" className="hover:text-[#FF4D29] transition-colors">{t('footer-l-about')}</Link></li>
               <li><Link href="#" className="hover:text-[#FF4D29] transition-colors">{t('footer-l-careers')}</Link></li>
               <li><Link href="/blog" className="hover:text-[#FF4D29] transition-colors">{t('footer-l-blog')}</Link></li>
-              <li><Link href="#contact" className="hover:text-[#FF4D29] transition-colors">{t('footer-l-contact')}</Link></li>
+              <li><Link href={`/${lang}/contact`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-contact')}</Link></li>
             </ul>
           </div>
 

@@ -49,7 +49,7 @@ export default function BlogClient({ articles }: Props) {
             <Link href={`/${lang}`} className="text-sm font-medium text-gray-500 hover:text-[#FF4D29] transition-colors flex items-center gap-1.5">
               <i className="fas fa-arrow-left text-xs"></i> Retour
             </Link>
-            <Link href={`/${lang}#contact`} className="px-5 py-2 bg-[#FF4D29] text-white text-sm font-bold rounded-full hover:bg-orange-600 transition-all">
+            <Link href={`/${lang}/contact`} className="px-5 py-2 bg-[#FF4D29] text-white text-sm font-bold rounded-full hover:bg-orange-600 transition-all">
               Contact
             </Link>
           </div>
@@ -203,7 +203,7 @@ export default function BlogClient({ articles }: Props) {
           </h2>
           <p className="text-gray-400 mb-8">Audit gratuit · Délais garantis · Budget respecté</p>
           <Link
-            href={`/${lang}#contact`}
+            href={`/${lang}/contact`}
             className="inline-flex items-center gap-2 px-8 py-4 bg-[#FF4D29] text-white font-bold rounded-full hover:bg-orange-600 transition-all shadow-lg shadow-[#FF4D29]/30 hover:-translate-y-0.5"
           >
             <i className="fas fa-rocket"></i> Démarrer mon projet

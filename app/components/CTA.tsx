@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useLang } from '../context/LangContext';
 
 export default function CTA() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   return (
     <section className="py-12 md:py-24 px-4 relative overflow-hidden z-30 bg-white rounded-b-[2rem] md:rounded-b-[3rem] shadow-xl mb-0 md:mb-[400px]">
@@ -25,14 +25,14 @@ export default function CTA() {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link
-                href="#contact"
+                href={`/${lang}/contact`}
                 className="px-8 py-4 md:px-10 md:py-5 bg-white text-[#0F0F0F] rounded-full font-bold text-base md:text-lg hover:scale-105 transition-transform duration-300 shadow-lg flex items-center justify-center gap-2 group active:scale-95"
               >
                 {t('cta-btn-1')}
                 <i className="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
               </Link>
               <Link
-                href="#work"
+                href={`/${lang}#work`}
                 className="px-8 py-4 md:px-10 md:py-5 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-full font-bold text-base md:text-lg hover:bg-white/20 transition-all flex items-center justify-center active:scale-95"
               >
                 {t('cta-btn-2')}

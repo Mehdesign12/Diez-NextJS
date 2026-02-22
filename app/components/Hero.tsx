@@ -93,7 +93,7 @@ export default function Hero() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 mb-10 md:mb-20 w-full px-4">
           <Link
-            href="#contact"
+            href={`/${lang}/contact`}
             className="w-full sm:w-auto px-6 py-3.5 md:px-8 md:py-4 bg-[#FF4D29] text-white rounded-full font-bold text-base md:text-lg shadow-lg shadow-[#FF4D29]/30 hover:shadow-[#FF4D29]/50 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 active:scale-95"
           >
             {t('hero-cta1')} <i className="fas fa-arrow-right text-sm"></i>

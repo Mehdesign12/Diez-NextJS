@@ -78,7 +78,7 @@ export default function Navbar() {
               <i className="fas fa-chevron-down text-[8px] text-gray-400"></i>
             </button>
 
-            <Link href={`/${lang}#contact`} className="hidden md:block px-6 py-2.5 bg-[#FF4D29] text-white text-sm font-bold rounded-full shadow-lg shadow-[#FF4D29]/20 hover:bg-orange-600 transition-all duration-300 hover:-translate-y-0.5">
+            <Link href={`/${lang}/contact`} className="hidden md:block px-6 py-2.5 bg-[#FF4D29] text-white text-sm font-bold rounded-full shadow-lg shadow-[#FF4D29]/20 hover:bg-orange-600 transition-all duration-300 hover:-translate-y-0.5">
               {t('nav-contact')}
             </Link>
 
@@ -87,7 +87,7 @@ export default function Navbar() {
               <button onClick={() => switchLang(otherLang)} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-50 border border-gray-200 active:scale-95 transition-all">
                 <img src={flagUrl} alt={lang.toUpperCase()} className="w-5 h-5 rounded-full object-cover" />
               </button>
-              <Link href={`/${lang}#contact`} className="w-9 h-9 flex items-center justify-center rounded-full bg-[#FF4D29] text-white shadow-md active:scale-95 transition-all">
+              <Link href={`/${lang}/contact`} className="w-9 h-9 flex items-center justify-center rounded-full bg-[#FF4D29] text-white shadow-md active:scale-95 transition-all">
                 <i className="fas fa-paper-plane text-xs"></i>
               </Link>
             </div>
@@ -113,7 +113,7 @@ export default function Navbar() {
           ))}
 
           <div className="pt-8" style={{ transform: mobileOpen ? 'translateY(0)' : 'translateY(2rem)', opacity: mobileOpen ? 1 : 0, transition: 'all 0.5s ease 600ms' }}>
-            <Link href={`/${lang}#contact`} onClick={closeMobile} className="inline-block w-full px-8 py-4 bg-[#FF4D29] text-white text-lg font-bold rounded-full shadow-lg shadow-[#FF4D29]/30 active:scale-95 transition-transform">
+            <Link href={`/${lang}/contact`} onClick={closeMobile} className="inline-block w-full px-8 py-4 bg-[#FF4D29] text-white text-lg font-bold rounded-full shadow-lg shadow-[#FF4D29]/30 active:scale-95 transition-transform">
               {t('nav-contact')}
             </Link>
           </div>
