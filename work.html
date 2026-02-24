@@ -14,9 +14,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Supabase JS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <script>
         tailwind.config = {
             theme: {
@@ -285,80 +282,46 @@
         <img id="lightbox-img" src="" alt="" class="max-w-[90vw] max-h-[90vh] object-contain">
     </div>
 
-    <script src="js/supabase-config.js"></script>
     <script src="js/realisations.js"></script>
     <script>
         let currentPopupRealisation = null;
         let lightboxImages = [];
         let currentLightboxIndex = 0;
-        let allRealisations = [];
 
         // Initialisation
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadRealisations();
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRealisations();
             initScrollReveal();
             checkUrlParams();
         });
 
-        async function loadRealisations() {
+        function loadRealisations() {
+            const realisations = RealisationsManager.get();
             const grid = document.getElementById('realisations-grid');
             const emptyState = document.getElementById('empty-state');
-            
-            // Show loading
-            grid.innerHTML = `
-                <div class="col-span-full flex justify-center py-12">
-                    <div class="text-center">
-                        <div class="w-8 h-8 border-4 border-diez-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        <p class="text-gray-500">Chargement des réalisations...</p>
-                    </div>
-                </div>
-            `;
 
-            try {
-                allRealisations = await RealisationsManager.get();
-                
-                if (allRealisations.length === 0) {
-                    grid.classList.add('hidden');
-                    emptyState.classList.remove('hidden');
-                    return;
-                }
-
-                grid.classList.remove('hidden');
-                emptyState.classList.add('hidden');
-
-                grid.innerHTML = allRealisations.map((r, index) => `
-                    <div class="reveal" style="transition-delay: ${0.1 + (index * 0.05)}s;">
-                        ${RealisationsManager.generateWorkCard(r)}
-                    </div>
-                `).join('');
-
-                // Re-init scroll reveal pour les nouveaux éléments
-                setTimeout(initScrollReveal, 100);
-            } catch (error) {
-                console.error('Error loading realisations:', error);
-                grid.innerHTML = `
-                    <div class="col-span-full text-center py-12">
-                        <i class="fas fa-exclamation-triangle text-4xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500">Erreur lors du chargement</p>
-                        <button onclick="loadRealisations()" class="mt-4 px-4 py-2 bg-diez-orange text-white rounded-lg">Réessayer</button>
-                    </div>
-                `;
+            if (realisations.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
             }
+
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = realisations.map((r, index) => `
+                <div class="reveal" style="transition-delay: ${0.1 + (index * 0.05)}s;">
+                    ${RealisationsManager.generateWorkCard(r)}
+                </div>
+            `).join('');
+
+            // Re-init scroll reveal pour les nouveaux éléments
+            setTimeout(initScrollReveal, 100);
         }
 
-        async function openRealisationPopup(id) {
-            // First try from cache
-            let r = allRealisations.find(item => item.id === id);
-            
-            // If not in cache, fetch from DB
-            if (!r) {
-                r = await RealisationsManager.getById(id);
-            }
-            
+        function openRealisationPopup(id) {
+            const r = RealisationsManager.getById(id);
             if (!r) return;
-            
-            // Normalize the data
-            r = RealisationsManager.normalize(r);
 
             currentPopupRealisation = r;
             const popup = document.getElementById('realisation-popup');
