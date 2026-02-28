@@ -47,7 +47,6 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen]     = useState(false);
   const [mobileServOpen, setMobileServOpen] = useState(false);
   const [scrolled, setScrolled]         = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [dropOpen, setDropOpen]         = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
 
@@ -57,7 +56,6 @@ export default function Navbar() {
       const scrollY = window.scrollY;
       setScrolled(scrollY > 50);
       const docH = document.documentElement.scrollHeight - window.innerHeight;
-      setScrollProgress(docH > 0 ? Math.min((scrollY / docH) * 100, 100) : 0);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -116,14 +114,6 @@ export default function Navbar() {
           : 'max-w-5xl shadow-[0_4px_20px_rgba(255,77,41,0.10)]'
       }`}>
         <div className={`flex justify-between items-center transition-all duration-300 ${scrolled ? 'h-12 md:h-14' : 'h-14 md:h-16'}`}>
-
-          {/* Barre de progression */}
-          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-transparent rounded-full overflow-hidden">
-            <div
-              className="h-full bg-[#FF4D29] transition-all duration-100 ease-out rounded-full"
-              style={{ width: `${scrollProgress}%` }}
-            />
-          </div>
 
           {/* Logo */}
           <Link href={`/${lang}`} className="flex-shrink-0 flex items-center gap-3 pl-2 md:pl-4">
