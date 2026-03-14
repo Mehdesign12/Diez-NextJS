@@ -9,11 +9,11 @@ import type { Realisation, Article, Contact, ContactInsert } from './types';
 // ne sont pas injectées au build time (Vercel cold build sans cache)
 const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL ||
-  'https://qegewzvyjiijozioqsgq.supabase.co';
+  'https://bcwpqblpovhbgzkipqgn.supabase.co';
 
 const supabaseAnonKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlZ2V3enZ5amlpam96aW9xc2dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxODExNTMsImV4cCI6MjA3OTc1NzE1M30.2Q84Q6aTfU--ShAa4VzRgEmzzkhdTFb6TZD73mqaar0';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjd3BxYmxwb3ZoYmd6a2lwcWduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTYxNzgsImV4cCI6MjA4OTA3MjE3OH0.5uXrIJtENQ-0xfn-BKjAfCIyow-0XIkyaGYKeaWqTTU';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 

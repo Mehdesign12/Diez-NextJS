@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "i.pravatar.cc" },
       { protocol: "https", hostname: "flagcdn.com" },
       { protocol: "https", hostname: "tfisxtkfiowogmthshqg.supabase.co" },
-      { protocol: "https", hostname: "qegewzvyjiijozioqsgq.supabase.co" },
+      { protocol: "https", hostname: "bcwpqblpovhbgzkipqgn.supabase.co" },
     ],
   },
   // Compression Gzip/Brotli activée
