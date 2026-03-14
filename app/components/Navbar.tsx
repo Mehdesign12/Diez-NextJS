@@ -119,7 +119,7 @@ export default function Navbar() {
           <Link href={`/${lang}`} className="flex-shrink-0 flex items-center gap-3 pl-2 md:pl-4">
             <div className="w-8 h-8 md:w-9 md:h-9 rounded-full overflow-hidden hover:scale-105 transition-transform">
               <Image
-                src="https://qegewzvyjiijozioqsgq.supabase.co/storage/v1/object/public/logo/logo%20diez.png"
+                src="/images/logo.png"
                 alt="Diez Agency"
                 width={48}
                 height={48}
