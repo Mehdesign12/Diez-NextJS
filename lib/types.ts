@@ -49,3 +49,18 @@ export interface Contact {
 }
 
 export type ContactInsert = Omit<Contact, 'id' | 'status' | 'created_at'>;
+
+export interface Application {
+  id: number;
+  first_name: string;
+  last_name: string;
+  motivation: string;
+  cv_url: string;
+  email: string;
+  phone: string | null;
+  lang: string;
+  status: 'new' | 'read' | 'replied';
+  created_at: string;
+}
+
+export type ApplicationInsert = Omit<Application, 'id' | 'status' | 'created_at'>;

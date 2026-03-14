@@ -3,7 +3,7 @@
 // ============================================================
 
 import { createClient } from '@supabase/supabase-js';
-import type { Realisation, Article, Contact, ContactInsert } from './types';
+import type { Realisation, Article, Contact, ContactInsert, Application, ApplicationInsert } from './types';
 
 // Fallback hardcodé pour garantir le fonctionnement même si les env vars
 // ne sont pas injectées au build time (Vercel cold build sans cache)
@@ -172,4 +172,64 @@ export async function updateContactStatus(
   status: Contact['status']
 ): Promise<void> {
   await supabase.from('contacts').update({ status }).eq('id', id);
+}
+
+// ─────────────────────────────────────────
+// CANDIDATURES (APPLICATIONS)
+// ─────────────────────────────────────────
+
+export async function uploadCV(file: File): Promise<string | null> {
+  const ext = file.name.split('.').pop();
+  const filename = `cvs/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from('images')
+    .upload(filename, file, { upsert: true, contentType: 'application/pdf' });
+
+  if (error) { console.error(error); return null; }
+
+  const { data } = supabase.storage.from('images').getPublicUrl(filename);
+  return data.publicUrl;
+}
+
+export async function saveApplication(
+  data: ApplicationInsert
+): Promise<{ error: Error | null }> {
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/applications`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      console.error('saveApplication error:', err);
+      return { error: new Error(err) };
+    }
+    return { error: null };
+  } catch (e) {
+    console.error('saveApplication fetch error:', e);
+    return { error: e as Error };
+  }
+}
+
+export async function getApplications(): Promise<Application[]> {
+  const { data, error } = await supabase
+    .from('applications')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) { console.error(error); return []; }
+  return data ?? [];
+}
+
+export async function updateApplicationStatus(
+  id: number,
+  status: Application['status']
+): Promise<void> {
+  await supabase.from('applications').update({ status }).eq('id', id);
 }

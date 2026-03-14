@@ -287,6 +287,42 @@ const translations: Record<Lang, Record<string, string>> = {
     'contact-s6-phone': 'Téléphone (optionnel)',
     'contact-s6-phone-ph': '+33 6 00 00 00 00',
     'contact-s6-privacy': 'Vos informations sont strictement confidentielles et jamais partagées.',
+
+    // ── Page Recrutement ──
+    'recruit-page-title': 'Rejoignez l\'équipe',
+    'recruit-page-subtitle': 'Envoyez-nous votre candidature — ça prend 2 minutes.',
+    'recruit-step': 'Étape',
+    'recruit-next': 'Suivant',
+    'recruit-prev': 'Précédent',
+    'recruit-send': 'Envoyer ma candidature',
+    'recruit-sending': 'Envoi en cours…',
+    'recruit-success-title': 'Candidature envoyée ! 🎉',
+    'recruit-success-sub': 'Nous étudions votre profil et vous recontactons rapidement.',
+    'recruit-success-btn': 'Retour à l\'accueil',
+    // Step 1
+    'recruit-s1-title': 'Ravi de vous rencontrer !',
+    'recruit-s1-subtitle': 'Comment vous appelez-vous ?',
+    'recruit-s1-firstname-ph': 'Prénom',
+    'recruit-s1-lastname-ph': 'Nom',
+    // Step 2
+    'recruit-s2-title': 'Votre CV',
+    'recruit-s2-subtitle': 'Déposez votre CV au format PDF (5 Mo max).',
+    'recruit-s2-drop': 'Glissez votre PDF ici ou cliquez pour parcourir',
+    'recruit-s2-drop-hint': 'PDF uniquement · 5 Mo maximum',
+    'recruit-s2-uploading': 'Téléversement en cours…',
+    // Step 3
+    'recruit-s3-title': 'Votre motivation',
+    'recruit-s3-subtitle': 'Présentez-vous brièvement et dites-nous pourquoi Diez Agency vous intéresse.',
+    'recruit-s3-placeholder': 'Ex : Développeur full-stack avec 3 ans d\'expérience, passionné par l\'automatisation et les outils sur-mesure…',
+    // Step 4
+    'recruit-s4-title': 'Presque terminé !',
+    'recruit-s4-subtitle': 'Comment vous contacter ?',
+    'recruit-s4-email': 'Email *',
+    'recruit-s4-email-ph': 'vous@email.com',
+    'recruit-s4-phone': 'Téléphone (optionnel)',
+    'recruit-s4-phone-ph': '+33 6 00 00 00 00',
+    'recruit-s4-privacy': 'Vos informations sont strictement confidentielles et jamais partagées.',
+    'footer-l-recruitment': 'Recrutement',
   },
   en: {
     'nav-home': 'Home',
@@ -563,6 +599,42 @@ const translations: Record<Lang, Record<string, string>> = {
     'contact-s6-phone': 'Phone (optional)',
     'contact-s6-phone-ph': '+1 555 000 0000',
     'contact-s6-privacy': 'Your information is strictly confidential and never shared.',
+
+    // ── Recruitment Page ──
+    'recruit-page-title': 'Join the team',
+    'recruit-page-subtitle': 'Send us your application — it only takes 2 minutes.',
+    'recruit-step': 'Step',
+    'recruit-next': 'Next',
+    'recruit-prev': 'Back',
+    'recruit-send': 'Send my application',
+    'recruit-sending': 'Sending…',
+    'recruit-success-title': 'Application sent! 🎉',
+    'recruit-success-sub': 'We\'ll review your profile and get back to you soon.',
+    'recruit-success-btn': 'Back to home',
+    // Step 1
+    'recruit-s1-title': 'Nice to meet you!',
+    'recruit-s1-subtitle': 'What is your name?',
+    'recruit-s1-firstname-ph': 'First name',
+    'recruit-s1-lastname-ph': 'Last name',
+    // Step 2
+    'recruit-s2-title': 'Your CV',
+    'recruit-s2-subtitle': 'Upload your CV in PDF format (5 MB max).',
+    'recruit-s2-drop': 'Drag your PDF here or click to browse',
+    'recruit-s2-drop-hint': 'PDF only · 5 MB maximum',
+    'recruit-s2-uploading': 'Uploading…',
+    // Step 3
+    'recruit-s3-title': 'Your motivation',
+    'recruit-s3-subtitle': 'Briefly introduce yourself and tell us why you\'re interested in Diez Agency.',
+    'recruit-s3-placeholder': 'Example: Full-stack developer with 3 years of experience, passionate about automation and custom tools…',
+    // Step 4
+    'recruit-s4-title': 'Almost done!',
+    'recruit-s4-subtitle': 'How can we reach you?',
+    'recruit-s4-email': 'Email *',
+    'recruit-s4-email-ph': 'your@email.com',
+    'recruit-s4-phone': 'Phone (optional)',
+    'recruit-s4-phone-ph': '+1 555 000 0000',
+    'recruit-s4-privacy': 'Your information is strictly confidential and never shared.',
+    'footer-l-recruitment': 'Recruitment',
   },
 };
 

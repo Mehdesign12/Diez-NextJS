@@ -11,12 +11,14 @@ interface Stats {
   published: number;
   contacts: number;
   new_contacts: number;
+  applications: number;
+  new_applications: number;
 }
 
 export default function DashboardPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<Stats>({ realisations: 0, articles: 0, published: 0, contacts: 0, new_contacts: 0 });
+  const [stats, setStats] = useState<Stats>({ realisations: 0, articles: 0, published: 0, contacts: 0, new_contacts: 0, applications: 0, new_applications: 0 });
 
   useEffect(() => {
     const init = async () => {
@@ -24,12 +26,14 @@ export default function DashboardPage() {
       if (!session) { router.push('/admin'); return; }
 
       // Charger les stats
-      const [{ count: rCount }, { count: aCount }, { count: pCount }, { count: cCount }, { count: ncCount }] = await Promise.all([
+      const [{ count: rCount }, { count: aCount }, { count: pCount }, { count: cCount }, { count: ncCount }, { count: appCount }, { count: nappCount }] = await Promise.all([
         supabase.from('realisations').select('*', { count: 'exact', head: true }),
         supabase.from('articles').select('*', { count: 'exact', head: true }),
         supabase.from('articles').select('*', { count: 'exact', head: true }).eq('published', true),
         supabase.from('contacts').select('*', { count: 'exact', head: true }),
         supabase.from('contacts').select('*', { count: 'exact', head: true }).eq('status', 'new'),
+        supabase.from('applications').select('*', { count: 'exact', head: true }),
+        supabase.from('applications').select('*', { count: 'exact', head: true }).eq('status', 'new'),
       ]);
 
       setStats({
@@ -38,6 +42,8 @@ export default function DashboardPage() {
         published: pCount ?? 0,
         contacts: cCount ?? 0,
         new_contacts: ncCount ?? 0,
+        applications: appCount ?? 0,
+        new_applications: nappCount ?? 0,
       });
       setLoading(false);
     };
@@ -168,6 +174,31 @@ export default function DashboardPage() {
                 <span className="text-xs font-semibold text-[#FF4D29]">{stats.contacts} demandes</span>
                 {stats.new_contacts > 0 && (
                   <span className="text-xs text-gray-400">dont {stats.new_contacts} non lue{stats.new_contacts > 1 ? 's' : ''}</span>
+                )}
+              </div>
+            </div>
+          </Link>
+
+          {/* Candidatures */}
+          <Link href="/admin/dashboard/applications" className="group block relative">
+            {stats.new_applications > 0 && (
+              <span className="absolute -top-2 -right-2 z-10 px-2 py-0.5 bg-[#FF4D29] text-white text-xs font-extrabold rounded-full shadow-md shadow-[#FF4D29]/30">
+                {stats.new_applications} nouveau{stats.new_applications > 1 ? 'x' : ''}
+              </span>
+            )}
+            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-lg hover:border-[#FF4D29]/20 transition-all duration-300">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center">
+                  <i className="fas fa-user-tie text-teal-500 text-lg"></i>
+                </div>
+                <i className="fas fa-arrow-right text-gray-300 group-hover:text-[#FF4D29] group-hover:translate-x-1 transition-all"></i>
+              </div>
+              <h3 className="text-lg font-extrabold text-[#0F0F0F] mb-1">Candidatures</h3>
+              <p className="text-sm text-gray-500">Consultez les candidatures reçues et téléchargez les CV.</p>
+              <div className="mt-4 pt-4 border-t border-gray-50 flex items-center gap-2">
+                <span className="text-xs font-semibold text-teal-500">{stats.applications} candidature{stats.applications > 1 ? 's' : ''}</span>
+                {stats.new_applications > 0 && (
+                  <span className="text-xs text-gray-400">dont {stats.new_applications} non lue{stats.new_applications > 1 ? 's' : ''}</span>
                 )}
               </div>
             </div>

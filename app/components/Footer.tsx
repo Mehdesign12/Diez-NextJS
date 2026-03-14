@@ -43,7 +43,7 @@ export default function Footer() {
               <h4 className="font-bold mb-4 md:mb-6">{t('footer-h-company')}</h4>
               <ul className="space-y-2 md:space-y-3 text-gray-400 text-xs md:text-sm">
                 <li><Link href="#" className="hover:text-[#FF4D29] transition-colors">{t('footer-l-about')}</Link></li>
-                <li><Link href="#" className="hover:text-[#FF4D29] transition-colors">{t('footer-l-careers')}</Link></li>
+                <li><Link href={`/${lang}/recruitment`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-recruitment')}</Link></li>
                 <li><Link href="/blog" className="hover:text-[#FF4D29] transition-colors">{t('footer-l-blog')}</Link></li>
                 <li><Link href={`/${lang}/contact`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-contact')}</Link></li>
               </ul>
