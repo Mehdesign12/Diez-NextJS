@@ -189,6 +189,7 @@ export default function Hero() {
               href="https://www.trustpilot.com"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Trustpilot — 4.9/5"
               className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
             >
               {/* Logo Trustpilot SVG inline */}

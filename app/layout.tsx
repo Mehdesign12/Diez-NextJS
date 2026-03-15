@@ -93,6 +93,26 @@ export default async function RootLayout({
       <body
         className={`${plusJakartaSans.variable} font-sans antialiased selection:bg-[#FF4D29] selection:text-white overflow-x-hidden`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Diez Agency",
+              url: "https://diez-agency.com",
+              logo: "https://diez-agency.com/images/logo.png",
+              description:
+                "Diez Agency – Présence digitale, Profit mesurable. Création de sites web, identité visuelle et stratégie digitale sur-mesure.",
+              sameAs: [],
+              contactPoint: {
+                "@type": "ContactPoint",
+                contactType: "customer service",
+                url: "https://diez-agency.com/fr/contact",
+              },
+            }),
+          }}
+        />
         {children}
       </body>
     </html>

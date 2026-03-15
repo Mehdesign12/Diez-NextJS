@@ -149,6 +149,7 @@ function ProjectCard({ r, onClick }: { r: Realisation; onClick: () => void }) {
                 href={r.link}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={`Voir le projet ${r.title}`}
                 onClick={e => e.stopPropagation()}
                 className="w-7 h-7 rounded-full flex items-center justify-center text-gray-400 hover:text-[#FF4D29] hover:bg-orange-50 transition-colors duration-200"
               >

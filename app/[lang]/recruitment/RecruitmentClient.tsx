@@ -404,6 +404,7 @@ export default function RecruitmentClient() {
                     <input
                       type="text"
                       autoFocus
+                      aria-label={t('recruit-s1-firstname-ph')}
                       value={form.first_name}
                       onChange={(e) => setForm({ ...form, first_name: e.target.value })}
                       onKeyDown={(e) => e.key === 'Enter' && handleNext()}
@@ -412,6 +413,7 @@ export default function RecruitmentClient() {
                     />
                     <input
                       type="text"
+                      aria-label={t('recruit-s1-lastname-ph')}
                       value={form.last_name}
                       onChange={(e) => setForm({ ...form, last_name: e.target.value })}
                       onKeyDown={(e) => e.key === 'Enter' && handleNext()}
@@ -502,6 +504,7 @@ export default function RecruitmentClient() {
                   <textarea
                     autoFocus
                     rows={5}
+                    aria-label={t('recruit-s3-title')}
                     value={form.motivation}
                     onChange={(e) => setForm({ ...form, motivation: e.target.value })}
                     placeholder={t('recruit-s3-placeholder')}
@@ -525,10 +528,11 @@ export default function RecruitmentClient() {
                   <p className="text-gray-400 mb-8">{t('recruit-s4-subtitle')}</p>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                      <label htmlFor="recruit-email" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
                         {t('recruit-s4-email')}
                       </label>
                       <input
+                        id="recruit-email"
                         type="email"
                         autoFocus
                         value={form.email}
@@ -538,10 +542,11 @@ export default function RecruitmentClient() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                      <label htmlFor="recruit-phone" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
                         {t('recruit-s4-phone')}
                       </label>
                       <input
+                        id="recruit-phone"
                         type="tel"
                         value={form.phone}
                         onChange={(e) => setForm({ ...form, phone: e.target.value })}

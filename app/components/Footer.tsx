@@ -30,11 +30,11 @@ export default function Footer() {
             <div>
               <h4 className="font-bold mb-4 md:mb-6">{t('footer-h-services')}</h4>
               <ul className="space-y-2 md:space-y-3 text-gray-400 text-xs md:text-sm">
-                <li><Link href="#" className="hover:text-[#FF4D29] transition-colors">{t('footer-l-web')}</Link></li>
-                <li><Link href="#" className="hover:text-[#FF4D29] transition-colors">{t('footer-l-mob')}</Link></li>
-                <li><Link href="#" className="hover:text-[#FF4D29] transition-colors">{t('footer-l-ui')}</Link></li>
-                <li><Link href="#" className="hover:text-[#FF4D29] transition-colors">{t('footer-l-consult')}</Link></li>
-                <li><Link href="/blog" className="hover:text-[#FF4D29] transition-colors">Blog & Actualités</Link></li>
+                <li><Link href={`/${lang}/services/saas-web-app`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-web')}</Link></li>
+                <li><Link href={`/${lang}/services/llc-creation`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-mob')}</Link></li>
+                <li><Link href={`/${lang}/services/llm-seo`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-ui')}</Link></li>
+                <li><Link href={`/${lang}/services/agent-automation`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-consult')}</Link></li>
+                <li><Link href={`/${lang}/blog`} className="hover:text-[#FF4D29] transition-colors">Blog & Actualités</Link></li>
               </ul>
             </div>
 
@@ -42,9 +42,9 @@ export default function Footer() {
             <div>
               <h4 className="font-bold mb-4 md:mb-6">{t('footer-h-company')}</h4>
               <ul className="space-y-2 md:space-y-3 text-gray-400 text-xs md:text-sm">
-                <li><Link href="#" className="hover:text-[#FF4D29] transition-colors">{t('footer-l-about')}</Link></li>
+                <li><Link href={`/${lang}#how-we-work`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-about')}</Link></li>
                 <li><Link href={`/${lang}/recruitment`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-recruitment')}</Link></li>
-                <li><Link href="/blog" className="hover:text-[#FF4D29] transition-colors">{t('footer-l-blog')}</Link></li>
+                <li><Link href={`/${lang}/blog`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-blog')}</Link></li>
                 <li><Link href={`/${lang}/contact`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-contact')}</Link></li>
               </ul>
             </div>
@@ -56,12 +56,13 @@ export default function Footer() {
               <div className="flex">
                 <input
                   type="email"
+                  aria-label={t('footer-email-ph')}
                   placeholder={t('footer-email-ph')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-white/10 border border-white/10 rounded-l-lg px-4 py-2 text-sm w-full focus:outline-none focus:ring-1 focus:ring-[#FF4D29]"
                 />
-                <button className="bg-[#FF4D29] px-4 py-2 rounded-r-lg hover:bg-orange-600 transition-colors">
+                <button aria-label={lang === 'fr' ? "S'inscrire à la newsletter" : 'Subscribe to newsletter'} className="bg-[#FF4D29] px-4 py-2 rounded-r-lg hover:bg-orange-600 transition-colors">
                   <i className="fas fa-paper-plane"></i>
                 </button>
               </div>
@@ -73,10 +74,10 @@ export default function Footer() {
           <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-gray-500 text-xs md:text-sm text-center md:text-left">© 2025 Diez Agency. Tous droits réservés.</div>
             <div className="flex space-x-6 text-gray-400">
-              <Link href="#" className="hover:text-white transition-colors"><i className="fab fa-twitter"></i></Link>
-              <Link href="#" className="hover:text-white transition-colors"><i className="fab fa-linkedin"></i></Link>
-              <Link href="#" className="hover:text-white transition-colors"><i className="fab fa-instagram"></i></Link>
-              <Link href="#" className="hover:text-white transition-colors"><i className="fab fa-dribbble"></i></Link>
+              <Link href="#" aria-label="Twitter" className="hover:text-white transition-colors"><i className="fab fa-twitter"></i></Link>
+              <Link href="#" aria-label="LinkedIn" className="hover:text-white transition-colors"><i className="fab fa-linkedin"></i></Link>
+              <Link href="#" aria-label="Instagram" className="hover:text-white transition-colors"><i className="fab fa-instagram"></i></Link>
+              <Link href="#" aria-label="Dribbble" className="hover:text-white transition-colors"><i className="fab fa-dribbble"></i></Link>
             </div>
           </div>
         </BlurFade>

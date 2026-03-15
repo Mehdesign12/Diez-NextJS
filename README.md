@@ -208,32 +208,24 @@ npm run lint      # Vérification ESLint
   - `ContactClient.tsx` — logos (36x36)
   - `RecruitmentClient.tsx` — logos (36x36)
 
-### Phase 2 — Haute priorité (impact SEO fort)
+### Phase 2 — Haute priorité (impact SEO fort) ✅ TERMINÉE
 
-- [ ] **2.1 Labels de formulaire manquants** — Ajouter `<label htmlFor>` ou `aria-label` sur tous les inputs :
-  - `ContactClient.tsx:444, 490, 572, 585`
-  - `RecruitmentClient.tsx:404, 413, 436, 502, 531, 544`
-  - `Footer.tsx:57-66` (input newsletter)
-- [ ] **2.2 Schema.org manquant** — Ajouter les données structurées :
-  - Schema `Organization` sur la homepage (nom, logo, URL, réseaux sociaux)
-  - Schema `Service` sur les pages services
-  - Schema `LocalBusiness` si applicable
-  - Schema `BreadcrumbList` sur toutes les pages internes
-- [ ] **2.3 Liens morts dans le Footer** — `Footer.tsx:33-37, 45-49` : tous les liens services et company pointent vers `href="#"`. Les remplacer par les vraies URLs ou les supprimer.
-- [ ] **2.4 `aria-label` sur boutons/icônes** — Ajouter des labels accessibles :
-  - `Footer.tsx:76-79` (icônes réseaux sociaux)
-  - `Portfolio.tsx:152-154` (lien externe)
-  - `Hero.tsx:187-189` (lien Trustpilot)
-- [ ] **2.5 Configuration `next.config.mjs`** — Ajouter les domaines d'images autorisés :
-  ```js
-  images: {
-    remotePatterns: [
-      { hostname: 'images.unsplash.com' },
-      { hostname: 'i.pravatar.cc' },
-      { hostname: 'flagcdn.com' },
-    ],
-  }
-  ```
+- [x] **2.1 Labels de formulaire manquants** — `aria-label` ajouté sur tous les inputs sans label visible, `htmlFor`+`id` ajoutés sur les paires label/input existantes :
+  - `ContactClient.tsx` : step 1 input (aria-label), step 3 textarea (aria-label), step 6 email/phone (htmlFor+id)
+  - `RecruitmentClient.tsx` : step 1 prénom/nom (aria-label), step 3 textarea (aria-label), step 4 email/phone (htmlFor+id)
+  - `Footer.tsx` : newsletter input (aria-label)
+- [x] **2.2 Schema.org** — Données structurées JSON-LD ajoutées :
+  - Schema `Organization` dans `app/layout.tsx` (nom, logo, URL, contactPoint)
+  - Schema `Service` + `BreadcrumbList` dans `app/[lang]/services/[slug]/page.tsx` pour chaque page service
+- [x] **2.3 Liens morts dans le Footer** — Tous les `href="#"` remplacés par de vraies routes :
+  - Services → `/{lang}/services/saas-web-app`, `llc-creation`, `llm-seo`, `agent-automation`
+  - Blog → `/{lang}/blog`
+  - À propos → `/{lang}#how-we-work`
+- [x] **2.4 `aria-label` sur boutons/icônes** — Labels accessibles ajoutés :
+  - `Footer.tsx` : 4 icônes réseaux sociaux (Twitter, LinkedIn, Instagram, Dribbble) + bouton newsletter
+  - `Portfolio.tsx` : lien externe projet
+  - `Hero.tsx` : lien Trustpilot
+- [x] **2.5 Configuration `next.config.ts`** — `images.unsplash.com` ajouté dans `remotePatterns` pour les images Unsplash des pages services
 
 ### Phase 3 — Priorité normale (optimisation)
 

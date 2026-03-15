@@ -444,6 +444,7 @@ export default function ContactClient() {
                   <input
                     type="text"
                     autoFocus
+                    aria-label={t('contact-s1-placeholder')}
                     value={form.first_name}
                     onChange={(e) => setForm({ ...form, first_name: e.target.value })}
                     onKeyDown={(e) => e.key === 'Enter' && handleNext()}
@@ -490,6 +491,7 @@ export default function ContactClient() {
                   <textarea
                     autoFocus
                     rows={5}
+                    aria-label={t('contact-s3-title')}
                     value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                     placeholder={t('contact-s3-placeholder')}
@@ -566,10 +568,11 @@ export default function ContactClient() {
                   <p className="text-gray-400 mb-8">{t('contact-s6-subtitle')}</p>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                      <label htmlFor="contact-email" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
                         {t('contact-s6-email')}
                       </label>
                       <input
+                        id="contact-email"
                         type="email"
                         autoFocus
                         value={form.email}
@@ -579,10 +582,11 @@ export default function ContactClient() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                      <label htmlFor="contact-phone" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
                         {t('contact-s6-phone')}
                       </label>
                       <input
+                        id="contact-phone"
                         type="tel"
                         value={form.phone}
                         onChange={(e) => setForm({ ...form, phone: e.target.value })}
