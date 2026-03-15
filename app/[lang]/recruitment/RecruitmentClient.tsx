@@ -280,9 +280,9 @@ export default function RecruitmentClient() {
               </svg>
             </div>
           </div>
-          <h1 className="text-3xl font-extrabold text-[#0F0F0F] mb-3">
+          <h2 className="text-3xl font-extrabold text-[#0F0F0F] mb-3">
             {t('recruit-success-title')}
-          </h1>
+          </h2>
           <p className="text-gray-500 mb-3 leading-relaxed">
             {t('recruit-success-sub')}
           </p>
@@ -314,7 +314,7 @@ export default function RecruitmentClient() {
         <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-md border border-gray-100 shadow-lg rounded-full px-6 h-16 flex items-center justify-between">
           <Link href={`/${currentLang}`} className="flex items-center gap-3 group">
             <div className="w-9 h-9 rounded-full overflow-hidden">
-              <img src="/images/logo_clean.png" alt="Diez Agency" className="w-full h-full object-cover" />
+              <img src="/images/logo_clean.png" alt="Diez Agency" width={36} height={36} className="w-full h-full object-cover" />
             </div>
             <span className="text-sm font-bold text-gray-800 group-hover:text-[#FF4D29] transition-colors">
               Diez Agency
@@ -349,7 +349,7 @@ export default function RecruitmentClient() {
 
           <div className="relative z-10">
             <div className="w-12 h-12 rounded-full overflow-hidden mb-10">
-              <img src="/images/logo_clean.png" alt="Diez Agency" className="w-full h-full object-cover" />
+              <img src="/images/logo_clean.png" alt="Diez Agency" width={36} height={36} className="w-full h-full object-cover" />
             </div>
             <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
               {t('recruit-page-title')}
@@ -396,9 +396,9 @@ export default function RecruitmentClient() {
                   <p className="text-xs font-bold text-[#FF4D29] uppercase tracking-widest mb-2">
                     {t('recruit-step')} 1
                   </p>
-                  <h1 className="text-2xl font-extrabold text-[#0F0F0F] mb-2">
+                  <h2 className="text-2xl font-extrabold text-[#0F0F0F] mb-2">
                     {t('recruit-s1-title')}
-                  </h1>
+                  </h2>
                   <p className="text-gray-400 mb-8">{t('recruit-s1-subtitle')}</p>
                   <div className="space-y-4">
                     <input
@@ -428,9 +428,9 @@ export default function RecruitmentClient() {
                   <p className="text-xs font-bold text-[#FF4D29] uppercase tracking-widest mb-2">
                     {t('recruit-step')} 2
                   </p>
-                  <h1 className="text-2xl font-extrabold text-[#0F0F0F] mb-1">
+                  <h2 className="text-2xl font-extrabold text-[#0F0F0F] mb-1">
                     {t('recruit-s2-title')}
-                  </h1>
+                  </h2>
                   <p className="text-gray-400 mb-6">{t('recruit-s2-subtitle')}</p>
 
                   <input
@@ -495,9 +495,9 @@ export default function RecruitmentClient() {
                   <p className="text-xs font-bold text-[#FF4D29] uppercase tracking-widest mb-2">
                     {t('recruit-step')} 3
                   </p>
-                  <h1 className="text-2xl font-extrabold text-[#0F0F0F] mb-1">
+                  <h2 className="text-2xl font-extrabold text-[#0F0F0F] mb-1">
                     {t('recruit-s3-title')}
-                  </h1>
+                  </h2>
                   <p className="text-gray-400 mb-6">{t('recruit-s3-subtitle')}</p>
                   <textarea
                     autoFocus
@@ -519,9 +519,9 @@ export default function RecruitmentClient() {
                   <p className="text-xs font-bold text-[#FF4D29] uppercase tracking-widest mb-2">
                     {t('recruit-step')} 4
                   </p>
-                  <h1 className="text-2xl font-extrabold text-[#0F0F0F] mb-1">
+                  <h2 className="text-2xl font-extrabold text-[#0F0F0F] mb-1">
                     {t('recruit-s4-title')}
-                  </h1>
+                  </h2>
                   <p className="text-gray-400 mb-8">{t('recruit-s4-subtitle')}</p>
                   <div className="space-y-4">
                     <div>

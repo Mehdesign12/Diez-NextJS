@@ -189,23 +189,24 @@ npm run lint      # Vérification ESLint
 
 ## Audit SEO — Plan de correction (score actuel : 58/100)
 
-### Phase 1 — Critique (bloquant SEO)
+### Phase 1 — Critique (bloquant SEO) ✅ TERMINÉE
 
-- [ ] **1.1 Attribut `lang` dynamique** — `app/layout.tsx:85` hardcode `lang="fr"`. Doit être dynamique selon la route (`fr` ou `en`). Google utilise cet attribut pour comprendre la langue du contenu.
-- [ ] **1.2 Traductions rendues côté client uniquement** — Les composants Hero, Services, Portfolio, Testimonials, FAQ, Timeline, Pricing utilisent tous `'use client'` + `useLang()`. Le HTML envoyé au crawler ne contient aucun texte traduit → **contenu invisible pour Google**. Migrer le contenu statique vers des Server Components avec `params.lang`.
-- [ ] **1.3 H1 multiples par page** — Actuellement 5+ `<h1>` par page. Garder UN SEUL `<h1>` (Hero) et convertir les autres en `<h2>` :
-  - `BlogClient.tsx:66` → `<h2>`
-  - `WorkClient.tsx:204` → `<h2>`
-  - `ContactClient.tsx:321` → `<h2>`
-  - `RecruitmentClient.tsx:283` → `<h2>`
-- [ ] **1.4 Images sans dimensions (CLS)** — Ajouter `width` + `height` explicites ou migrer vers `next/image` :
-  - `Hero.tsx:160-165` (avatars trust bar)
-  - `Portfolio.tsx:35, 92-96` (images projets)
-  - `Navbar.tsx:225, 237, 337, 341` (drapeaux)
-  - `Testimonials.tsx:58` (avatars)
-  - `BlogClient.tsx:121-125` (image featured)
-  - `ArticleClient.tsx:59-63` (cover article)
-  - `ServiceSlugClient.tsx:60-65` (image hero service)
+- [x] **1.1 Attribut `lang` dynamique** — Le middleware transmet désormais la langue détectée via un header `x-lang`. Le root layout (`app/layout.tsx`) lit ce header pour rendre `<html lang="fr">` ou `<html lang="en">` dynamiquement.
+  - Fichiers modifiés : `middleware.ts`, `app/layout.tsx`
+- [x] **1.2 Traductions SSR** — ~~Initialement signalé comme critique~~ → **Faux positif**. Les composants `'use client'` sont bien SSR par Next.js. Le `LangProvider` initialise `useState(initialLang)` qui retourne la bonne langue côté serveur. Les traductions `t(key)` sont donc présentes dans le HTML initial envoyé aux crawlers. Aucune migration nécessaire.
+- [x] **1.3 H1 multiples par page** — Tous les `<h1>` parasites convertis en `<h2>`. Seul le Hero de la homepage et le titre d'article individuel conservent un `<h1>`.
+  - Fichiers modifiés : `BlogClient.tsx`, `WorkClient.tsx`, `ContactClient.tsx` (7 h1→h2), `RecruitmentClient.tsx` (5 h1→h2)
+- [x] **1.4 Images sans dimensions (CLS)** — Attributs `width` + `height` ajoutés sur toutes les `<img>` qui en manquaient :
+  - `Hero.tsx` — avatars trust bar (36x36)
+  - `Navbar.tsx` — 4 drapeaux (20x20)
+  - `Testimonials.tsx` — avatars (40x40)
+  - `BlogClient.tsx` — featured (800x400), grille (400x176), logo (36x36)
+  - `ArticleClient.tsx` — cover (1200x600), logo (36x36)
+  - `Portfolio.tsx` — modal (800x400), card (800x500)
+  - `WorkClient.tsx` — modal (800x400), grille (600x208), logo (36x36)
+  - `ServiceSlugClient.tsx` — LLC hero (800x600), clients (160x192), testimonial (48x48)
+  - `ContactClient.tsx` — logos (36x36)
+  - `RecruitmentClient.tsx` — logos (36x36)
 
 ### Phase 2 — Haute priorité (impact SEO fort)
 

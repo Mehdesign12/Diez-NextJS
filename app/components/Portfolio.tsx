@@ -32,7 +32,7 @@ function Modal({ r, onClose }: { r: Realisation; onClose: () => void }) {
         {/* Image */}
         <div className="relative w-full h-56 md:h-64 flex-shrink-0" style={{ background: '#111827' }}>
           {r.image_url
-            ? <img src={r.image_url} alt={r.title} className="absolute inset-0 w-full h-full object-cover" />
+            ? <img src={r.image_url} alt={r.title} width={800} height={400} className="absolute inset-0 w-full h-full object-cover" />
             : <div className="absolute inset-0 flex items-center justify-center"><i className="fas fa-rocket text-6xl" style={{ color: 'rgba(255,255,255,0.15)' }} /></div>
           }
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,.65) 0%, transparent 60%)' }} />
@@ -92,6 +92,8 @@ function ProjectCard({ r, onClick }: { r: Realisation; onClick: () => void }) {
               <img
                 src={r.image_url}
                 alt={r.title}
+                width={800}
+                height={500}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
             )

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "./globals.css";
@@ -76,13 +77,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const h = await headers();
+  const lang = h.get("x-lang") || "fr";
+
   return (
-    <html lang="fr">
+    <html lang={lang}>
       <head>
         <meta name="theme-color" content="#FF4D29" />
       </head>

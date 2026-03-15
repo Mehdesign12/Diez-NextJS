@@ -55,7 +55,7 @@ export default function Testimonials() {
                   <p className="text-gray-700 mb-6 leading-relaxed">{t(r.key)}</p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
-                      <img src={`https://i.pravatar.cc/150?img=${r.img}`} alt={r.name} loading="lazy" />
+                      <img src={`https://i.pravatar.cc/150?img=${r.img}`} alt={r.name} width={40} height={40} loading="lazy" />
                     </div>
                     <div>
                       <div className="font-bold text-sm text-[#0F0F0F]">{r.name}</div>

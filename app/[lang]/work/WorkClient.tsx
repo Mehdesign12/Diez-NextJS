@@ -52,6 +52,8 @@ function RealisationModal({
             <img
               src={realisation.image_url}
               alt={realisation.title}
+              width={800}
+              height={400}
               className="w-full h-full object-cover"
             />
           ) : (
@@ -179,7 +181,7 @@ export default function WorkClient() {
         <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-md border border-gray-100 shadow-lg rounded-full px-6 h-16 flex items-center justify-between">
           <Link href={`/${lang}`} className="flex items-center gap-3 group">
             <div className="w-9 h-9 rounded-full overflow-hidden">
-              <img src="/images/logo_clean.png" alt="Diez Agency" className="w-full h-full object-cover" />
+              <img src="/images/logo_clean.png" alt="Diez Agency" width={36} height={36} className="w-full h-full object-cover" />
             </div>
             <span className="text-sm font-bold text-gray-800 group-hover:text-[#FF4D29] transition-colors">Diez Agency</span>
           </Link>
@@ -201,9 +203,9 @@ export default function WorkClient() {
             <span className="w-2 h-2 rounded-full bg-[#FF4D29] animate-pulse"></span>
             Portfolio complet
           </span>
-          <h1 className="text-4xl md:text-6xl font-extrabold text-[#0F0F0F] leading-tight mb-6">
+          <h2 className="text-4xl md:text-6xl font-extrabold text-[#0F0F0F] leading-tight mb-6">
             Tous nos <span className="text-gradient-orange">projets</span>
-          </h1>
+          </h2>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto">
             Des écosystèmes digitaux qui scalent. Chaque projet est conçu pour durer et performer.
           </p>
@@ -268,6 +270,8 @@ export default function WorkClient() {
                       <img
                         src={r.image_url}
                         alt={r.title}
+                        width={600}
+                        height={208}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (

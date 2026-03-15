@@ -60,6 +60,8 @@ function ServiceIllustration({ id, color }: { id: string; color: string }) {
       <img
         src={LLC_HERO_PHOTO}
         alt="Entrepreneur américain, création LLC"
+        width={800}
+        height={600}
         className="w-full h-full object-cover"
         loading="eager"
       />
@@ -399,6 +401,8 @@ export function ServiceSlugClient() {
                         <img
                           src={p.url}
                           alt={p.name}
+                          width={160}
+                          height={192}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"/>
@@ -444,6 +448,8 @@ export function ServiceSlugClient() {
                     <img
                       src={LLC_TESTIMONIAL_PHOTO}
                       alt={copy.testimonial.author}
+                      width={48}
+                      height={48}
                       className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-md"
                     />
                   ) : (

@@ -222,7 +222,7 @@ export default function Navbar() {
               onClick={() => switchLang(otherLang)}
               className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gray-50 hover:bg-white border border-gray-200 rounded-full transition-all duration-300 shadow-sm hover:shadow-md group active:scale-95"
             >
-              <img src={flagUrl} alt={lang.toUpperCase()} className="w-5 h-5 rounded-full object-cover shadow-sm border border-gray-100" />
+              <img src={flagUrl} alt={lang.toUpperCase()} width={20} height={20} className="w-5 h-5 rounded-full object-cover shadow-sm border border-gray-100" />
               <span className="text-xs font-extrabold text-gray-600 group-hover:text-[#FF4D29] transition-colors">{lang.toUpperCase()}</span>
               <i className="fas fa-chevron-down text-[8px] text-gray-400" />
             </button>
@@ -234,7 +234,7 @@ export default function Navbar() {
             {/* Mobile actions */}
             <div className="flex md:hidden items-center gap-2 mr-1">
               <button onClick={() => switchLang(otherLang)} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-50 border border-gray-200 active:scale-95 transition-all">
-                <img src={flagUrl} alt={lang.toUpperCase()} className="w-5 h-5 rounded-full object-cover" />
+                <img src={flagUrl} alt={lang.toUpperCase()} width={20} height={20} className="w-5 h-5 rounded-full object-cover" />
               </button>
               <Link href={`/${lang}/contact`} className="w-9 h-9 flex items-center justify-center rounded-full bg-[#FF4D29] text-white shadow-md active:scale-95 transition-all">
                 <i className="fas fa-paper-plane text-xs" />
@@ -334,11 +334,11 @@ export default function Navbar() {
           {/* Mobile Lang */}
           <div className="pt-2 flex justify-center gap-4" style={{ transform: mobileOpen ? 'translateY(0)' : 'translateY(2rem)', opacity: mobileOpen ? 1 : 0, transition: 'all 0.5s ease 800ms' }}>
             <button onClick={() => switchLang('fr')} className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-sm active:scale-95 transition-all border ${lang === 'fr' ? 'bg-[#FF4D29] border-[#FF4D29] text-white' : 'bg-white border-gray-200 text-gray-600'}`}>
-              <img src="https://flagcdn.com/w40/fr.png" className="w-5 h-5 rounded-full object-cover" alt="FR" />
+              <img src="https://flagcdn.com/w40/fr.png" width={20} height={20} className="w-5 h-5 rounded-full object-cover" alt="FR" />
               <span className="font-bold">FR</span>
             </button>
             <button onClick={() => switchLang('en')} className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-sm active:scale-95 transition-all border ${lang === 'en' ? 'bg-[#FF4D29] border-[#FF4D29] text-white' : 'bg-white border-gray-200 text-gray-600'}`}>
-              <img src="https://flagcdn.com/w40/gb.png" className="w-5 h-5 rounded-full object-cover" alt="EN" />
+              <img src="https://flagcdn.com/w40/gb.png" width={20} height={20} className="w-5 h-5 rounded-full object-cover" alt="EN" />
               <span className="font-bold">EN</span>
             </button>
           </div>

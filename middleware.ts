@@ -44,11 +44,16 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Si déjà sur une route avec langue → continuer
+  // Si déjà sur une route avec langue → transmettre la langue via header
   const hasLang = SUPPORTED_LANGS.some(
     (lang) => pathname === `/${lang}` || pathname.startsWith(`/${lang}/`)
   );
-  if (hasLang) return NextResponse.next();
+  if (hasLang) {
+    const langFromPath = pathname.split('/')[1] as Lang;
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set('x-lang', langFromPath);
+    return NextResponse.next({ request: { headers: requestHeaders } });
+  }
 
   // Détecter la langue et rediriger
   const lang = detectLang(req);

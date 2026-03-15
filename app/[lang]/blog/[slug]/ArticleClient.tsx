@@ -36,7 +36,7 @@ export default function ArticleClient({ article }: Props) {
         <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-md border border-gray-100 shadow-lg rounded-full px-6 h-16 flex items-center justify-between">
           <Link href={`/${lang}`} className="flex items-center gap-3 group">
             <div className="w-9 h-9 rounded-full overflow-hidden">
-              <img src="/images/logo_clean.png" alt="Diez Agency" className="w-full h-full object-cover" />
+              <img src="/images/logo_clean.png" alt="Diez Agency" width={36} height={36} className="w-full h-full object-cover" />
             </div>
             <span className="text-sm font-bold text-gray-800 group-hover:text-[#FF4D29] transition-colors">Diez Agency</span>
           </Link>
@@ -59,6 +59,8 @@ export default function ArticleClient({ article }: Props) {
             <img
               src={article.cover_url || FALLBACK_IMAGE}
               alt={article.title}
+              width={1200}
+              height={600}
               className="w-full h-full object-cover"
             />
           </div>

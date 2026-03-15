@@ -41,7 +41,7 @@ export default function BlogClient({ articles }: Props) {
         <div className="max-w-5xl mx-auto bg-white/90 backdrop-blur-md border border-gray-100 shadow-lg rounded-full px-6 h-16 flex items-center justify-between">
           <Link href={`/${lang}`} className="flex items-center gap-3 group">
             <div className="w-9 h-9 rounded-full overflow-hidden">
-              <img src="/images/logo_clean.png" alt="Diez Agency" className="w-full h-full object-cover" />
+              <img src="/images/logo_clean.png" alt="Diez Agency" width={36} height={36} className="w-full h-full object-cover" />
             </div>
             <span className="text-sm font-bold text-gray-800 group-hover:text-[#FF4D29] transition-colors">Diez Agency</span>
           </Link>
@@ -63,9 +63,9 @@ export default function BlogClient({ articles }: Props) {
             <span className="w-2 h-2 rounded-full bg-[#FF4D29] animate-pulse"></span>
             Blog & Ressources
           </span>
-          <h1 className="text-4xl md:text-6xl font-extrabold text-[#0F0F0F] leading-tight mb-4">
+          <h2 className="text-4xl md:text-6xl font-extrabold text-[#0F0F0F] leading-tight mb-4">
             Conseils pour votre <span className="text-gradient-orange">croissance</span>
-          </h1>
+          </h2>
           <p className="text-lg text-gray-500 max-w-xl mx-auto">
             Automatisation, design, développement : nos insights pour transformer votre business.
           </p>
@@ -121,6 +121,8 @@ export default function BlogClient({ articles }: Props) {
                       <img
                         src={featured.cover_url || FALLBACK_IMAGE}
                         alt={featured.title}
+                        width={800}
+                        height={400}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
@@ -160,6 +162,8 @@ export default function BlogClient({ articles }: Props) {
                           <img
                             src={article.cover_url || FALLBACK_IMAGE}
                             alt={article.title}
+                            width={400}
+                            height={176}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
                         </div>
