@@ -184,3 +184,61 @@ npm run dev       # Serveur local http://localhost:3000
 npm run build     # Build production
 npm run lint      # Vérification ESLint
 ```
+
+---
+
+## Audit SEO — Plan de correction (score actuel : 58/100)
+
+### Phase 1 — Critique (bloquant SEO)
+
+- [ ] **1.1 Attribut `lang` dynamique** — `app/layout.tsx:85` hardcode `lang="fr"`. Doit être dynamique selon la route (`fr` ou `en`). Google utilise cet attribut pour comprendre la langue du contenu.
+- [ ] **1.2 Traductions rendues côté client uniquement** — Les composants Hero, Services, Portfolio, Testimonials, FAQ, Timeline, Pricing utilisent tous `'use client'` + `useLang()`. Le HTML envoyé au crawler ne contient aucun texte traduit → **contenu invisible pour Google**. Migrer le contenu statique vers des Server Components avec `params.lang`.
+- [ ] **1.3 H1 multiples par page** — Actuellement 5+ `<h1>` par page. Garder UN SEUL `<h1>` (Hero) et convertir les autres en `<h2>` :
+  - `BlogClient.tsx:66` → `<h2>`
+  - `WorkClient.tsx:204` → `<h2>`
+  - `ContactClient.tsx:321` → `<h2>`
+  - `RecruitmentClient.tsx:283` → `<h2>`
+- [ ] **1.4 Images sans dimensions (CLS)** — Ajouter `width` + `height` explicites ou migrer vers `next/image` :
+  - `Hero.tsx:160-165` (avatars trust bar)
+  - `Portfolio.tsx:35, 92-96` (images projets)
+  - `Navbar.tsx:225, 237, 337, 341` (drapeaux)
+  - `Testimonials.tsx:58` (avatars)
+  - `BlogClient.tsx:121-125` (image featured)
+  - `ArticleClient.tsx:59-63` (cover article)
+  - `ServiceSlugClient.tsx:60-65` (image hero service)
+
+### Phase 2 — Haute priorité (impact SEO fort)
+
+- [ ] **2.1 Labels de formulaire manquants** — Ajouter `<label htmlFor>` ou `aria-label` sur tous les inputs :
+  - `ContactClient.tsx:444, 490, 572, 585`
+  - `RecruitmentClient.tsx:404, 413, 436, 502, 531, 544`
+  - `Footer.tsx:57-66` (input newsletter)
+- [ ] **2.2 Schema.org manquant** — Ajouter les données structurées :
+  - Schema `Organization` sur la homepage (nom, logo, URL, réseaux sociaux)
+  - Schema `Service` sur les pages services
+  - Schema `LocalBusiness` si applicable
+  - Schema `BreadcrumbList` sur toutes les pages internes
+- [ ] **2.3 Liens morts dans le Footer** — `Footer.tsx:33-37, 45-49` : tous les liens services et company pointent vers `href="#"`. Les remplacer par les vraies URLs ou les supprimer.
+- [ ] **2.4 `aria-label` sur boutons/icônes** — Ajouter des labels accessibles :
+  - `Footer.tsx:76-79` (icônes réseaux sociaux)
+  - `Portfolio.tsx:152-154` (lien externe)
+  - `Hero.tsx:187-189` (lien Trustpilot)
+- [ ] **2.5 Configuration `next.config.mjs`** — Ajouter les domaines d'images autorisés :
+  ```js
+  images: {
+    remotePatterns: [
+      { hostname: 'images.unsplash.com' },
+      { hostname: 'i.pravatar.cc' },
+      { hostname: 'flagcdn.com' },
+    ],
+  }
+  ```
+
+### Phase 3 — Priorité normale (optimisation)
+
+- [ ] **3.1 Modal Portfolio accessible** — `Portfolio.tsx:25` : ajouter `role="dialog"`, `aria-modal="true"`, et gestion du focus trap.
+- [ ] **3.2 Barre de progression accessible** — `ContactClient.tsx:30-45` : ajouter `role="progressbar"`, `aria-valuenow`, `aria-valuemin`, `aria-valuemax`.
+- [ ] **3.3 Optimiser le bundle animations** — Les composants BlurFade, TextAnimate, ShimmerButton, MagicCard + Framer Motion alourdissent le JS. Évaluer le lazy-loading ou le remplacement par des animations CSS.
+- [ ] **3.4 Headers de sécurité** — Ajouter dans `next.config.mjs` les headers `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` (signal de confiance indirect pour le SEO).
+- [ ] **3.5 Optimiser FontAwesome** — Vérifier si l'intégralité de FontAwesome CSS est chargée (`layout.tsx:3`). Passer à un import sélectif (tree-shaking) pour réduire le CSS render-blocking.
+- [ ] **3.6 Générer les pages blog en statique** — Utiliser `generateStaticParams` pour les articles de blog et les réalisations afin d'améliorer le TTFB.
