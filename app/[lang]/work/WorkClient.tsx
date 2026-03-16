@@ -35,6 +35,9 @@ function RealisationModal({
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center p-0 md:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-label={realisation.title}
       onClick={onClose}
     >
       {/* Backdrop */}
@@ -74,6 +77,7 @@ function RealisationModal({
           {/* Bouton fermer */}
           <button
             onClick={onClose}
+            aria-label="Fermer"
             className="absolute top-4 right-4 w-9 h-9 bg-black/40 hover:bg-black/70 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all hover:scale-110"
           >
             <i className="fas fa-times text-sm"></i>

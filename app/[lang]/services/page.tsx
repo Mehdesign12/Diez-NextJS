@@ -14,6 +14,10 @@ const META: Record<SupportedLang, { title: string; description: string }> = {
   },
 };
 
+export async function generateStaticParams() {
+  return SUPPORTED_LANGS.map((lang) => ({ lang }));
+}
+
 export async function generateMetadata({
   params,
 }: {

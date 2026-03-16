@@ -35,7 +35,7 @@ function ProgressBar({ step, total }: { step: number; total: number }) {
         </span>
         <span className="text-xs text-gray-400">{pct}%</span>
       </div>
-      <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-1 w-full bg-gray-100 rounded-full overflow-hidden" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={`Étape ${step} sur ${total}`}>
         <div
           className="h-full bg-[#FF4D29] rounded-full transition-all duration-500 ease-out"
           style={{ width: `${pct}%` }}

@@ -22,7 +22,7 @@ function Modal({ r, onClose }: { r: Realisation; onClose: () => void }) {
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center p-0 md:p-6" onClick={onClose}>
+    <div className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center p-0 md:p-6" role="dialog" aria-modal="true" aria-label={r.title} onClick={onClose}>
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" style={{ animation: 'fadeIn .25s ease forwards' }} />
       <div
         className="relative z-10 w-full md:max-w-2xl bg-white rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden"
@@ -36,8 +36,8 @@ function Modal({ r, onClose }: { r: Realisation; onClose: () => void }) {
             : <div className="absolute inset-0 flex items-center justify-center"><i className="fas fa-rocket text-6xl" style={{ color: 'rgba(255,255,255,0.15)' }} /></div>
           }
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,.65) 0%, transparent 60%)' }} />
-          {r.featured && <span className="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold text-white" style={{ background: '#FF4D29' }}>⭐ Featured</span>}
-          <button onClick={onClose} className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center text-white" style={{ background: 'rgba(0,0,0,.5)' }}>
+          {r.featured && <span className="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold text-white" style={{ background: '#FF4D29' }}>Featured</span>}
+          <button onClick={onClose} aria-label="Fermer" className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center text-white" style={{ background: 'rgba(0,0,0,.5)' }}>
             <i className="fas fa-times text-sm" />
           </button>
           <div className="absolute bottom-0 left-0 right-0 p-5">

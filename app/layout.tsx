@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import "@fortawesome/fontawesome-free/css/all.min.css";
+/* FontAwesome — import sélectif (solid + brands uniquement, pas regular/all) */
+import "@fortawesome/fontawesome-free/css/fontawesome.min.css";
+import "@fortawesome/fontawesome-free/css/solid.min.css";
+import "@fortawesome/fontawesome-free/css/brands.min.css";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({

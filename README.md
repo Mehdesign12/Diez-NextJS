@@ -227,11 +227,15 @@ npm run lint      # Vérification ESLint
   - `Hero.tsx` : lien Trustpilot
 - [x] **2.5 Configuration `next.config.ts`** — `images.unsplash.com` ajouté dans `remotePatterns` pour les images Unsplash des pages services
 
-### Phase 3 — Priorité normale (optimisation)
+### Phase 3 — Priorité normale (optimisation) ✅ TERMINÉE
 
-- [ ] **3.1 Modal Portfolio accessible** — `Portfolio.tsx:25` : ajouter `role="dialog"`, `aria-modal="true"`, et gestion du focus trap.
-- [ ] **3.2 Barre de progression accessible** — `ContactClient.tsx:30-45` : ajouter `role="progressbar"`, `aria-valuenow`, `aria-valuemin`, `aria-valuemax`.
-- [ ] **3.3 Optimiser le bundle animations** — Les composants BlurFade, TextAnimate, ShimmerButton, MagicCard + Framer Motion alourdissent le JS. Évaluer le lazy-loading ou le remplacement par des animations CSS.
-- [ ] **3.4 Headers de sécurité** — Ajouter dans `next.config.mjs` les headers `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` (signal de confiance indirect pour le SEO).
-- [ ] **3.5 Optimiser FontAwesome** — Vérifier si l'intégralité de FontAwesome CSS est chargée (`layout.tsx:3`). Passer à un import sélectif (tree-shaking) pour réduire le CSS render-blocking.
-- [ ] **3.6 Générer les pages blog en statique** — Utiliser `generateStaticParams` pour les articles de blog et les réalisations afin d'améliorer le TTFB.
+- [x] **3.1 Modal Portfolio accessible** — Ajouté `role="dialog"`, `aria-modal="true"`, `aria-label` sur les modals de `Portfolio.tsx` et `WorkClient.tsx`. Ajouté `aria-label="Fermer"` sur les boutons de fermeture.
+- [x] **3.2 Barre de progression accessible** — Ajouté `role="progressbar"`, `aria-valuenow`, `aria-valuemin={0}`, `aria-valuemax={100}`, `aria-label` sur les barres de progression de `ContactClient.tsx` et `RecruitmentClient.tsx`.
+- [x] **3.3 Optimiser le bundle animations** — Lazy-loading des sections below-the-fold via `next/dynamic` dans `app/[lang]/page.tsx` : Timeline, Testimonials, Pricing, FAQ, Manifesto, CTA, ScrollReveal. Réduit le JS initial de la homepage.
+- [x] **3.4 Headers de sécurité** — Ajouté dans `next.config.ts` les headers :
+  - `X-Content-Type-Options: nosniff`
+  - `X-Frame-Options: SAMEORIGIN`
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+- [x] **3.5 Optimiser FontAwesome** — Remplacé l'import global `all.min.css` par un import sélectif : `fontawesome.min.css` + `solid.min.css` + `brands.min.css` uniquement (pas de `regular`, aucune icône `far` utilisée). Réduit le CSS render-blocking.
+- [x] **3.6 Générer les pages en statique** — Ajouté `generateStaticParams` sur les pages blog listing (`app/[lang]/blog/page.tsx`) et services listing (`app/[lang]/services/page.tsx`). Les articles individuels et pages services avaient déjà cette configuration.
