@@ -404,14 +404,15 @@ Chaque page générée contient :
 
 #### Phase 2 — Contenu & SEO
 
-| # | Tâche | Fichiers |
-|---|-------|----------|
-| 2.1 | Seeder les 12 villes marocaines dans `pseo_cities` | SQL Supabase |
-| 2.2 | Seeder les 10 secteurs dans `pseo_sectors` | SQL Supabase |
-| 2.3 | Générer le contenu des 60 premières pages (ville × service) | `pseo_pages` |
-| 2.4 | Ajouter Schema JSON-LD `LocalBusiness` + `FAQPage` sur chaque page PSEO | Template PSEO |
-| 2.5 | Ajouter les pages PSEO au sitemap | `app/sitemap.ts` |
-| 2.6 | Ajouter le maillage interne dans le Footer | `app/components/Footer.tsx` |
+| # | Tâche | Fichiers | Statut |
+|---|-------|----------|--------|
+| 2.1 | Seeder les 12 villes marocaines dans `pseo_cities` | `supabase/seeds/01_cities.sql` | ✅ |
+| 2.2 | Seeder les 10 secteurs dans `pseo_sectors` | `supabase/seeds/02_sectors.sql` | ✅ |
+| 2.3 | Générer les 12 pages ville (agence) | `supabase/seeds/03_pages_city.sql` | ✅ |
+| 2.4 | Générer les 48 pages ville × service | `supabase/seeds/04-07_pages_*.sql` | ✅ |
+| 2.5 | Schema JSON-LD `LocalBusiness` + `FAQPage` sur chaque page PSEO | Inclus dans Phase 1 (routes) | ✅ |
+| 2.6 | Pages PSEO dans le sitemap | `app/sitemap.ts` | ✅ |
+| 2.7 | Ajouter le maillage interne dans le Footer | `app/components/Footer.tsx` | |
 
 #### Phase 3 — Expansion (secteurs)
 
