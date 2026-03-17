@@ -3,7 +3,7 @@
 // ============================================================
 
 import { createClient } from '@supabase/supabase-js';
-import type { Realisation, Article, Contact, ContactInsert, Application, ApplicationInsert } from './types';
+import type { Realisation, Article, Contact, ContactInsert, Application, ApplicationInsert, PseoCity, PseoSector, PseoPage, PseoPageWithRelations } from './types';
 
 // Fallback hardcodé pour garantir le fonctionnement même si les env vars
 // ne sont pas injectées au build time (Vercel cold build sans cache)
@@ -232,4 +232,144 @@ export async function updateApplicationStatus(
   status: Application['status']
 ): Promise<void> {
   await supabase.from('applications').update({ status }).eq('id', id);
+}
+
+// ─────────────────────────────────────────
+// PSEO — Programmatic SEO
+// ─────────────────────────────────────────
+
+/** Get all cities */
+export async function getPseoCities(): Promise<PseoCity[]> {
+  const { data, error } = await supabase
+    .from('pseo_cities')
+    .select('*')
+    .order('population', { ascending: false });
+  if (error) { console.error(error); return []; }
+  return data ?? [];
+}
+
+/** Get a single city by slug */
+export async function getPseoCityBySlug(slug: string): Promise<PseoCity | null> {
+  const { data, error } = await supabase
+    .from('pseo_cities')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+
+/** Get all city slugs (for generateStaticParams) */
+export async function getAllPseoCitySlugs(): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('pseo_cities')
+    .select('slug');
+  if (error) { console.error(error); return []; }
+  return (data ?? []).map((c) => c.slug);
+}
+
+/** Get all sectors */
+export async function getPseoSectors(): Promise<PseoSector[]> {
+  const { data, error } = await supabase
+    .from('pseo_sectors')
+    .select('*')
+    .order('name_fr', { ascending: true });
+  if (error) { console.error(error); return []; }
+  return data ?? [];
+}
+
+/** Get a single sector by slug */
+export async function getPseoSectorBySlug(slug: string): Promise<PseoSector | null> {
+  const { data, error } = await supabase
+    .from('pseo_sectors')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+
+/** Get a PSEO page for a city (no service, no sector) */
+export async function getPseoPageByCity(cityId: number): Promise<PseoPage | null> {
+  const { data, error } = await supabase
+    .from('pseo_pages')
+    .select('*')
+    .eq('city_id', cityId)
+    .is('service_slug', null)
+    .is('sector_id', null)
+    .eq('published', true)
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+
+/** Get a PSEO page for a city + service */
+export async function getPseoPageByCityAndService(
+  cityId: number,
+  serviceSlug: string
+): Promise<PseoPage | null> {
+  const { data, error } = await supabase
+    .from('pseo_pages')
+    .select('*')
+    .eq('city_id', cityId)
+    .eq('service_slug', serviceSlug)
+    .is('sector_id', null)
+    .eq('published', true)
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+
+/** Get a PSEO page for a city + sector */
+export async function getPseoPageByCityAndSector(
+  cityId: number,
+  sectorId: number
+): Promise<PseoPage | null> {
+  const { data, error } = await supabase
+    .from('pseo_pages')
+    .select('*')
+    .eq('city_id', cityId)
+    .is('service_slug', null)
+    .eq('sector_id', sectorId)
+    .eq('published', true)
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+
+/** Get all published PSEO pages with relations (for sitemap) */
+export async function getAllPseoPages(): Promise<PseoPageWithRelations[]> {
+  const { data, error } = await supabase
+    .from('pseo_pages')
+    .select('*, city:pseo_cities(*), sector:pseo_sectors(*)')
+    .eq('published', true);
+  if (error) { console.error(error); return []; }
+  return (data ?? []) as unknown as PseoPageWithRelations[];
+}
+
+/** Get all published PSEO pages for a given city (for internal linking) */
+export async function getPseoPagesByCity(cityId: number): Promise<PseoPage[]> {
+  const { data, error } = await supabase
+    .from('pseo_pages')
+    .select('*')
+    .eq('city_id', cityId)
+    .eq('published', true);
+  if (error) { console.error(error); return []; }
+  return data ?? [];
+}
+
+/** Get all unique city+service combinations (for generateStaticParams) */
+export async function getAllPseoCityServiceParams(): Promise<{ city: string; service: string }[]> {
+  const { data, error } = await supabase
+    .from('pseo_pages')
+    .select('service_slug, city:pseo_cities(slug)')
+    .eq('published', true)
+    .not('service_slug', 'is', null);
+  if (error) { console.error(error); return []; }
+  return (data ?? [])
+    .filter((r: Record<string, unknown>) => r.service_slug && r.city)
+    .map((r: Record<string, unknown>) => ({
+      city: (r.city as { slug: string }).slug,
+      service: r.service_slug as string,
+    }));
 }

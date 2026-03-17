@@ -64,3 +64,63 @@ export interface Application {
 }
 
 export type ApplicationInsert = Omit<Application, 'id' | 'status' | 'created_at'>;
+
+// ============================================================
+// PSEO — Programmatic SEO
+// ============================================================
+
+export interface PseoCity {
+  id: number;
+  slug: string;
+  name_fr: string;
+  name_en: string;
+  region: string | null;
+  population: number | null;
+  description_fr: string | null;
+  description_en: string | null;
+  lat: number | null;
+  lng: number | null;
+  created_at: string;
+}
+
+export interface PseoSector {
+  id: number;
+  slug: string;
+  name_fr: string;
+  name_en: string;
+  icon: string | null;
+  description_fr: string | null;
+  description_en: string | null;
+  created_at: string;
+}
+
+export interface PseoFaqItem {
+  question: string;
+  answer: string;
+}
+
+export interface PseoPage {
+  id: number;
+  city_id: number;
+  service_slug: string | null;
+  sector_id: number | null;
+  title_fr: string;
+  title_en: string;
+  meta_title_fr: string | null;
+  meta_title_en: string | null;
+  meta_description_fr: string | null;
+  meta_description_en: string | null;
+  content_fr: string | null;
+  content_en: string | null;
+  faq_fr: PseoFaqItem[];
+  faq_en: PseoFaqItem[];
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+/** PseoPage with joined city and sector data (used in page rendering) */
+export interface PseoPageWithRelations extends PseoPage {
+  city: PseoCity;
+  sector: PseoSector | null;
+}
