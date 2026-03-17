@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { getAllArticleSlugs } from '@/lib/supabase';
+import { getAllArticleSlugs, getAllPseoPages } from '@/lib/supabase';
 
 const BASE_URL = 'https://diez-agency.com';
 const LANGS = ['fr', 'en'];
@@ -57,6 +57,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         alternates: {
           languages: Object.fromEntries(
             LANGS.map((l) => [l, `${BASE_URL}/${l}/blog/${slug}`])
+          ),
+        },
+      });
+    }
+  }
+
+  // PSEO pages (dynamic from Supabase)
+  const pseoPages = await getAllPseoPages();
+  for (const lang of LANGS) {
+    for (const p of pseoPages) {
+      const citySlug = p.city.slug;
+      const path = p.service_slug
+        ? `/agence/${citySlug}/${p.service_slug}`
+        : `/agence/${citySlug}`;
+
+      entries.push({
+        url: `${BASE_URL}/${lang}${path}`,
+        lastModified: new Date(p.updated_at),
+        changeFrequency: 'monthly',
+        priority: 0.7,
+        alternates: {
+          languages: Object.fromEntries(
+            LANGS.map((l) => [l, `${BASE_URL}/${l}${path}`])
           ),
         },
       });

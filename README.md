@@ -391,16 +391,16 @@ Chaque page générée contient :
 
 #### Phase 1 — Fondations (priorité immédiate)
 
-| # | Tâche | Fichiers |
-|---|-------|----------|
-| 1.1 | Créer les tables Supabase (`pseo_cities`, `pseo_sectors`, `pseo_pages`) | SQL Supabase |
-| 1.2 | Ajouter les types TypeScript PSEO | `lib/types.ts` |
-| 1.3 | Ajouter les fonctions fetch Supabase PSEO | `lib/supabase.ts` |
-| 1.4 | Créer la route `app/[lang]/agence/[city]/page.tsx` | Nouvelle page |
-| 1.5 | Créer la route `app/[lang]/agence/[city]/[service]/page.tsx` | Nouvelle page |
-| 1.6 | Créer le composant template PSEO réutilisable | `app/components/PseoPage.tsx` |
-| 1.7 | Ajouter `generateStaticParams` pour SSG de toutes les combinaisons | Pages PSEO |
-| 1.8 | Ajouter les traductions PSEO dans `LangContext.tsx` | Traductions |
+| # | Tâche | Fichiers | Statut |
+|---|-------|----------|--------|
+| 1.1 | Créer les tables Supabase (`pseo_cities`, `pseo_sectors`, `pseo_pages`) | SQL Supabase | ✅ |
+| 1.2 | Ajouter les types TypeScript PSEO | `lib/types.ts` | ✅ |
+| 1.3 | Ajouter les fonctions fetch Supabase PSEO | `lib/supabase.ts` | ✅ |
+| 1.4 | Créer la route `app/[lang]/agence/[city]/page.tsx` | Nouvelle page | ✅ |
+| 1.5 | Créer la route `app/[lang]/agence/[city]/[service]/page.tsx` | Nouvelle page | ✅ |
+| 1.6 | Créer le composant template PSEO réutilisable | `app/components/PseoPage.tsx` | ✅ |
+| 1.7 | Ajouter `generateStaticParams` pour SSG de toutes les combinaisons | Pages PSEO | ✅ |
+| 1.8 | Ajouter les pages PSEO au sitemap | `app/sitemap.ts` | ✅ |
 
 #### Phase 2 — Contenu & SEO
 
