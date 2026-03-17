@@ -262,3 +262,172 @@ npm run lint      # Vérification ESLint
 | 3 | Moyenne | **Alt text images** | Certains alt text sont génériques ("client" pour les avatars, juste le titre pour le portfolio) — à rendre plus descriptifs |
 | 4 | Basse | **Page error.tsx** | Pas de page d'erreur runtime (500) — ajouter `app/error.tsx` |
 | 5 | Basse | **Articles liés** | Les articles de blog ne linkent pas vers des services ou articles connexes |
+
+---
+
+## PSEO — Programmatic SEO (Stratégie de domination locale Maroc)
+
+> **Objectif** : Devenir la référence #1 du digital au Maroc en générant des centaines de pages locales optimisées ciblant chaque combinaison `ville × service × secteur`.
+
+### Principe
+
+Le PSEO génère automatiquement des pages SEO à partir de templates + données structurées. Chaque page cible une intention de recherche locale précise et est unique, indexable, et optimisée.
+
+**Formule** : `[Service] + [Ville]` + `[Secteur d'activité]`
+
+Exemples :
+- *"Création de SaaS à Casablanca"*
+- *"Automatisation IA pour restaurants à Marrakech"*
+- *"Site web pour avocat à Rabat"*
+
+### Architecture des routes PSEO
+
+```
+/fr/agence/[city]                          → "Agence digitale à Casablanca"
+/fr/agence/[city]/[service-slug]           → "Création de SaaS à Casablanca"
+/fr/agence/[city]/[sector]                 → "Agence digitale pour restaurants à Rabat"
+/fr/agence/[city]/[service-slug]/[sector]  → "Site web pour avocat à Marrakech" (phase 2)
+```
+
+### Matrice de données
+
+| Dimension | Éléments | Volume |
+|-----------|----------|--------|
+| **Villes** | Casablanca, Rabat, Marrakech, Fès, Tanger, Agadir, Meknès, Oujda, Kénitra, Tétouan, Salé, Nador | 12 |
+| **Services** | SaaS/Sites web, Création LLC, LLM SEO, Automatisation IA | 4 |
+| **Secteurs** | Restaurant, Immobilier, E-commerce, Avocat, Médecin, Hôtel, Startup, PME, Import/Export, Éducation | 10 |
+
+**Volume estimé** :
+- Phase 1 : 12 villes × (1 + 4 services) = **60 pages**
+- Phase 1b : + 12 villes × 10 secteurs = **+120 pages = 180 pages total**
+- Phase 2 : + 12 × 4 × 10 combinaisons complètes = **jusqu'à 660+ pages**
+
+### Tables Supabase (nouvelles)
+
+**`pseo_cities`**
+| Colonne | Type | Description |
+|---------|------|-------------|
+| id | int | Clé primaire |
+| slug | text | URL slug (ex: `casablanca`) |
+| name_fr | text | Nom FR (ex: `Casablanca`) |
+| name_en | text | Nom EN |
+| region | text | Région (ex: `Casablanca-Settat`) |
+| population | int | Population (pour les chiffres locaux) |
+| description_fr | text | Paragraphe contexte économique FR |
+| description_en | text | Paragraphe contexte économique EN |
+| lat | float | Latitude (Schema LocalBusiness) |
+| lng | float | Longitude (Schema LocalBusiness) |
+| created_at | timestamp | Date de création |
+
+**`pseo_sectors`**
+| Colonne | Type | Description |
+|---------|------|-------------|
+| id | int | Clé primaire |
+| slug | text | URL slug (ex: `restaurant`) |
+| name_fr | text | Nom FR (ex: `Restaurant`) |
+| name_en | text | Nom EN |
+| icon | text | Icône (emoji ou classe FA) |
+| description_fr | text | Description du secteur FR |
+| description_en | text | Description du secteur EN |
+| created_at | timestamp | Date de création |
+
+**`pseo_pages`**
+| Colonne | Type | Description |
+|---------|------|-------------|
+| id | int | Clé primaire |
+| city_id | int | FK → pseo_cities |
+| service_slug | text | Slug du service (nullable) |
+| sector_id | int | FK → pseo_sectors (nullable) |
+| title_fr | text | H1 FR personnalisé |
+| title_en | text | H1 EN personnalisé |
+| meta_title_fr | text | Meta title FR |
+| meta_title_en | text | Meta title EN |
+| meta_description_fr | text | Meta description FR |
+| meta_description_en | text | Meta description EN |
+| content_fr | text | Contenu Markdown FR |
+| content_en | text | Contenu Markdown EN |
+| faq_fr | jsonb | FAQ FR (array de {question, answer}) |
+| faq_en | jsonb | FAQ EN (array de {question, answer}) |
+| published | boolean | Publié ou brouillon |
+| created_at | timestamp | Date de création |
+
+### Contenu de chaque page PSEO
+
+Chaque page générée contient :
+1. **H1 dynamique** — ex: *"Agence de création de SaaS à Casablanca"*
+2. **Hero avec contexte local** — chiffres économiques de la ville, nombre d'entreprises du secteur
+3. **Section services** — adaptée au secteur ciblé avec cas d'usage spécifiques
+4. **FAQ locale** — 3-5 questions/réponses (Schema `FAQPage` JSON-LD)
+5. **CTA** — vers `/contact` avec pré-remplissage ville/service/secteur
+6. **Schema JSON-LD** — `LocalBusiness` + `Service` + `BreadcrumbList`
+7. **Maillage interne** — liens vers pages sœurs (autres villes, autres services, autres secteurs)
+
+### Données structurées (Schema.org)
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Diez Agency — Casablanca",
+  "description": "Agence digitale à Casablanca...",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Casablanca",
+    "addressRegion": "Casablanca-Settat",
+    "addressCountry": "MA"
+  },
+  "geo": { "@type": "GeoCoordinates", "latitude": 33.5731, "longitude": -7.5898 },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Services digitaux",
+    "itemListElement": [
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Création de SaaS" } }
+    ]
+  }
+}
+```
+
+### Plan d'implémentation
+
+#### Phase 1 — Fondations (priorité immédiate)
+
+| # | Tâche | Fichiers |
+|---|-------|----------|
+| 1.1 | Créer les tables Supabase (`pseo_cities`, `pseo_sectors`, `pseo_pages`) | SQL Supabase |
+| 1.2 | Ajouter les types TypeScript PSEO | `lib/types.ts` |
+| 1.3 | Ajouter les fonctions fetch Supabase PSEO | `lib/supabase.ts` |
+| 1.4 | Créer la route `app/[lang]/agence/[city]/page.tsx` | Nouvelle page |
+| 1.5 | Créer la route `app/[lang]/agence/[city]/[service]/page.tsx` | Nouvelle page |
+| 1.6 | Créer le composant template PSEO réutilisable | `app/components/PseoPage.tsx` |
+| 1.7 | Ajouter `generateStaticParams` pour SSG de toutes les combinaisons | Pages PSEO |
+| 1.8 | Ajouter les traductions PSEO dans `LangContext.tsx` | Traductions |
+
+#### Phase 2 — Contenu & SEO
+
+| # | Tâche | Fichiers |
+|---|-------|----------|
+| 2.1 | Seeder les 12 villes marocaines dans `pseo_cities` | SQL Supabase |
+| 2.2 | Seeder les 10 secteurs dans `pseo_sectors` | SQL Supabase |
+| 2.3 | Générer le contenu des 60 premières pages (ville × service) | `pseo_pages` |
+| 2.4 | Ajouter Schema JSON-LD `LocalBusiness` + `FAQPage` sur chaque page PSEO | Template PSEO |
+| 2.5 | Ajouter les pages PSEO au sitemap | `app/sitemap.ts` |
+| 2.6 | Ajouter le maillage interne dans le Footer | `app/components/Footer.tsx` |
+
+#### Phase 3 — Expansion (secteurs)
+
+| # | Tâche | Fichiers |
+|---|-------|----------|
+| 3.1 | Créer la route `app/[lang]/agence/[city]/[sector]/page.tsx` | Nouvelle page |
+| 3.2 | Générer les 120 pages ville × secteur | `pseo_pages` |
+| 3.3 | Créer la route combinée `app/[lang]/agence/[city]/[service]/[sector]/page.tsx` | Phase 2 |
+| 3.4 | Générer les 480 pages combinées | `pseo_pages` |
+
+#### Phase 4 — Tracking & Optimisation
+
+| # | Tâche | Détail |
+|---|-------|--------|
+| 4.1 | Soumettre le sitemap étendu à Google Search Console | Indexation |
+| 4.2 | Monitorer les positions ville par ville | Google Search Console |
+| 4.3 | A/B tester les titres et meta descriptions | Optimisation CTR |
+| 4.4 | Tracker les citations IA (ChatGPT, Perplexity) | LLM SEO |
+| 4.5 | Itérer sur le contenu des pages performantes | Optimisation continue |
