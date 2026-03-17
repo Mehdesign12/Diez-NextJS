@@ -20,6 +20,19 @@ const Manifesto = dynamic(() => import('@/app/components/Manifesto'));
 const CTA = dynamic(() => import('@/app/components/CTA'));
 const ScrollReveal = dynamic(() => import('@/app/components/ScrollReveal'));
 
+const FAQ_DATA: Record<string, { q: string; a: string }[]> = {
+  fr: [
+    { q: 'Combien de temps dure un projet typique ?', a: 'Les délais varient selon la complexité. Une landing page peut prendre 2 semaines, un SaaS complet 8-12 semaines. Nous travaillons en sprints de 2 semaines pour montrer des progrès constants.' },
+    { q: 'Assurez-vous le support après lancement ?', a: 'Absolument. Nous proposons plusieurs forfaits de maintenance pour garder votre produit sécurisé et à jour.' },
+    { q: 'Quelles technologies utilisez-vous ?', a: 'Nous sommes experts de la stack Javascript moderne : React, Next.js, Node.js et Tailwind CSS pour le frontend et le backend.' },
+  ],
+  en: [
+    { q: 'How long does a typical project take?', a: 'Timelines vary depending on complexity. A landing page might take 2 weeks, while a full SaaS MVP usually takes 8-12 weeks. We work in 2-week sprints to show consistent progress.' },
+    { q: 'Do you provide post-launch support?', a: 'Absolutely. We offer various maintenance packages to ensure your product stays secure, updated, and bug-free after launch.' },
+    { q: 'What technologies do you use?', a: 'We specialize in the modern Javascript stack: React, Next.js, Node.js, and Tailwind CSS on the frontend/backend. For mobile, we use React Native.' },
+  ],
+};
+
 export default async function Home({
   params,
 }: {
@@ -28,8 +41,24 @@ export default async function Home({
   const { lang } = await params;
   if (!SUPPORTED_LANGS.includes(lang as SupportedLang)) notFound();
 
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: (FAQ_DATA[lang] ?? FAQ_DATA.fr).map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.a,
+      },
+    })),
+  };
+
   return (
     <>
+      {/* FAQ Schema */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+
       {/* Noise Texture */}
       <div className="bg-noise"></div>
 
