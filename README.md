@@ -239,3 +239,26 @@ npm run lint      # Vérification ESLint
   - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
 - [x] **3.5 Optimiser FontAwesome** — Remplacé l'import global `all.min.css` par un import sélectif : `fontawesome.min.css` + `solid.min.css` + `brands.min.css` uniquement (pas de `regular`, aucune icône `far` utilisée). Réduit le CSS render-blocking.
 - [x] **3.6 Générer les pages en statique** — Ajouté `generateStaticParams` sur les pages blog listing (`app/[lang]/blog/page.tsx`) et services listing (`app/[lang]/services/page.tsx`). Les articles individuels et pages services avaient déjà cette configuration.
+
+### Phase 4 — Audit complémentaire ✅ TERMINÉE
+
+- [x] **4.1 Sitemap complet** — Le sitemap (`app/sitemap.ts`) inclut désormais :
+  - Les 4 pages services individuelles : `/services/saas-web-app`, `/services/llc-creation`, `/services/llm-seo`, `/services/agent-automation` (priority 0.8, changeFrequency monthly)
+  - Tous les articles de blog individuels depuis Supabase via `getAllArticleSlugs()` (priority 0.7, changeFrequency weekly)
+  - La page `/services` listing ajoutée aux routes statiques
+  - Alternates hreflang FR/EN sur chaque entrée
+  - Le sitemap est maintenant `async` pour le fetch dynamique
+- [x] **4.2 Schema JSON-LD FAQPage** — Données structurées FAQ ajoutées sur la homepage (`app/[lang]/page.tsx`) :
+  - 3 questions/réponses en FR et 3 en EN (durée projet, support post-lancement, technologies)
+  - Injecté côté serveur via `<script type="application/ld+json">`
+  - Permet l'affichage de rich snippets FAQ dans les résultats Google
+
+### Ce qu'il reste à faire (non bloquant)
+
+| # | Priorité | Tâche | Détail |
+|---|----------|-------|--------|
+| 1 | Haute | **Liens sociaux réels** | Les 4 liens du Footer (Twitter, LinkedIn, Instagram, Dribbble) pointent vers `href="#"` — remplacer par les vraies URLs des profils |
+| 2 | Haute | **Schema `sameAs`** | Le JSON-LD Organization dans `app/layout.tsx` a un tableau `sameAs: []` vide — à compléter avec les URLs des profils sociaux |
+| 3 | Moyenne | **Alt text images** | Certains alt text sont génériques ("client" pour les avatars, juste le titre pour le portfolio) — à rendre plus descriptifs |
+| 4 | Basse | **Page error.tsx** | Pas de page d'erreur runtime (500) — ajouter `app/error.tsx` |
+| 5 | Basse | **Articles liés** | Les articles de blog ne linkent pas vers des services ou articles connexes |
