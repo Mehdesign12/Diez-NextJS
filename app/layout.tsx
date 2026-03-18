@@ -107,7 +107,12 @@ export default async function RootLayout({
               logo: "https://diez-agency.com/images/logo.png",
               description:
                 "Diez Agency – Présence digitale, Profit mesurable. Création de sites web, identité visuelle et stratégie digitale sur-mesure.",
-              sameAs: [],
+              sameAs: [
+                "https://www.linkedin.com/company/diezagency",
+                "https://www.instagram.com/diezagency",
+                "https://x.com/diezagency",
+                "https://dribbble.com/diezagency",
+              ],
               contactPoint: {
                 "@type": "ContactPoint",
                 contactType: "customer service",

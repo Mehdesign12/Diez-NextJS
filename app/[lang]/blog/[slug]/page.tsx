@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getArticleBySlug, getAllArticleSlugs } from '@/lib/supabase';
+import { getArticleBySlug, getAllArticleSlugs, getArticles } from '@/lib/supabase';
 import ArticleClient from './ArticleClient';
 import { SUPPORTED_LANGS, type SupportedLang } from '../../layout';
 
@@ -58,5 +58,16 @@ export default async function ArticlePage(
   const article = await getArticleBySlug(slug);
   if (!article) notFound();
 
-  return <ArticleClient article={article} />;
+  // Fetch related articles: same category first, then others, exclude current
+  const allArticles = await getArticles();
+  const related = allArticles
+    .filter((a) => a.slug !== article.slug)
+    .sort((a, b) => {
+      const aMatch = a.category === article.category ? 1 : 0;
+      const bMatch = b.category === article.category ? 1 : 0;
+      return bMatch - aMatch;
+    })
+    .slice(0, 3);
+
+  return <ArticleClient article={article} relatedArticles={related} />;
 }

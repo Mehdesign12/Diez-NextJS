@@ -159,7 +159,7 @@ export default function Hero() {
                   >
                     <img
                       src={`https://i.pravatar.cc/80?img=${img}`}
-                      alt="client"
+                      alt={`Client satisfait Diez Agency ${i + 1}`}
                       width={36}
                       height={36}
                       className="w-full h-full object-cover"

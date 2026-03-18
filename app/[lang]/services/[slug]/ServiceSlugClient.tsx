@@ -59,7 +59,7 @@ function ServiceIllustration({ id, color }: { id: string; color: string }) {
       {/* Photo principale */}
       <img
         src={LLC_HERO_PHOTO}
-        alt="Entrepreneur américain, création LLC"
+        alt="Entrepreneur signant les documents de création de LLC aux États-Unis"
         width={800}
         height={600}
         className="w-full h-full object-cover"
@@ -400,7 +400,7 @@ export function ServiceSlugClient() {
                       <div key={i} className="relative overflow-hidden group">
                         <img
                           src={p.url}
-                          alt={p.name}
+                          alt={`Photo de ${p.name}, client LLC Diez Agency`}
                           width={160}
                           height={192}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

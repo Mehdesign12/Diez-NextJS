@@ -21,9 +21,12 @@ function readingTime(content: string) {
 // Configuration marked
 marked.setOptions({ gfm: true, breaks: true });
 
-interface Props { article: Article }
+interface Props {
+  article: Article;
+  relatedArticles?: Article[];
+}
 
-export default function ArticleClient({ article }: Props) {
+export default function ArticleClient({ article, relatedArticles = [] }: Props) {
   const params = useParams();
   const lang = (params?.lang as string) || 'fr';
   const htmlContent = useMemo(() => marked(article.content) as string, [article.content]);
@@ -180,6 +183,50 @@ export default function ArticleClient({ article }: Props) {
           }),
         }}
       />
+
+      {/* ── Articles liés ── */}
+      {relatedArticles.length > 0 && (
+        <section className="py-16 px-4 bg-white">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-[#0F0F0F] mb-8 text-center">
+              {lang === 'fr' ? 'Articles similaires' : 'Related articles'}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {relatedArticles.map((related) => (
+                <Link
+                  key={related.slug}
+                  href={`/${lang}/blog/${related.slug}`}
+                  className="group rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white"
+                >
+                  <div className="h-40 overflow-hidden bg-[#F4F4F5]">
+                    <img
+                      src={related.cover_url || FALLBACK_IMAGE}
+                      alt={`Illustration de l'article : ${related.title}`}
+                      width={400}
+                      height={200}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <span className="text-xs font-bold text-[#FF4D29] mb-2 inline-block">{related.category}</span>
+                    <h3 className="text-base font-bold text-[#0F0F0F] group-hover:text-[#FF4D29] transition-colors line-clamp-2 mb-2">
+                      {related.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 line-clamp-2">{related.excerpt}</p>
+                    <div className="mt-3 flex items-center gap-2 text-xs text-gray-400">
+                      <i className="fas fa-clock"></i>
+                      {readingTime(related.content)} min
+                      <span className="mx-1">·</span>
+                      {formatDate(related.created_at)}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── CTA bas ── */}
       <section className="bg-[#0F0F0F] py-20 px-4">

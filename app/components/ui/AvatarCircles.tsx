@@ -24,7 +24,7 @@ export function AvatarCircles({
         >
           <Image
             src={url}
-            alt={`Avatar ${index + 1}`}
+            alt={`Photo de client satisfait ${index + 1}`}
             fill
             className="object-cover"
           />

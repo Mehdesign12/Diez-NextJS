@@ -222,7 +222,7 @@ export default function Navbar() {
               onClick={() => switchLang(otherLang)}
               className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-gray-50 hover:bg-white border border-gray-200 rounded-full transition-all duration-300 shadow-sm hover:shadow-md group active:scale-95"
             >
-              <img src={flagUrl} alt={lang.toUpperCase()} width={20} height={20} className="w-5 h-5 rounded-full object-cover shadow-sm border border-gray-100" />
+              <img src={flagUrl} alt={lang === 'fr' ? 'Drapeau français — langue actuelle' : 'English flag — current language'} width={20} height={20} className="w-5 h-5 rounded-full object-cover shadow-sm border border-gray-100" />
               <span className="text-xs font-extrabold text-gray-600 group-hover:text-[#FF4D29] transition-colors">{lang.toUpperCase()}</span>
               <i className="fas fa-chevron-down text-[8px] text-gray-400" />
             </button>
@@ -234,7 +234,7 @@ export default function Navbar() {
             {/* Mobile actions */}
             <div className="flex md:hidden items-center gap-2 mr-1">
               <button onClick={() => switchLang(otherLang)} className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-50 border border-gray-200 active:scale-95 transition-all">
-                <img src={flagUrl} alt={lang.toUpperCase()} width={20} height={20} className="w-5 h-5 rounded-full object-cover" />
+                <img src={flagUrl} alt={lang === 'fr' ? 'Changer en anglais' : 'Switch to French'} width={20} height={20} className="w-5 h-5 rounded-full object-cover" />
               </button>
               <Link href={`/${lang}/contact`} className="w-9 h-9 flex items-center justify-center rounded-full bg-[#FF4D29] text-white shadow-md active:scale-95 transition-all">
                 <i className="fas fa-paper-plane text-xs" />
