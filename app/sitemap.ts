@@ -63,14 +63,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // PSEO pages (dynamic from Supabase)
+  // PSEO pages (dynamic from Supabase — includes city, city+service, city+sector, city+service+sector)
   const pseoPages = await getAllPseoPages();
   for (const lang of LANGS) {
     for (const p of pseoPages) {
       const citySlug = p.city.slug;
-      const path = p.service_slug
-        ? `/agence/${citySlug}/${p.service_slug}`
-        : `/agence/${citySlug}`;
+      const sectorSlug = p.sector?.slug;
+
+      let path: string;
+      if (p.service_slug && sectorSlug) {
+        path = `/agence/${citySlug}/${p.service_slug}/${sectorSlug}`;
+      } else if (p.service_slug) {
+        path = `/agence/${citySlug}/${p.service_slug}`;
+      } else if (sectorSlug) {
+        path = `/agence/${citySlug}/${sectorSlug}`;
+      } else {
+        path = `/agence/${citySlug}`;
+      }
 
       entries.push({
         url: `${BASE_URL}/${lang}${path}`,

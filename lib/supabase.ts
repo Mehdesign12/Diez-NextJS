@@ -364,7 +364,8 @@ export async function getAllPseoCityServiceParams(): Promise<{ city: string; ser
     .from('pseo_pages')
     .select('service_slug, city:pseo_cities(slug)')
     .eq('published', true)
-    .not('service_slug', 'is', null);
+    .not('service_slug', 'is', null)
+    .is('sector_id', null);
   if (error) { console.error(error); return []; }
   return (data ?? [])
     .filter((r: Record<string, unknown>) => r.service_slug && r.city)
@@ -372,4 +373,66 @@ export async function getAllPseoCityServiceParams(): Promise<{ city: string; ser
       city: (r.city as { slug: string }).slug,
       service: r.service_slug as string,
     }));
+}
+
+/** Get all unique city+sector combinations (for generateStaticParams) */
+export async function getAllPseoCitySectorParams(): Promise<{ city: string; sector: string }[]> {
+  const { data, error } = await supabase
+    .from('pseo_pages')
+    .select('sector:pseo_sectors(slug), city:pseo_cities(slug)')
+    .eq('published', true)
+    .is('service_slug', null)
+    .not('sector_id', 'is', null);
+  if (error) { console.error(error); return []; }
+  return (data ?? [])
+    .filter((r: Record<string, unknown>) => r.sector && r.city)
+    .map((r: Record<string, unknown>) => ({
+      city: (r.city as { slug: string }).slug,
+      sector: (r.sector as { slug: string }).slug,
+    }));
+}
+
+/** Get a PSEO page for city + service + sector (triple combo) */
+export async function getPseoPageByCityServiceAndSector(
+  cityId: number,
+  serviceSlug: string,
+  sectorId: number
+): Promise<PseoPage | null> {
+  const { data, error } = await supabase
+    .from('pseo_pages')
+    .select('*')
+    .eq('city_id', cityId)
+    .eq('service_slug', serviceSlug)
+    .eq('sector_id', sectorId)
+    .eq('published', true)
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+
+/** Get all unique city+service+sector combinations (for generateStaticParams) */
+export async function getAllPseoCityServiceSectorParams(): Promise<{ city: string; service: string; sector: string }[]> {
+  const { data, error } = await supabase
+    .from('pseo_pages')
+    .select('service_slug, city:pseo_cities(slug), sector:pseo_sectors(slug)')
+    .eq('published', true)
+    .not('service_slug', 'is', null)
+    .not('sector_id', 'is', null);
+  if (error) { console.error(error); return []; }
+  return (data ?? [])
+    .filter((r: Record<string, unknown>) => r.service_slug && r.city && r.sector)
+    .map((r: Record<string, unknown>) => ({
+      city: (r.city as { slug: string }).slug,
+      service: r.service_slug as string,
+      sector: (r.sector as { slug: string }).slug,
+    }));
+}
+
+/** Get all sector slugs (for generateStaticParams) */
+export async function getAllPseoSectorSlugs(): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('pseo_sectors')
+    .select('slug');
+  if (error) { console.error(error); return []; }
+  return (data ?? []).map((s) => s.slug);
 }
