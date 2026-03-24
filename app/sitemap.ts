@@ -4,7 +4,7 @@ import { getAllArticleSlugs, getAllPseoPages } from '@/lib/supabase';
 const BASE_URL = 'https://diez-agency.com';
 const LANGS = ['fr', 'en'];
 
-const SERVICE_SLUGS = ['saas-web-app', 'llc-creation', 'llm-seo', 'agent-automation'];
+const SERVICE_SLUGS = ['saas-web-app', 'llm-seo', 'agent-automation'];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = ['', '/work', '/blog', '/contact', '/services'];

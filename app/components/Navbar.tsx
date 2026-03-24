@@ -17,14 +17,6 @@ const SERVICES_ITEMS = [
     shortKey: 'srv1-short',
   },
   {
-    id: 'llc-creation',
-    icon: 'fa-building',
-    color: '#0F0F0F',
-    bgLight: '#F4F4F5',
-    titleKey: 'srv2-title',
-    shortKey: 'srv2-short',
-  },
-  {
     id: 'llm-seo',
     icon: 'fa-brain',
     color: '#7C3AED',

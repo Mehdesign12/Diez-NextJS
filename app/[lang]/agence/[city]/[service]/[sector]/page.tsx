@@ -12,11 +12,10 @@ import PseoPage from '@/app/components/PseoPage';
 import Navbar from '@/app/components/Navbar';
 import Footer from '@/app/components/Footer';
 
-const VALID_SERVICE_SLUGS = ['saas-web-app', 'llc-creation', 'llm-seo', 'agent-automation'];
+const VALID_SERVICE_SLUGS = ['saas-web-app', 'llm-seo', 'agent-automation'];
 
 const SERVICE_LABELS: Record<string, Record<string, string>> = {
   'saas-web-app': { fr: 'SaaS, Sites Web & Applications', en: 'SaaS, Websites & Applications' },
-  'llc-creation': { fr: 'Création de LLC Complète', en: 'Full LLC Creation' },
   'llm-seo': { fr: 'LLM SEO Optimisation', en: 'LLM SEO Optimization' },
   'agent-automation': { fr: 'Agent Automation Process', en: 'Agent Automation Process' },
 };

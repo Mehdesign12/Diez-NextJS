@@ -4,7 +4,7 @@ import { SUPPORTED_LANGS, type SupportedLang } from '../../layout';
 import { ServiceSlugClient } from './ServiceSlugClient';
 import { SERVICES_DATA } from '../servicesData';
 
-const VALID_SLUGS = ['saas-web-app', 'llc-creation', 'llm-seo', 'agent-automation'];
+const VALID_SLUGS = ['saas-web-app', 'llm-seo', 'agent-automation'];
 
 export async function generateStaticParams() {
   return SUPPORTED_LANGS.flatMap(lang =>
@@ -22,10 +22,6 @@ export async function generateMetadata({
     'saas-web-app': {
       fr: 'SaaS, Sites Web & Applications | Diez Agency',
       en: 'SaaS, Websites & Applications | Diez Agency',
-    },
-    'llc-creation': {
-      fr: 'Création de LLC Complète | Diez Agency',
-      en: 'Full LLC Creation | Diez Agency',
     },
     'llm-seo': {
       fr: 'LLM SEO Optimisation | Diez Agency',

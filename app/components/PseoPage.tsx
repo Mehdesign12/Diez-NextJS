@@ -19,12 +19,11 @@ interface PseoPageProps {
 
 const SERVICE_LABELS: Record<string, Record<string, string>> = {
   'saas-web-app': { fr: 'SaaS, Sites Web & Applications', en: 'SaaS, Websites & Applications' },
-  'llc-creation': { fr: 'Création de LLC Complète', en: 'Full LLC Creation' },
   'llm-seo': { fr: 'LLM SEO Optimisation', en: 'LLM SEO Optimization' },
   'agent-automation': { fr: 'Agent Automation Process', en: 'Agent Automation Process' },
 };
 
-const SERVICE_SLUGS = ['saas-web-app', 'llc-creation', 'llm-seo', 'agent-automation'];
+const SERVICE_SLUGS = ['saas-web-app', 'llm-seo', 'agent-automation'];
 
 const SECTOR_SLUGS = [
   'restaurant', 'immobilier', 'ecommerce', 'avocat', 'medecin',

@@ -31,7 +31,6 @@ export default function Footer() {
               <h4 className="font-bold mb-4 md:mb-6">{t('footer-h-services')}</h4>
               <ul className="space-y-2 md:space-y-3 text-gray-400 text-xs md:text-sm">
                 <li><Link href={`/${lang}/services/saas-web-app`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-web')}</Link></li>
-                <li><Link href={`/${lang}/services/llc-creation`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-mob')}</Link></li>
                 <li><Link href={`/${lang}/services/llm-seo`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-ui')}</Link></li>
                 <li><Link href={`/${lang}/services/agent-automation`} className="hover:text-[#FF4D29] transition-colors">{t('footer-l-consult')}</Link></li>
                 <li><Link href={`/${lang}/blog`} className="hover:text-[#FF4D29] transition-colors">Blog & Actualités</Link></li>

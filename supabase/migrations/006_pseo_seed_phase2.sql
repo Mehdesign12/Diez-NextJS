@@ -94,11 +94,10 @@ BEGIN
   FOR c IN SELECT id, slug, name_fr, name_en, region FROM pseo_cities ORDER BY population DESC LOOP
     FOR s IN SELECT id, slug, name_fr, name_en FROM pseo_sectors ORDER BY name_fr LOOP
 
-      -- Loop over the 4 services
+      -- Loop over the 3 services
       FOR srv IN
         SELECT * FROM (VALUES
           ('saas-web-app', 'SaaS, Sites Web & Applications', 'SaaS, Websites & Applications'),
-          ('llc-creation', 'Création de LLC Complète', 'Full LLC Creation'),
           ('llm-seo', 'LLM SEO Optimisation', 'LLM SEO Optimization'),
           ('agent-automation', 'Agent Automation Process', 'Agent Automation Process')
         ) AS t(slug, label_fr, label_en)

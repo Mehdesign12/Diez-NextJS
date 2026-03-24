@@ -173,124 +173,7 @@ export const SERVICES_DATA: ServiceData[] = [
   },
 
   /* ──────────────────────────────────────
-     2. LLC Creation
-  ────────────────────────────────────── */
-  {
-    id: 'llc-creation',
-    icon: 'fa-building',
-    color: '#1a1a2e',
-    colorDark: '#0f0f1a',
-    bgLight: '#F4F4F5',
-    bgGradient: 'from-[#F4F4F5] to-[#FAFAFA]',
-    num: '02',
-    fr: {
-      title: 'Création de LLC Complète',
-      tagline: 'Votre société américaine opérationnelle en 72h.',
-      heroSubtitle: 'Accédez aux marchés mondiaux, à Stripe US, PayPal US et à la crédibilité internationale — sans quitter votre bureau.',
-      desc: 'La LLC américaine est la structure préférée des entrepreneurs digitaux du monde entier. Nous gérons tout le processus de A à Z : vous recevez votre société prête à facturer.',
-      painTitle: 'Pourquoi vous hésitez encore ?',
-      pains: [
-        { icon: 'fa-file-alt', title: 'Paperasse incompréhensible', desc: 'Les formulaires américains sont en anglais juridique et le moindre erreur coûte cher.' },
-        { icon: 'fa-map-marker-alt', title: 'Adresse US introuvable', desc: 'Sans adresse physique aux États-Unis, l\'enregistrement est impossible.' },
-        { icon: 'fa-university', title: 'Compte bancaire bloqué', desc: 'Les banques US refusent les non-résidents ou imposent une présence physique.' },
-        { icon: 'fa-calendar-check', title: 'Conformité annuelle oubliée', desc: 'Les obligations annuelles mal gérées entraînent la dissolution automatique de la société.' },
-      ],
-      solutionTitle: 'Clé en main, sans prise de tête',
-      solutionSubtitle: 'Nous faisons tout. Vous signez, recevez, encaissez.',
-      features: [
-        { icon: 'fa-map-pin', title: 'État optimal sélectionné', desc: 'Wyoming (confidentialité + frais réduits) ou Delaware (fundraising). Nous vous conseillons selon votre situation.' },
-        { icon: 'fa-id-card', title: 'EIN (numéro fiscal US) obtenu', desc: 'Sans EIN, impossible d\'ouvrir un compte bancaire ou de signer des contrats US. Nous l\'obtenons pour vous.' },
-        { icon: 'fa-building', title: 'Registered Agent 12 mois inclus', desc: 'Adresse légale US, réception des courriers officiels, notifications de conformité — tout inclus la première année.' },
-        { icon: 'fa-university', title: 'Compte bancaire US en ligne', desc: 'Mercury, Relay ou Brex selon votre profil. Carte Visa, virements SWIFT, accès Stripe et PayPal US.' },
-        { icon: 'fa-file-contract', title: 'Operating Agreement rédigé', desc: 'Document légal essentiel qui protège votre patrimoine personnel et structure votre société.' },
-        { icon: 'fa-bell', title: 'Conformité annuelle gérée', desc: 'Rappels automatiques, dépôt des rapports annuels, renouvellement Registered Agent — on ne laisse rien tomber.' },
-      ],
-      processTitle: 'De 0 à LLC en 72h',
-      steps: [
-        { num: '01', title: 'Consultation (Jour 1)', desc: 'Appel de 30min pour choisir l\'État, le type d\'activité et la structure adaptée. On répond à toutes vos questions.' },
-        { num: '02', title: 'Dépôt & enregistrement (Jour 1–2)', desc: 'Nous déposons les Articles of Organization auprès de l\'État choisi. Traitement accéléré disponible.' },
-        { num: '03', title: 'EIN & documents (Jour 2–3)', desc: 'Obtention de l\'EIN auprès de l\'IRS, rédaction de l\'Operating Agreement, mise en place du Registered Agent.' },
-        { num: '04', title: 'Compte bancaire & activation (Jour 3–5)', desc: 'Ouverture du compte bancaire en ligne, activation Stripe/PayPal US. Votre LLC est opérationnelle.' },
-      ],
-      resultsTitle: 'Ce que vous obtenez',
-      results: [
-        { metric: '72h', label: 'LLC opérationnelle' },
-        { metric: '100%', label: 'En ligne, sans déplacement' },
-        { metric: '0', label: 'Démarche à faire vous-même' },
-        { metric: '$0', label: 'Frais cachés' },
-      ],
-      testimonial: {
-        text: '"J\'avais essayé de créer ma LLC seul pendant 3 semaines sans succès. Diez a tout réglé en 2 jours. J\'encaisse maintenant en dollars via Stripe US. Game changer."',
-        author: 'Karim B.',
-        role: 'Fondateur, SaaS Marketing Automation',
-      },
-      faqTitle: 'Questions fréquentes',
-      faqs: [
-        { q: 'Dois-je être résident américain pour créer une LLC ?', a: 'Non, absolument pas. Toute personne physique, quelle que soit sa nationalité, peut créer et détenir une LLC américaine. Aucun visa, aucune résidence requise.' },
-        { q: 'Quelle est la différence entre Wyoming et Delaware ?', a: 'Wyoming : confidentialité maximale (pas de publication des noms des membres), frais annuels très bas (~50$/an). Delaware : préféré des VC et investisseurs pour les startups qui lèvent des fonds. Nous vous aidons à choisir.' },
-        { q: 'Comment fonctionne la fiscalité ?', a: 'La LLC est par défaut "pass-through" : les bénéfices sont déclarés dans votre pays de résidence. Nous vous recommandons un comptable spécialisé pour optimiser selon votre situation.' },
-        { q: 'Quels sont les frais annuels à prévoir ?', a: 'Wyoming : ~$150/an (Registered Agent + rapport annuel). Delaware : ~$300/an. Plus les frais de comptabilité si vous déposez en IRS (recommandé à partir d\'un certain volume d\'activité).' },
-      ],
-      ctaTitle: 'Votre LLC américaine vous attend.',
-      ctaSubtitle: 'Consultation gratuite · LLC en 72h · Tout inclus',
-      ctaBtn: 'Créer ma LLC maintenant',
-    },
-    en: {
-      title: 'Full LLC Creation',
-      tagline: 'Your US company operational in 72h.',
-      heroSubtitle: 'Access global markets, US Stripe, US PayPal and international credibility — without leaving your desk.',
-      desc: 'The American LLC is the preferred structure for digital entrepreneurs worldwide. We handle the entire process from A to Z: you receive your company ready to invoice.',
-      painTitle: 'Why are you still hesitating?',
-      pains: [
-        { icon: 'fa-file-alt', title: 'Incomprehensible paperwork', desc: 'US forms are in legal English and even a small mistake costs money.' },
-        { icon: 'fa-map-marker-alt', title: 'No US address', desc: 'Without a physical US address, registration is impossible.' },
-        { icon: 'fa-university', title: 'Bank account blocked', desc: 'US banks reject non-residents or require physical presence.' },
-        { icon: 'fa-calendar-check', title: 'Annual compliance forgotten', desc: 'Poorly managed annual obligations lead to automatic dissolution of the company.' },
-      ],
-      solutionTitle: 'Turnkey, hassle-free',
-      solutionSubtitle: 'We do everything. You sign, receive, collect.',
-      features: [
-        { icon: 'fa-map-pin', title: 'Optimal state selected', desc: 'Wyoming (privacy + low fees) or Delaware (fundraising). We advise you based on your situation.' },
-        { icon: 'fa-id-card', title: 'EIN (US tax number) obtained', desc: 'Without an EIN, you can\'t open a bank account or sign US contracts. We get it for you.' },
-        { icon: 'fa-building', title: '12-month Registered Agent included', desc: 'US legal address, receipt of official mail, compliance notifications — all included for the first year.' },
-        { icon: 'fa-university', title: 'US online bank account', desc: 'Mercury, Relay or Brex depending on your profile. Visa card, SWIFT transfers, US Stripe and PayPal access.' },
-        { icon: 'fa-file-contract', title: 'Operating Agreement drafted', desc: 'Essential legal document that protects your personal assets and structures your company.' },
-        { icon: 'fa-bell', title: 'Annual compliance managed', desc: 'Automatic reminders, annual report filing, Registered Agent renewal — we don\'t let anything slip.' },
-      ],
-      processTitle: 'From 0 to LLC in 72h',
-      steps: [
-        { num: '01', title: 'Consultation (Day 1)', desc: '30-min call to choose the state, business type and the right structure. We answer all your questions.' },
-        { num: '02', title: 'Filing & registration (Day 1–2)', desc: 'We file the Articles of Organization with the chosen state. Expedited processing available.' },
-        { num: '03', title: 'EIN & documents (Day 2–3)', desc: 'EIN obtained from the IRS, Operating Agreement drafted, Registered Agent set up.' },
-        { num: '04', title: 'Bank account & activation (Day 3–5)', desc: 'Online bank account opened, US Stripe/PayPal activated. Your LLC is operational.' },
-      ],
-      resultsTitle: 'What you get',
-      results: [
-        { metric: '72h', label: 'Operational LLC' },
-        { metric: '100%', label: 'Online, no travel required' },
-        { metric: '0', label: 'Steps to do yourself' },
-        { metric: '$0', label: 'Hidden fees' },
-      ],
-      testimonial: {
-        text: '"I tried to set up my LLC alone for 3 weeks with no success. Diez sorted everything in 2 days. I now collect in dollars via US Stripe. Game changer."',
-        author: 'Karim B.',
-        role: 'Founder, Marketing Automation SaaS',
-      },
-      faqTitle: 'Frequently asked questions',
-      faqs: [
-        { q: 'Do I need to be a US resident to create an LLC?', a: 'No, absolutely not. Any individual, regardless of nationality, can create and own a US LLC. No visa, no residency required.' },
-        { q: 'What is the difference between Wyoming and Delaware?', a: 'Wyoming: maximum privacy (no publication of member names), very low annual fees (~$50/year). Delaware: preferred by VCs and investors for startups raising funds. We help you choose.' },
-        { q: 'How does taxation work?', a: 'The LLC is by default "pass-through": profits are declared in your country of residence. We recommend a specialized accountant to optimize based on your situation.' },
-        { q: 'What annual fees should I expect?', a: 'Wyoming: ~$150/year (Registered Agent + annual report). Delaware: ~$300/year. Plus accounting fees if you file with the IRS (recommended from a certain volume of activity).' },
-      ],
-      ctaTitle: 'Your American LLC is waiting for you.',
-      ctaSubtitle: 'Free consultation · LLC in 72h · All inclusive',
-      ctaBtn: 'Create my LLC now',
-    },
-  },
-
-  /* ──────────────────────────────────────
-     3. LLM SEO
+     2. LLM SEO
   ────────────────────────────────────── */
   {
     id: 'llm-seo',
@@ -299,7 +182,7 @@ export const SERVICES_DATA: ServiceData[] = [
     colorDark: '#5b21b6',
     bgLight: '#F5F3FF',
     bgGradient: 'from-[#F5F3FF] to-[#FAF9FF]',
-    num: '03',
+    num: '02',
     fr: {
       title: 'LLM SEO Optimisation',
       tagline: 'Soyez cité par ChatGPT, Perplexity & Google AI.',
@@ -416,7 +299,7 @@ export const SERVICES_DATA: ServiceData[] = [
     colorDark: '#047857',
     bgLight: '#ECFDF5',
     bgGradient: 'from-[#ECFDF5] to-[#F0FDF4]',
-    num: '04',
+    num: '03',
     fr: {
       title: 'Agent Automation Process',
       tagline: 'Vos tâches répétitives gérées par des agents IA 24h/24.',

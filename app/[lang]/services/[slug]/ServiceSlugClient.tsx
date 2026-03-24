@@ -11,18 +11,6 @@ import Navbar from '@/app/components/Navbar';
 import Footer from '@/app/components/Footer';
 import { SERVICES_DATA } from '../servicesData';
 
-/* ── Photos Unsplash pour LLC ── */
-const LLC_HERO_PHOTO = 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&q=80&auto=format&fit=crop';
-const LLC_TESTIMONIAL_PHOTO = 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=120&q=80&auto=format&fit=crop&crop=face';
-
-/* Galerie de clients satisfaits (LLC social proof) */
-const LLC_CLIENT_PHOTOS = [
-  { url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=80&h=80&q=80&auto=format&fit=crop&crop=face', name: 'Marc D.', country: '🇫🇷' },
-  { url: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=80&h=80&q=80&auto=format&fit=crop&crop=face', name: 'Aisha K.', country: '🇸🇳' },
-  { url: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=80&h=80&q=80&auto=format&fit=crop&crop=face', name: 'Thomas R.', country: '🇧🇪' },
-  { url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&h=80&q=80&auto=format&fit=crop&crop=face', name: 'Sofia M.', country: '🇲🇦' },
-  { url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&q=80&auto=format&fit=crop&crop=face', name: 'Yann P.', country: '🇨🇭' },
-];
 
 /* ── Illustrations SVG par service ── */
 function ServiceIllustration({ id, color }: { id: string; color: string }) {
@@ -52,36 +40,6 @@ function ServiceIllustration({ id, color }: { id: string; color: string }) {
       <circle cx="330" cy="226" r="16" fill={color} opacity="0.12"/>
       <text x="324" y="231" fontSize="12" fill={color} fontWeight="bold">✓</text>
     </svg>
-  );
-
-  if (id === 'llc-creation') return (
-    <div className="w-full h-full relative overflow-hidden rounded-2xl">
-      {/* Photo principale */}
-      <img
-        src={LLC_HERO_PHOTO}
-        alt="Entrepreneur signant les documents de création de LLC aux États-Unis"
-        width={800}
-        height={600}
-        className="w-full h-full object-cover"
-        loading="eager"
-      />
-      {/* Overlay gradient léger */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"/>
-      {/* Badge "Opérationnel en 72h" */}
-      <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-lg">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${color}15` }}>
-          <span className="text-lg">🏛️</span>
-        </div>
-        <div>
-          <p className="text-xs font-bold text-[#0F0F0F]">LLC opérationnelle</p>
-          <p className="text-[10px] text-gray-500">Dépôt en 24h · EIN en 72h</p>
-        </div>
-        <div className="ml-auto flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"/>
-          <span className="text-[10px] font-semibold text-green-600">En ligne</span>
-        </div>
-      </div>
-    </div>
   );
 
   if (id === 'llm-seo') return (
@@ -250,7 +208,7 @@ export function ServiceSlugClient() {
                     transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
                     className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-lg border border-gray-100 px-4 py-3 flex items-center gap-2"
                   >
-                    <span className="text-lg">{srv.id === 'agent-automation' ? '🤖' : srv.id === 'llm-seo' ? '🧠' : srv.id === 'llc-creation' ? '🏛️' : '⚡'}</span>
+                    <span className="text-lg">{srv.id === 'agent-automation' ? '🤖' : srv.id === 'llm-seo' ? '🧠' : '⚡'}</span>
                     <p className="text-xs font-bold text-[#0F0F0F]">{copy.results[2].metric}</p>
                   </motion.div>
                 </div>
@@ -390,52 +348,6 @@ export function ServiceSlugClient() {
               ))}
             </div>
 
-            {/* Social proof avec photos — LLC uniquement */}
-            {srv.id === 'llc-creation' && (
-              <BlurFade delay={0.25} yOffset={12} blur="8px" inView>
-                <div className="mb-12 rounded-3xl overflow-hidden border border-gray-100 shadow-sm">
-                  {/* Bande photos */}
-                  <div className="grid grid-cols-5 h-48">
-                    {LLC_CLIENT_PHOTOS.map((p, i) => (
-                      <div key={i} className="relative overflow-hidden group">
-                        <img
-                          src={p.url}
-                          alt={`Photo de ${p.name}, client LLC Diez Agency`}
-                          width={160}
-                          height={192}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"/>
-                        <div className="absolute bottom-2 left-0 right-0 text-center">
-                          <p className="text-white text-[10px] font-semibold">{p.name}</p>
-                          <p className="text-[11px]">{p.country}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Caption */}
-                  <div className="bg-white px-6 py-4 flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-bold text-[#0F0F0F]">
-                        {lang === 'fr' ? 'Rejoignez +200 entrepreneurs' : 'Join 200+ entrepreneurs'}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-0.5">
-                        {lang === 'fr'
-                          ? 'Ils ont créé leur LLC américaine avec Diez — depuis la France, le Maroc, la Belgique et bien plus.'
-                          : 'They created their US LLC with Diez — from France, Morocco, Belgium and beyond.'}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1 shrink-0 ml-4">
-                      {[...Array(5)].map((_, i) => (
-                        <i key={i} className="fas fa-star text-xs" style={{ color: srv.color }}/>
-                      ))}
-                      <span className="text-xs font-bold ml-1 text-[#0F0F0F]">4.9/5</span>
-                    </div>
-                  </div>
-                </div>
-              </BlurFade>
-            )}
-
             {/* Testimonial */}
             <BlurFade delay={0.3} yOffset={16} blur="10px" inView>
               <div className="max-w-3xl mx-auto rounded-3xl p-8 md:p-10 border border-gray-100 shadow-sm relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${srv.bgLight} 0%, white 100%)` }}>
@@ -444,19 +356,9 @@ export function ServiceSlugClient() {
                   {copy.testimonial.text}
                 </p>
                 <div className="flex items-center gap-4">
-                  {srv.id === 'llc-creation' ? (
-                    <img
-                      src={LLC_TESTIMONIAL_PHOTO}
-                      alt={copy.testimonial.author}
-                      width={48}
-                      height={48}
-                      className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-md"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white text-lg" style={{ background: srv.color }}>
-                      {copy.testimonial.author.charAt(0)}
-                    </div>
-                  )}
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white text-lg" style={{ background: srv.color }}>
+                    {copy.testimonial.author.charAt(0)}
+                  </div>
                   <div>
                     <p className="font-bold text-[#0F0F0F]">{copy.testimonial.author}</p>
                     <p className="text-sm text-gray-500">{copy.testimonial.role}</p>
