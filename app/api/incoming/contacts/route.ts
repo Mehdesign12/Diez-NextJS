@@ -32,7 +32,7 @@ export async function POST(req: Request) {
       email,
       phone: phone || null,
       budget: budget || null,
-      interests: Array.isArray(interests) ? interests : null,
+      interests: Array.isArray(interests) ? interests : undefined,
       message: message || null,
       metadata: { user_agent: req.headers.get('user-agent') || '', origin: req.headers.get('origin') || '' },
     });
