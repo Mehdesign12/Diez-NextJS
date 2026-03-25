@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -36,6 +36,10 @@ export async function POST(req: Request) {
 
     // 2. Send email notification via Resend
     const isFr = lang === 'fr';
+
+    if (!resend) {
+      return NextResponse.json({ success: true });
+    }
 
     const { error: emailError } = await resend.emails.send({
       from: 'Diez Agency <noreply@diez-agency.com>',
