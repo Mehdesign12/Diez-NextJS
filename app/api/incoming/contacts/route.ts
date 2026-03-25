@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { getProjectByApiKey, saveProjectContact } from '@/lib/supabase';
+import { getProjectByApiKey, saveProjectContact, checkRateLimit } from '@/lib/supabase';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -15,6 +15,12 @@ export async function POST(req: Request) {
     const project = await getProjectByApiKey(apiKey);
     if (!project) {
       return NextResponse.json({ error: 'Invalid API key' }, { status: 401, headers: corsHeaders });
+    }
+
+    // 1b. Rate limiting (10 req/min per API key)
+    const allowed = await checkRateLimit(apiKey);
+    if (!allowed) {
+      return NextResponse.json({ error: 'Rate limit exceeded. Max 10 requests per minute.' }, { status: 429, headers: corsHeaders });
     }
 
     // 2. Parse and validate body

@@ -265,6 +265,10 @@ npm run lint      # Vérification ESLint
 | 6 | **Haute** | **Configurer réception email** | Resend est configuré pour **envoyer** les emails de contact, mais il faut configurer la **réception** sur `contact@diez-agency.com`. Options : ImprovMX (gratuit, forwarding vers Gmail) ou Cloudflare Email Routing. Ajouter les MX records chez Maromania (registrar du domaine) |
 | 7 | **Haute** | **Vérifier domaine sur Resend** | Aller sur [resend.com/domains](https://resend.com/domains), ajouter `diez-agency.com`, puis ajouter les DNS records (SPF, DKIM, DMARC) chez Maromania pour que Resend puisse envoyer depuis `noreply@diez-agency.com` |
 | 8 | **Haute** | **Ajouter RESEND_API_KEY sur Vercel** | Aller dans Vercel > Settings > Environment Variables et ajouter `RESEND_API_KEY` = `re_VAVnHPgH_...` (la clé est déjà dans `.env.local` en local) |
+| 9 | Haute | **Email de confirmation au prospect** | Envoyer un email automatique au prospect quand il remplit un formulaire sous-projet ("Merci, nous revenons vers vous sous 24h") |
+| 10 | Moyenne | **Webhook Slack/Telegram** | Notification instantanée sur téléphone quand un lead arrive, sans ouvrir l'admin |
+| 11 | Moyenne | **Export CSV des leads** | Bouton pour exporter les leads en CSV (filtré par projet, date, statut) |
+| 12 | Basse | **Widget embed** | Script `<script>` injectable dans n'importe quel site pour afficher un formulaire Diez sans coder (pour les projets non-Next.js) |
 
 ---
 

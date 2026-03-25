@@ -1,16 +1,93 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { getSession, getProjects, getProjectContacts, updateProjectContactStatus, supabase } from '@/lib/supabase';
-import type { Project, ProjectContact } from '@/lib/types';
+import { getSession, getProjects, getProjectContacts, updateProjectContactStatus, getContactNotes, addContactNote, supabase } from '@/lib/supabase';
+import type { Project, ProjectContact, ProjectContactNote } from '@/lib/types';
 
 const STATUS_CONFIG = {
   new:     { label: 'Nouveau',  color: 'bg-orange-100 text-[#FF4D29] border-orange-200' },
   read:    { label: 'Lu',       color: 'bg-blue-50 text-blue-600 border-blue-100' },
   replied: { label: 'Répondu', color: 'bg-green-50 text-green-600 border-green-100' },
 };
+
+const POLL_INTERVAL = 30_000; // 30 seconds
+
+/* ═══════════════════════════════════════════
+   NOTES SECTION
+═══════════════════════════════════════════ */
+function NotesSection({ contactId }: { contactId: number }) {
+  const [notes, setNotes] = useState<ProjectContactNote[]>([]);
+  const [newNote, setNewNote] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    getContactNotes(contactId).then((n) => { setNotes(n); setLoaded(true); });
+  }, [contactId]);
+
+  const handleAdd = async () => {
+    if (!newNote.trim() || saving) return;
+    setSaving(true);
+    const { error } = await addContactNote(contactId, newNote.trim());
+    if (!error) {
+      setNotes((prev) => [{ id: Date.now(), contact_id: contactId, content: newNote.trim(), created_at: new Date().toISOString() }, ...prev]);
+      setNewNote('');
+    }
+    setSaving(false);
+  };
+
+  if (!loaded) return <div className="text-xs text-gray-400"><i className="fas fa-spinner animate-spin mr-1"></i>Chargement notes...</div>;
+
+  return (
+    <div className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+      <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+        <i className="fas fa-sticky-note mr-1.5"></i>Notes internes ({notes.length})
+      </p>
+
+      {/* Add note */}
+      <div className="flex gap-2 mb-3">
+        <input
+          type="text"
+          value={newNote}
+          onChange={(e) => setNewNote(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+          placeholder="Ajouter une note..."
+          className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-[#FF4D29] transition-colors"
+        />
+        <button
+          onClick={handleAdd}
+          disabled={!newNote.trim() || saving}
+          className={`px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+            newNote.trim() && !saving
+              ? 'bg-[#FF4D29] text-white hover:bg-orange-600'
+              : 'bg-gray-100 text-gray-300 cursor-not-allowed'
+          }`}
+        >
+          {saving ? <i className="fas fa-spinner animate-spin"></i> : <i className="fas fa-plus"></i>}
+        </button>
+      </div>
+
+      {/* Notes list */}
+      {notes.length > 0 && (
+        <div className="space-y-2 max-h-40 overflow-y-auto">
+          {notes.map((n) => (
+            <div key={n.id} className="flex items-start gap-2 text-sm">
+              <i className="fas fa-circle text-[3px] text-gray-300 mt-2 flex-shrink-0"></i>
+              <div className="flex-1 min-w-0">
+                <p className="text-[#0F0F0F] text-sm">{n.content}</p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {new Date(n.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /* ═══════════════════════════════════════════
    LEAD CARD
@@ -68,8 +145,8 @@ function LeadCard({
       </button>
 
       {open && (
-        <div className="px-6 pb-6 border-t border-gray-50 pt-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+        <div className="px-6 pb-6 border-t border-gray-50 pt-5 space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-3">
               <Detail icon="fa-envelope" label="Email" value={lead.email} link={`mailto:${lead.email}`} />
               {lead.phone && <Detail icon="fa-phone" label="Téléphone" value={lead.phone} link={`tel:${lead.phone}`} />}
@@ -98,13 +175,16 @@ function LeadCard({
           </div>
 
           {lead.message && (
-            <div className="bg-[#FFF8F3] border border-orange-100 rounded-xl p-4 mb-5">
+            <div className="bg-[#FFF8F3] border border-orange-100 rounded-xl p-4">
               <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                 <i className="fas fa-comment-alt mr-1.5"></i>Message
               </p>
               <p className="text-sm text-[#0F0F0F] leading-relaxed whitespace-pre-wrap">{lead.message}</p>
             </div>
           )}
+
+          {/* Notes internes */}
+          <NotesSection contactId={lead.id} />
 
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-1">Statut :</span>
@@ -186,10 +266,7 @@ function AddProjectModal({ onClose, onAdded }: { onClose: () => void; onAdded: (
     });
 
     setSaving(false);
-    if (error) {
-      console.error(error);
-      return;
-    }
+    if (error) { console.error(error); return; }
     setGeneratedKey(apiKey);
   };
 
@@ -202,23 +279,17 @@ function AddProjectModal({ onClose, onAdded }: { onClose: () => void; onAdded: (
           </div>
           <h3 className="text-lg font-extrabold text-center text-[#0F0F0F] mb-2">Projet créé !</h3>
           <p className="text-sm text-gray-500 text-center mb-6">Voici la clé API à configurer dans le sous-projet :</p>
-
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">API Key</p>
             <code className="text-sm text-[#0F0F0F] font-mono break-all select-all">{generatedKey}</code>
           </div>
-
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
             <p className="text-xs text-amber-700 font-semibold">
               <i className="fas fa-exclamation-triangle mr-1"></i>
               Copiez cette clé maintenant. Elle ne sera plus affichée.
             </p>
           </div>
-
-          <button
-            onClick={() => { onAdded(); onClose(); }}
-            className="w-full py-3 bg-[#FF4D29] text-white font-bold rounded-xl hover:bg-orange-600 transition-all"
-          >
+          <button onClick={() => { onAdded(); onClose(); }} className="w-full py-3 bg-[#FF4D29] text-white font-bold rounded-xl hover:bg-orange-600 transition-all">
             Fermer
           </button>
         </div>
@@ -230,56 +301,23 @@ function AddProjectModal({ onClose, onAdded }: { onClose: () => void; onAdded: (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <h3 className="text-lg font-extrabold text-[#0F0F0F] mb-6">Ajouter un projet</h3>
-
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Nom du projet *</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Ex: MonSaaS"
-              className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:outline-none focus:border-[#FF4D29] transition-colors"
-            />
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: MonSaaS" className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:outline-none focus:border-[#FF4D29] transition-colors" />
           </div>
           <div>
             <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">URL du site</label>
-            <input
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://monsaas.com"
-              className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:outline-none focus:border-[#FF4D29] transition-colors"
-            />
+            <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://monsaas.com" className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:outline-none focus:border-[#FF4D29] transition-colors" />
           </div>
           <div>
             <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-              placeholder="Description courte du projet..."
-              className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:outline-none focus:border-[#FF4D29] transition-colors resize-none"
-            />
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Description courte du projet..." className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl text-sm focus:outline-none focus:border-[#FF4D29] transition-colors resize-none" />
           </div>
         </div>
-
         <div className="flex gap-3 mt-6">
-          <button
-            onClick={onClose}
-            className="flex-1 py-3 bg-gray-100 text-gray-600 font-semibold rounded-xl hover:bg-gray-200 transition-all text-sm"
-          >
-            Annuler
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={!name.trim() || saving}
-            className={`flex-1 py-3 font-bold rounded-xl transition-all text-sm ${
-              name.trim() && !saving
-                ? 'bg-[#FF4D29] text-white hover:bg-orange-600 shadow-md shadow-[#FF4D29]/20'
-                : 'bg-gray-100 text-gray-300 cursor-not-allowed'
-            }`}
-          >
+          <button onClick={onClose} className="flex-1 py-3 bg-gray-100 text-gray-600 font-semibold rounded-xl hover:bg-gray-200 transition-all text-sm">Annuler</button>
+          <button onClick={handleSave} disabled={!name.trim() || saving} className={`flex-1 py-3 font-bold rounded-xl transition-all text-sm ${name.trim() && !saving ? 'bg-[#FF4D29] text-white hover:bg-orange-600 shadow-md shadow-[#FF4D29]/20' : 'bg-gray-100 text-gray-300 cursor-not-allowed'}`}>
             {saving ? <><i className="fas fa-spinner animate-spin mr-1"></i> Création...</> : 'Créer le projet'}
           </button>
         </div>
@@ -299,22 +337,44 @@ export default function ProjectsPage() {
   const [filter, setFilter] = useState<'all' | ProjectContact['status']>('all');
   const [projectFilter, setProjectFilter] = useState<number | 'all'>('all');
   const [showModal, setShowModal] = useState(false);
+  const [lastPoll, setLastPoll] = useState<Date>(new Date());
+  const prevNewCount = useRef(0);
 
   const loadData = useCallback(async () => {
     const [p, l] = await Promise.all([getProjects(), getProjectContacts()]);
     setProjects(p);
     setLeads(l);
+    return l;
   }, []);
 
   useEffect(() => {
     const init = async () => {
       const session = await getSession();
       if (!session) { router.push('/admin'); return; }
-      await loadData();
+      const l = await loadData();
+      prevNewCount.current = l.filter((x) => x.status === 'new').length;
       setLoading(false);
     };
     init();
   }, [router, loadData]);
+
+  // Auto-polling every 30s
+  useEffect(() => {
+    if (loading) return;
+    const interval = setInterval(async () => {
+      const l = await loadData().catch(() => null);
+      setLastPoll(new Date());
+      if (l) {
+        const newCount = l.filter((x) => x.status === 'new').length;
+        if (newCount > prevNewCount.current) {
+          // Play notification sound
+          try { new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH+Jj4eFcV1RW2x8hoyLhHJdUFpsfIiOjIV0X1Jcbn+KkI2Hd2NWXnKBi5KPi4V3ZFtidoKMko+Jg3JfWGJ0gYyUkYuFdWJaY3aBjJSSjYiCcWBaY3WBjJSTjomDcmFaY3aBjJSTjYmDcmFaY3aBjJSTjomDcmFaYw==').play(); } catch {}
+        }
+        prevNewCount.current = newCount;
+      }
+    }, POLL_INTERVAL);
+    return () => clearInterval(interval);
+  }, [loading, loadData]);
 
   const handleStatusChange = useCallback(async (id: number, status: ProjectContact['status']) => {
     await updateProjectContactStatus(id, status);
@@ -333,6 +393,10 @@ export default function ProjectsPage() {
     read: leads.filter((l) => l.status === 'read').length,
     replied: leads.filter((l) => l.status === 'replied').length,
   };
+
+  // Stats per project
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
   if (loading) return (
     <div className="min-h-screen bg-[#FFF8F3] flex items-center justify-center">
@@ -354,12 +418,15 @@ export default function ProjectsPage() {
             <h1 className="text-sm font-extrabold text-[#0F0F0F] flex items-center gap-2">
               Projets & Leads
               {counts.new > 0 && (
-                <span className="px-2 py-0.5 bg-[#FF4D29] text-white text-xs font-extrabold rounded-full">
+                <span className="px-2 py-0.5 bg-[#FF4D29] text-white text-xs font-extrabold rounded-full animate-pulse">
                   {counts.new}
                 </span>
               )}
             </h1>
-            <p className="text-xs text-gray-400">{projects.length} projet{projects.length > 1 ? 's' : ''} · {leads.length} lead{leads.length > 1 ? 's' : ''}</p>
+            <p className="text-xs text-gray-400">
+              {projects.length} projet{projects.length > 1 ? 's' : ''} · {leads.length} lead{leads.length > 1 ? 's' : ''}
+              <span className="ml-2 text-gray-300">· màj {lastPoll.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+            </p>
           </div>
         </div>
         <button
@@ -372,40 +439,67 @@ export default function ProjectsPage() {
 
       <main className="max-w-4xl mx-auto px-6 py-8">
 
-        {/* Projects overview */}
+        {/* Projects overview with stats */}
         {projects.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             {projects.map((p) => {
               const pLeads = leads.filter((l) => l.project_id === p.id);
               const newCount = pLeads.filter((l) => l.status === 'new').length;
+              const repliedCount = pLeads.filter((l) => l.status === 'replied').length;
+              const weekLeads = pLeads.filter((l) => new Date(l.created_at) >= weekAgo).length;
+              const conversionRate = pLeads.length > 0 ? Math.round((repliedCount / pLeads.length) * 100) : 0;
               return (
-                <button
-                  key={p.id}
-                  onClick={() => setProjectFilter(projectFilter === p.id ? 'all' : p.id)}
-                  className={`text-left bg-white rounded-2xl p-5 border transition-all duration-200 ${
-                    projectFilter === p.id
-                      ? 'border-indigo-300 shadow-md shadow-indigo-500/10'
-                      : 'border-gray-100 shadow-sm hover:border-indigo-200'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-sm font-extrabold text-[#0F0F0F] truncate">{p.name}</h3>
-                    {newCount > 0 && (
-                      <span className="px-2 py-0.5 bg-[#FF4D29] text-white text-xs font-extrabold rounded-full">
-                        {newCount}
+                <div key={p.id} className="flex flex-col">
+                  <button
+                    onClick={() => setProjectFilter(projectFilter === p.id ? 'all' : p.id)}
+                    className={`text-left bg-white rounded-2xl p-5 border transition-all duration-200 flex-1 ${
+                      projectFilter === p.id
+                        ? 'border-indigo-300 shadow-md shadow-indigo-500/10'
+                        : 'border-gray-100 shadow-sm hover:border-indigo-200'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-extrabold text-[#0F0F0F] truncate">{p.name}</h3>
+                      {newCount > 0 && (
+                        <span className="px-2 py-0.5 bg-[#FF4D29] text-white text-xs font-extrabold rounded-full">
+                          {newCount}
+                        </span>
+                      )}
+                    </div>
+                    {p.url && <p className="text-xs text-gray-400 truncate mb-3">{p.url}</p>}
+
+                    {/* Stats mini */}
+                    <div className="grid grid-cols-3 gap-2 mb-3">
+                      <div className="text-center">
+                        <p className="text-lg font-extrabold text-[#0F0F0F]">{pLeads.length}</p>
+                        <p className="text-[10px] text-gray-400 uppercase">Total</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-lg font-extrabold text-indigo-500">{weekLeads}</p>
+                        <p className="text-[10px] text-gray-400 uppercase">7 jours</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-lg font-extrabold text-green-500">{conversionRate}%</p>
+                        <p className="text-[10px] text-gray-400 uppercase">Répondu</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+                        p.status === 'active' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'
+                      }`}>
+                        {p.status}
                       </span>
-                    )}
-                  </div>
-                  {p.url && <p className="text-xs text-gray-400 truncate mb-2">{p.url}</p>}
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-indigo-500">{pLeads.length} lead{pLeads.length > 1 ? 's' : ''}</span>
-                    <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
-                      p.status === 'active' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'
-                    }`}>
-                      {p.status}
-                    </span>
-                  </div>
-                </button>
+                      <Link
+                        href={`/admin/dashboard/projects/${p.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="ml-auto text-xs text-indigo-500 hover:text-indigo-700 font-semibold transition-colors"
+                      >
+                        Détails <i className="fas fa-arrow-right text-[10px] ml-0.5"></i>
+                      </Link>
+                    </div>
+                  </button>
+                </div>
               );
             })}
           </div>
@@ -429,9 +523,7 @@ export default function ProjectsPage() {
               }`}
             >
               {label}
-              <span className={`text-xs font-extrabold px-1.5 py-0.5 rounded-full ${
-                filter === key ? 'bg-white/20' : 'bg-gray-100'
-              }`}>
+              <span className={`text-xs font-extrabold px-1.5 py-0.5 rounded-full ${filter === key ? 'bg-white/20' : 'bg-gray-100'}`}>
                 {count}
               </span>
             </button>

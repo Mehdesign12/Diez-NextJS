@@ -3,7 +3,7 @@
 // ============================================================
 
 import { createClient } from '@supabase/supabase-js';
-import type { Realisation, Article, Contact, ContactInsert, Application, ApplicationInsert, PseoCity, PseoSector, PseoPage, PseoPageWithRelations, Project, ProjectContact } from './types';
+import type { Realisation, Article, Contact, ContactInsert, Application, ApplicationInsert, PseoCity, PseoSector, PseoPage, PseoPageWithRelations, Project, ProjectContact, ProjectContactNote } from './types';
 
 // Fallback hardcodé pour garantir le fonctionnement même si les env vars
 // ne sont pas injectées au build time (Vercel cold build sans cache)
@@ -517,4 +517,53 @@ export async function updateProjectContactStatus(
   status: ProjectContact['status']
 ): Promise<void> {
   await supabase.from('project_contacts').update({ status }).eq('id', id);
+}
+
+// ─────────────────────────────────────────
+// QG — NOTES SUR LES LEADS
+// ─────────────────────────────────────────
+
+export async function getContactNotes(contactId: number): Promise<ProjectContactNote[]> {
+  const { data, error } = await supabase
+    .from('project_contact_notes')
+    .select('*')
+    .eq('contact_id', contactId)
+    .order('created_at', { ascending: false });
+  if (error) { console.error(error); return []; }
+  return data ?? [];
+}
+
+export async function addContactNote(contactId: number, content: string): Promise<{ error: Error | null }> {
+  const { error } = await supabase
+    .from('project_contact_notes')
+    .insert({ contact_id: contactId, content });
+  if (error) { console.error(error); return { error }; }
+  return { error: null };
+}
+
+// ─────────────────────────────────────────
+// QG — RATE LIMITING
+// ─────────────────────────────────────────
+
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX = 10; // 10 requests per minute per API key
+
+export async function checkRateLimit(apiKey: string): Promise<boolean> {
+  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS).toISOString();
+
+  // Count requests in current window
+  const { count, error } = await supabase
+    .from('api_rate_limits')
+    .select('*', { count: 'exact', head: true })
+    .eq('api_key', apiKey)
+    .gte('window_start', windowStart);
+
+  if (error) { console.error(error); return true; } // fail open
+
+  if ((count ?? 0) >= RATE_LIMIT_MAX) return false; // rate limited
+
+  // Record this request
+  await supabase.from('api_rate_limits').insert({ api_key: apiKey, window_start: new Date().toISOString() });
+
+  return true; // allowed
 }

@@ -158,3 +158,10 @@ export interface ProjectContact {
 }
 
 export type ProjectContactInsert = Omit<ProjectContact, 'id' | 'status' | 'created_at'>;
+
+export interface ProjectContactNote {
+  id: number;
+  contact_id: number;
+  content: string;
+  created_at: string;
+}
