@@ -262,6 +262,9 @@ npm run lint      # Vérification ESLint
 | 3 | Moyenne | **Alt text images** | Certains alt text sont génériques ("client" pour les avatars, juste le titre pour le portfolio) — à rendre plus descriptifs |
 | 4 | Basse | **Page error.tsx** | Pas de page d'erreur runtime (500) — ajouter `app/error.tsx` |
 | 5 | Basse | **Articles liés** | Les articles de blog ne linkent pas vers des services ou articles connexes |
+| 6 | **Haute** | **Configurer réception email** | Resend est configuré pour **envoyer** les emails de contact, mais il faut configurer la **réception** sur `contact@diez-agency.com`. Options : ImprovMX (gratuit, forwarding vers Gmail) ou Cloudflare Email Routing. Ajouter les MX records chez Maromania (registrar du domaine) |
+| 7 | **Haute** | **Vérifier domaine sur Resend** | Aller sur [resend.com/domains](https://resend.com/domains), ajouter `diez-agency.com`, puis ajouter les DNS records (SPF, DKIM, DMARC) chez Maromania pour que Resend puisse envoyer depuis `noreply@diez-agency.com` |
+| 8 | **Haute** | **Ajouter RESEND_API_KEY sur Vercel** | Aller dans Vercel > Settings > Environment Variables et ajouter `RESEND_API_KEY` = `re_VAVnHPgH_...` (la clé est déjà dans `.env.local` en local) |
 
 ---
 
