@@ -432,3 +432,82 @@ Chaque page générée contient :
 | 4.3 | A/B tester les titres et meta descriptions | Optimisation CTR |
 | 4.4 | Tracker les citations IA (ChatGPT, Perplexity) | LLM SEO |
 | 4.5 | Itérer sur le contenu des pages performantes | Optimisation continue |
+
+---
+
+## QG Multi-Projets — Plan de développement (à venir)
+
+> **Objectif** : Transformer l'admin Diez en un **QG centralisé** (hub-and-spoke) capable de gérer plusieurs sous-projets déployés, recevoir leurs données/stats via API, et envoyer des commandes à distance.
+
+### Architecture
+
+```
+Sous-projet A ──┐
+                 │   HTTPS + API Key + HMAC
+Sous-projet B ──┼──────────► QG (Diez Admin)
+                 │           ┌─────────────┐
+Sous-projet C ──┘           │ Dashboard    │
+                             │ Projets      │
+    ◄────────────────────── │ Actions      │
+    Commandes retour         │ Logs         │
+                             └─────────────┘
+```
+
+### Modules côté QG
+
+| Module | Description |
+|--------|-------------|
+| **Registre de projets** | Ajouter/supprimer des projets, stocker URL + clé API + type |
+| **Dashboard multi-projets** | Vue d'ensemble : statut, dernières stats, alertes par projet |
+| **Fiche projet** | Vue détaillée d'un projet avec ses métriques et actions possibles |
+| **Contrôle à distance** | Modifier contenu, toggle features, vider cache d'un sous-projet |
+| **Logs centralisés** | Historique de toutes les actions effectuées sur chaque projet |
+| **Health monitoring** | Ping automatique des sous-projets, alerte si down |
+
+### API des sous-projets (endpoints standardisés)
+
+| Endpoint | Direction | Description |
+|----------|-----------|-------------|
+| `POST /api/qg/stats` | Projet → QG | Envoyer métriques (visites, conversions, etc.) |
+| `GET /api/qg/health` | QG → Projet | Vérifier que le projet est en ligne |
+| `GET /api/qg/data` | QG → Projet | Récupérer données (articles, produits, etc.) |
+| `PUT /api/qg/content` | QG → Projet | Modifier du contenu à distance |
+| `POST /api/qg/action` | QG → Projet | Exécuter une action (vider cache, rebuild, etc.) |
+| `GET /api/qg/config` | QG → Projet | Lire la config du projet |
+| `PUT /api/qg/config` | QG → Projet | Modifier la config à distance |
+
+### Plan d'implémentation
+
+#### Phase 1 — Fondations (BDD + modèles)
+- Créer la table `projects` (nom, url, api_key, type, status, etc.)
+- Créer la table `project_stats` (métriques reçues des sous-projets)
+- Créer la table `project_logs` (historique d'actions)
+- Types TypeScript + fonctions CRUD dans `supabase.ts`
+
+#### Phase 2 — API du QG (réception)
+- `POST /api/projects/[id]/stats` — recevoir des stats
+- `GET /api/projects/[id]/health` — endpoint de vérification
+- Middleware d'authentification par clé API + HMAC
+- Validation des payloads entrants
+
+#### Phase 3 — Dashboard admin multi-projets
+- Page `/admin/dashboard/projects` — liste de tous les projets
+- Page `/admin/dashboard/projects/[id]` — fiche détaillée
+- Formulaire d'ajout/édition avec génération de clé API
+- Widgets de stats + vue d'ensemble sur le dashboard principal
+
+#### Phase 4 — Contrôle à distance
+- Fonctions pour appeler les API des sous-projets depuis le QG
+- Interface admin pour modifier du contenu à distance
+- Système de logs + health check automatique
+
+#### Phase 5 — SDK sous-projet (réutilisable)
+- Module `diez-qg-client` installable dans chaque sous-projet
+- Inclut : envoi de stats, endpoints de réception, middleware d'auth
+- Documentation d'intégration
+
+### Principes de conception
+- **Découplage** : les sous-projets fonctionnent même si le QG est down
+- **Sécurité** : clés API par projet + signature HMAC des requêtes
+- **Modularité** : chaque type de projet (e-commerce, vitrine, SaaS) a ses propres modules
+- **Polling > WebSockets** : stats en batch toutes les 5-15 min, actions en appel direct synchrone
