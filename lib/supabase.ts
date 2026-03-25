@@ -3,7 +3,7 @@
 // ============================================================
 
 import { createClient } from '@supabase/supabase-js';
-import type { Realisation, Article, Contact, ContactInsert, Application, ApplicationInsert, PseoCity, PseoSector, PseoPage, PseoPageWithRelations } from './types';
+import type { Realisation, Article, Contact, ContactInsert, Application, ApplicationInsert, PseoCity, PseoSector, PseoPage, PseoPageWithRelations, Project, ProjectContact } from './types';
 
 // Fallback hardcodé pour garantir le fonctionnement même si les env vars
 // ne sont pas injectées au build time (Vercel cold build sans cache)
@@ -435,4 +435,86 @@ export async function getAllPseoSectorSlugs(): Promise<string[]> {
     .select('slug');
   if (error) { console.error(error); return []; }
   return (data ?? []).map((s) => s.slug);
+}
+
+// ─────────────────────────────────────────
+// QG — PROJETS
+// ─────────────────────────────────────────
+
+export async function getProjects(): Promise<Project[]> {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) { console.error(error); return []; }
+  return data ?? [];
+}
+
+export async function getProjectByApiKey(apiKey: string): Promise<Project | null> {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('api_key', apiKey)
+    .eq('status', 'active')
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+
+export async function getProjectById(id: number): Promise<Project | null> {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('id', id)
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+
+// ─────────────────────────────────────────
+// QG — CONTACTS PROJETS
+// ─────────────────────────────────────────
+
+export async function getProjectContacts(projectId?: number): Promise<ProjectContact[]> {
+  let query = supabase
+    .from('project_contacts')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (projectId) query = query.eq('project_id', projectId);
+  const { data, error } = await query;
+  if (error) { console.error(error); return []; }
+  return data ?? [];
+}
+
+export async function saveProjectContact(
+  data: { project_id: number; name: string; email: string; phone?: string; budget?: string; interests?: string[]; message?: string; metadata?: Record<string, unknown> }
+): Promise<{ error: Error | null }> {
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/project_contacts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      console.error('saveProjectContact error:', err);
+      return { error: new Error(err) };
+    }
+    return { error: null };
+  } catch (e) {
+    console.error('saveProjectContact fetch error:', e);
+    return { error: e as Error };
+  }
+}
+
+export async function updateProjectContactStatus(
+  id: number,
+  status: ProjectContact['status']
+): Promise<void> {
+  await supabase.from('project_contacts').update({ status }).eq('id', id);
 }

@@ -124,3 +124,37 @@ export interface PseoPageWithRelations extends PseoPage {
   city: PseoCity;
   sector: PseoSector | null;
 }
+
+// ============================================================
+// QG — Multi-Projets
+// ============================================================
+
+export interface Project {
+  id: number;
+  name: string;
+  slug: string;
+  url: string | null;
+  api_key: string;
+  description: string | null;
+  status: 'active' | 'paused' | 'archived';
+  created_at: string;
+  updated_at: string;
+}
+
+export type ProjectInsert = Omit<Project, 'id' | 'created_at' | 'updated_at'>;
+
+export interface ProjectContact {
+  id: number;
+  project_id: number;
+  name: string;
+  email: string;
+  phone: string | null;
+  budget: string | null;
+  interests: string[] | null;
+  message: string | null;
+  status: 'new' | 'read' | 'replied';
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export type ProjectContactInsert = Omit<ProjectContact, 'id' | 'status' | 'created_at'>;
