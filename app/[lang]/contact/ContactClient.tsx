@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useLang } from '@/app/context/LangContext';
-import { saveContact } from '@/lib/supabase';
 
 /* ─────────────────────────────────────────────────────────────
    TYPES
@@ -151,13 +150,19 @@ export default function ContactClient() {
     if (!canProceed() || sending) return;
     setSending(true);
     setError('');
-    const { error: err } = await saveContact({ ...form, lang: currentLang });
-    setSending(false);
-    if (err) {
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, lang: currentLang }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      setSubmitted(true);
+    } catch {
       setError(currentLang === 'fr' ? 'Une erreur est survenue. Réessayez.' : 'Something went wrong. Please try again.');
-      return;
+    } finally {
+      setSending(false);
     }
-    setSubmitted(true);
   };
 
   /* ── Options ── */
