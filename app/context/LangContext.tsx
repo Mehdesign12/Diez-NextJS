@@ -56,25 +56,6 @@ const translations: Record<Lang, Record<string, string>> = {
     'srv1-faq-q2': 'Proposez-vous la maintenance après livraison ?',
     'srv1-faq-a2': 'Oui, avec des forfaits maintenance mensuels incluant mises à jour, monitoring et corrections.',
 
-    // Service 2 — LLC
-    'srv2-title': 'Création de LLC Complète',
-    'srv2-tagline': 'Lancez votre entreprise aux États‑Unis en 72h',
-    'srv2-short': 'Création clé en main de votre LLC américaine : immatriculation, EIN, compte bancaire et conformité.',
-    'srv2-desc': "Nous gérons l'intégralité du processus d'incorporation aux États‑Unis. LLC enregistrée, EIN obtenu, adresse registered agent, compte bancaire pro ouvert — sans que vous n'ayez à vous déplacer.",
-    'srv2-f1': 'Enregistrement LLC dans l\'État optimal (Wyoming, Delaware…)',
-    'srv2-f2': 'Obtention de l\'EIN (numéro fiscal US)',
-    'srv2-f3': 'Registered Agent 12 mois inclus',
-    'srv2-f4': 'Ouverture de compte bancaire US en ligne',
-    'srv2-f5': 'Operating Agreement rédigé',
-    'srv2-f6': 'Conformité annuelle & rappels',
-    'srv2-r1': 'LLC opérationnelle en moins de 72h',
-    'srv2-r2': '100% en ligne, sans déplacement',
-    'srv2-r3': 'Accès aux paiements Stripe / PayPal US',
-    'srv2-faq-q1': 'Dois‑je être résident américain ?',
-    'srv2-faq-a1': 'Non. Toute personne physique de nationalité étrangère peut créer une LLC aux États‑Unis sans visa ni résidence.',
-    'srv2-faq-q2': 'Quels États recommandez‑vous ?',
-    'srv2-faq-a2': 'Wyoming pour la confidentialité et les frais réduits, Delaware pour les startups qui lèvent des fonds.',
-
     // Service 3 — LLM SEO
     'srv3-title': 'LLM SEO Optimisation',
     'srv3-tagline': 'Optimisez votre visibilité dans l\'IA générative',
@@ -367,25 +348,6 @@ const translations: Record<Lang, Record<string, string>> = {
     'srv1-faq-a1': 'A functional MVP is deliverable in 6–8 weeks. We work in 2-week sprints with continuous validation.',
     'srv1-faq-q2': 'Do you offer post-delivery maintenance?',
     'srv1-faq-a2': 'Yes, with monthly maintenance packages including updates, monitoring and bug fixes.',
-
-    // Service 2 — LLC
-    'srv2-title': 'Full LLC Creation',
-    'srv2-tagline': 'Launch your US company in 72h',
-    'srv2-short': 'Turnkey creation of your American LLC: registration, EIN, bank account and compliance.',
-    'srv2-desc': "We handle the entire US incorporation process. LLC registered, EIN obtained, registered agent address, professional bank account opened — without you having to travel.",
-    'srv2-f1': 'LLC registration in the optimal state (Wyoming, Delaware…)',
-    'srv2-f2': 'EIN (US tax number) obtained',
-    'srv2-f3': '12-month Registered Agent included',
-    'srv2-f4': 'US online bank account opening',
-    'srv2-f5': 'Operating Agreement drafted',
-    'srv2-f6': 'Annual compliance & reminders',
-    'srv2-r1': 'Operational LLC in less than 72h',
-    'srv2-r2': '100% online, no travel required',
-    'srv2-r3': 'Access to US Stripe / PayPal payments',
-    'srv2-faq-q1': 'Do I need to be a US resident?',
-    'srv2-faq-a1': 'No. Any foreign national can create a US LLC without a visa or residency.',
-    'srv2-faq-q2': 'Which states do you recommend?',
-    'srv2-faq-a2': 'Wyoming for privacy and low fees, Delaware for startups raising funds.',
 
     // Service 3 — LLM SEO
     'srv3-title': 'LLM SEO Optimization',

@@ -6,11 +6,11 @@ import { ServicesListClient } from './ServicesListClient';
 const META: Record<SupportedLang, { title: string; description: string }> = {
   fr: {
     title: 'Nos Services | Diez Agency',
-    description: 'SaaS & Web, Création LLC, LLM SEO, Agent Automation — découvrez tous les services sur‑mesure de Diez Agency.',
+    description: 'SaaS & Web, LLM SEO, Agent Automation — découvrez tous les services sur‑mesure de Diez Agency.',
   },
   en: {
     title: 'Our Services | Diez Agency',
-    description: 'SaaS & Web, LLC Creation, LLM SEO, Agent Automation — discover all Diez Agency tailored services.',
+    description: 'SaaS & Web, LLM SEO, Agent Automation — discover all Diez Agency tailored services.',
   },
 };
 

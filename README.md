@@ -204,7 +204,7 @@ npm run lint      # Vérification ESLint
   - `ArticleClient.tsx` — cover (1200x600), logo (36x36)
   - `Portfolio.tsx` — modal (800x400), card (800x500)
   - `WorkClient.tsx` — modal (800x400), grille (600x208), logo (36x36)
-  - `ServiceSlugClient.tsx` — LLC hero (800x600), clients (160x192), testimonial (48x48)
+  - `ServiceSlugClient.tsx` — hero (800x600), clients (160x192), testimonial (48x48)
   - `ContactClient.tsx` — logos (36x36)
   - `RecruitmentClient.tsx` — logos (36x36)
 
@@ -218,7 +218,7 @@ npm run lint      # Vérification ESLint
   - Schema `Organization` dans `app/layout.tsx` (nom, logo, URL, contactPoint)
   - Schema `Service` + `BreadcrumbList` dans `app/[lang]/services/[slug]/page.tsx` pour chaque page service
 - [x] **2.3 Liens morts dans le Footer** — Tous les `href="#"` remplacés par de vraies routes :
-  - Services → `/{lang}/services/saas-web-app`, `llc-creation`, `llm-seo`, `agent-automation`
+  - Services → `/{lang}/services/saas-web-app`, `llm-seo`, `agent-automation`
   - Blog → `/{lang}/blog`
   - À propos → `/{lang}#how-we-work`
 - [x] **2.4 `aria-label` sur boutons/icônes** — Labels accessibles ajoutés :
@@ -243,7 +243,7 @@ npm run lint      # Vérification ESLint
 ### Phase 4 — Audit complémentaire ✅ TERMINÉE
 
 - [x] **4.1 Sitemap complet** — Le sitemap (`app/sitemap.ts`) inclut désormais :
-  - Les 4 pages services individuelles : `/services/saas-web-app`, `/services/llc-creation`, `/services/llm-seo`, `/services/agent-automation` (priority 0.8, changeFrequency monthly)
+  - Les 3 pages services individuelles : `/services/saas-web-app`, `/services/llm-seo`, `/services/agent-automation` (priority 0.8, changeFrequency monthly)
   - Tous les articles de blog individuels depuis Supabase via `getAllArticleSlugs()` (priority 0.7, changeFrequency weekly)
   - La page `/services` listing ajoutée aux routes statiques
   - Alternates hreflang FR/EN sur chaque entrée
@@ -301,7 +301,7 @@ Exemples :
 | Dimension | Éléments | Volume |
 |-----------|----------|--------|
 | **Villes** | Casablanca, Rabat, Marrakech, Fès, Tanger, Agadir, Meknès, Oujda, Kénitra, Tétouan, Salé, Nador | 12 |
-| **Services** | SaaS/Sites web, Création LLC, LLM SEO, Automatisation IA | 4 |
+| **Services** | SaaS/Sites web, LLM SEO, Automatisation IA | 3 |
 | **Secteurs** | Restaurant, Immobilier, E-commerce, Avocat, Médecin, Hôtel, Startup, PME, Import/Export, Éducation | 10 |
 
 **Volume estimé** :
