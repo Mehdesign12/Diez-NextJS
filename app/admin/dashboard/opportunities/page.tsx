@@ -393,6 +393,22 @@ export default function OpportunitiesPage() {
     setTimeout(() => setFetchResult(null), 5000);
   }, [loadData]);
 
+  const handleClearJobs = useCallback(async () => {
+    if (!confirm('Supprimer toutes les opportunites ? Cette action est irreversible.')) return;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch('/api/admin/clear-jobs', {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${session?.access_token || ''}` },
+      });
+      if ((await res.json()).success) {
+        setOpportunities([]);
+        setFetchResult('Toutes les opportunites ont ete supprimees');
+        setTimeout(() => setFetchResult(null), 3000);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
   const handlePrefsSave = useCallback(async (prefs: JobPreferences) => {
     await updateJobPreferences(prefs.id, {
       skills: prefs.skills,
@@ -478,6 +494,12 @@ export default function OpportunitiesPage() {
           >
             <i className={`fas ${fetching ? 'fa-spinner animate-spin' : 'fa-sync-alt'} text-xs`}></i>
             {fetching ? 'Recherche...' : 'Actualiser'}
+          </button>
+          <button
+            onClick={handleClearJobs}
+            className="px-4 py-2 bg-gray-100 hover:bg-red-50 hover:text-red-600 text-gray-600 text-sm font-semibold rounded-xl transition-colors flex items-center gap-2"
+          >
+            <i className="fas fa-trash-alt text-xs"></i>
           </button>
           <button
             onClick={() => setShowPrefs(true)}
