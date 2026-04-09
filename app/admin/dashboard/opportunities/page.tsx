@@ -376,7 +376,8 @@ export default function OpportunitiesPage() {
       const data = await res.json();
       if (data.success) {
         const total = (data.fetched?.remoteok || 0) + (data.fetched?.freelancer || 0) + (data.fetched?.weworkremotely || 0);
-        setFetchResult(`${total} offre${total > 1 ? 's' : ''} recuperee${total > 1 ? 's' : ''}`);
+        const filtered = data.fetched?.filtered || 0;
+        setFetchResult(`${total} offre${total > 1 ? 's' : ''} pertinente${total > 1 ? 's' : ''}${filtered ? ` (${filtered} filtree${filtered > 1 ? 's' : ''})` : ''}`);
         await loadData();
       } else {
         setFetchResult('Erreur lors du fetch');

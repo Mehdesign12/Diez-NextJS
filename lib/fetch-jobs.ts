@@ -10,8 +10,18 @@ export interface FetchResults {
   remoteok: number;
   freelancer: number;
   weworkremotely: number;
+  filtered: number;
   errors: string[];
 }
+
+// Mots-cles de pertinence : une offre doit contenir AU MOINS un de ces termes
+const RELEVANCE_KEYWORDS = [
+  'product manager', 'product owner', 'product lead', 'product director',
+  'product management', 'product strategy', 'product roadmap',
+  'chef de produit', 'responsable produit', 'directeur produit',
+  'scrum master', 'agile coach', 'program manager', 'project manager',
+  'head of product', 'vp product', 'cpo',
+];
 
 const REMOTEOK_API = 'https://remoteok.com/api?tag=product';
 
@@ -25,17 +35,28 @@ const WEWORKREMOTELY_FEEDS = [
   'https://weworkremotely.com/categories/remote-product-jobs.rss',
 ];
 
+/** Verifie qu'une offre est potentiellement pertinente (filtre pre-scoring) */
+function isRelevant(job: Record<string, unknown>): boolean {
+  const text = `${job.title || ''} ${job.description || ''}`.toLowerCase();
+  return RELEVANCE_KEYWORDS.some(kw => text.includes(kw));
+}
+
 /** Fetch toutes les sources et stocke les offres */
 export async function fetchAllJobs(): Promise<FetchResults> {
-  const results: FetchResults = { remoteok: 0, freelancer: 0, weworkremotely: 0, errors: [] };
+  const results: FetchResults = { remoteok: 0, freelancer: 0, weworkremotely: 0, filtered: 0, errors: [] };
   const preferences = await getJobPreferences();
+
+  // Helper: filter + save
+  const processJobs = async (jobs: Record<string, unknown>[], sourceKey: keyof Omit<FetchResults, 'errors' | 'filtered'>) => {
+    for (const job of jobs) {
+      if (!isRelevant(job)) { results.filtered++; continue; }
+      if (await saveAndScore(job, preferences)) results[sourceKey]++;
+    }
+  };
 
   // 1. RemoteOK
   try {
-    const jobs = await fetchRemoteOK();
-    for (const job of jobs) {
-      if (await saveAndScore(job, preferences)) results.remoteok++;
-    }
+    await processJobs(await fetchRemoteOK(), 'remoteok');
   } catch (err) {
     results.errors.push(`RemoteOK: ${err}`);
   }
@@ -43,10 +64,7 @@ export async function fetchAllJobs(): Promise<FetchResults> {
   // 2. Freelancer
   for (const query of FREELANCER_QUERIES) {
     try {
-      const jobs = await fetchFreelancer(query);
-      for (const job of jobs) {
-        if (await saveAndScore(job, preferences)) results.freelancer++;
-      }
+      await processJobs(await fetchFreelancer(query), 'freelancer');
     } catch (err) {
       results.errors.push(`Freelancer (${query}): ${err}`);
     }
@@ -55,10 +73,7 @@ export async function fetchAllJobs(): Promise<FetchResults> {
   // 3. WeWorkRemotely
   for (const feedUrl of WEWORKREMOTELY_FEEDS) {
     try {
-      const jobs = await fetchWeWorkRemotely(feedUrl);
-      for (const job of jobs) {
-        if (await saveAndScore(job, preferences)) results.weworkremotely++;
-      }
+      await processJobs(await fetchWeWorkRemotely(feedUrl), 'weworkremotely');
     } catch (err) {
       results.errors.push(`WeWorkRemotely: ${err}`);
     }
@@ -235,7 +250,16 @@ function extractTagValue(xml: string, tag: string): string {
 
 function cleanHTML(text: string | null | undefined): string | null {
   if (!text) return null;
-  return text.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+  let cleaned = text;
+  // Decode HTML entities first (handles double-encoded RSS content)
+  cleaned = cleaned.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ');
+  // Second pass for double-encoded
+  cleaned = cleaned.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  // Strip all HTML tags
+  cleaned = cleaned.replace(/<[^>]+>/g, ' ');
+  // Clean up whitespace
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  return cleaned;
 }
 
 function extractSkillsFromText(text: string): string[] {
