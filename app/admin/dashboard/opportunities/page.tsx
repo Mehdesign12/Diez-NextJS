@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { getSession, getJobOpportunities, updateJobOpportunityStatus, updateJobOpportunityNotes, getJobPreferences, updateJobPreferences } from '@/lib/supabase';
+import { getSession, getJobOpportunities, updateJobOpportunityStatus, updateJobOpportunityNotes, getJobPreferences, updateJobPreferences, supabase } from '@/lib/supabase';
 import type { JobOpportunity, JobPreferences } from '@/lib/types';
 
 // ── Config statuts ──
@@ -368,7 +368,11 @@ export default function OpportunitiesPage() {
     setFetching(true);
     setFetchResult(null);
     try {
-      const res = await fetch('/api/admin/fetch-jobs', { method: 'POST' });
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch('/api/admin/fetch-jobs', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${session?.access_token || ''}` },
+      });
       const data = await res.json();
       if (data.success) {
         const total = (data.fetched?.remoteok || 0) + (data.fetched?.freelancer || 0) + (data.fetched?.weworkremotely || 0);
