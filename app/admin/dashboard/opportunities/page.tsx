@@ -433,6 +433,7 @@ export default function OpportunitiesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showPrefs, setShowPrefs] = useState(false);
   const [fetching, setFetching] = useState(false);
+  const [batchApplying, setBatchApplying] = useState(false);
   const [fetchResult, setFetchResult] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
@@ -574,6 +575,37 @@ export default function OpportunitiesPage() {
     }
   }, []);
 
+  const handleBatchApply = useCallback(async () => {
+    const eligible = opportunities.filter(o => o.status === 'new' && o.match_score >= 70);
+    if (eligible.length === 0) {
+      setFetchResult('Aucune offre eligible (score >= 70%)');
+      setTimeout(() => setFetchResult(null), 3000);
+      return;
+    }
+    if (!confirm(`Postuler automatiquement sur ${eligible.length} offre${eligible.length > 1 ? 's' : ''} avec un score >= 70% ?`)) return;
+    setBatchApplying(true);
+    setFetchResult('Candidatures en cours...');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch('/api/admin/batch-apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` },
+        body: JSON.stringify({ min_score: 70, status: 'new' }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setFetchResult(`${data.applied} candidature${data.applied > 1 ? 's' : ''} envoyee${data.applied > 1 ? 's' : ''} sur ${data.total}`);
+        await loadData();
+      } else {
+        setFetchResult('Erreur batch apply');
+      }
+    } catch {
+      setFetchResult('Erreur reseau');
+    }
+    setBatchApplying(false);
+    setTimeout(() => setFetchResult(null), 5000);
+  }, [opportunities, loadData]);
+
   const handleClearJobs = useCallback(async () => {
     if (!confirm('Supprimer toutes les opportunites ? Cette action est irreversible.')) return;
     try {
@@ -680,6 +712,14 @@ export default function OpportunitiesPage() {
           >
             <i className={`fas ${fetching ? 'fa-spinner animate-spin' : 'fa-sync-alt'} text-xs`}></i>
             {fetching ? 'Recherche...' : 'Actualiser'}
+          </button>
+          <button
+            onClick={handleBatchApply}
+            disabled={batchApplying}
+            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white text-sm font-bold rounded-xl transition-colors flex items-center gap-2 shadow-md shadow-emerald-500/20"
+          >
+            <i className={`fas ${batchApplying ? 'fa-spinner animate-spin' : 'fa-rocket'} text-xs`}></i>
+            {batchApplying ? 'En cours...' : 'Postuler en masse'}
           </button>
           <button
             onClick={handleClearJobs}

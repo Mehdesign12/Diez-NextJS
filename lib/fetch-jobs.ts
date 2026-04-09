@@ -3,8 +3,9 @@
 // Utilisee par le cron ET le bouton admin
 // ============================================================
 
-import { upsertJobOpportunity, updateJobOpportunityScore, getJobPreferences } from '@/lib/supabase';
+import { upsertJobOpportunity, updateJobOpportunityScore, getJobPreferences, getJobOpportunities } from '@/lib/supabase';
 import { scoreOpportunity } from '@/lib/ai-matcher';
+import { autoApplyBatch } from '@/lib/auto-apply';
 
 export interface FetchResults {
   remoteok: number;
@@ -14,6 +15,7 @@ export interface FetchResults {
   arbeitnow: number;
   jobicy: number;
   filtered: number;
+  auto_applied: number;
   errors: string[];
 }
 
@@ -54,7 +56,7 @@ function isRelevant(job: Record<string, unknown>): boolean {
 
 /** Fetch toutes les sources et stocke les offres */
 export async function fetchAllJobs(): Promise<FetchResults> {
-  const results: FetchResults = { remoteok: 0, freelancer: 0, weworkremotely: 0, himalayas: 0, arbeitnow: 0, jobicy: 0, filtered: 0, errors: [] };
+  const results: FetchResults = { remoteok: 0, freelancer: 0, weworkremotely: 0, himalayas: 0, arbeitnow: 0, jobicy: 0, filtered: 0, auto_applied: 0, errors: [] };
   const preferences = await getJobPreferences();
 
   // Helper: filter + save
@@ -112,7 +114,20 @@ export async function fetchAllJobs(): Promise<FetchResults> {
   }
 
   const total = results.remoteok + results.freelancer + results.weworkremotely + results.himalayas + results.arbeitnow + results.jobicy;
-  console.log(`[fetch-jobs] Total: ${total} (RemoteOK: ${results.remoteok}, Freelancer: ${results.freelancer}, WWR: ${results.weworkremotely}), Errors: ${results.errors.length}`);
+
+  // Auto-apply on high-score opportunities (>= 80%)
+  try {
+    const highScoreJobs = await getJobOpportunities({ status: 'new', minScore: 80 });
+    if (highScoreJobs.length > 0) {
+      const applyResult = await autoApplyBatch(highScoreJobs);
+      results.auto_applied = applyResult.applied;
+      results.errors.push(...applyResult.errors);
+    }
+  } catch (err) {
+    results.errors.push(`Auto-apply error: ${err}`);
+  }
+
+  console.log(`[fetch-jobs] Total: ${total}, Auto-applied: ${results.auto_applied}, Errors: ${results.errors.length}`);
 
   return results;
 }
