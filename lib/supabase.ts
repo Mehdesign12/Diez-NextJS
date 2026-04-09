@@ -3,7 +3,7 @@
 // ============================================================
 
 import { createClient } from '@supabase/supabase-js';
-import type { Realisation, Article, Contact, ContactInsert, Application, ApplicationInsert, PseoCity, PseoSector, PseoPage, PseoPageWithRelations, Project, ProjectContact, ProjectContactNote } from './types';
+import type { Realisation, Article, Contact, ContactInsert, Application, ApplicationInsert, PseoCity, PseoSector, PseoPage, PseoPageWithRelations, Project, ProjectContact, ProjectContactNote, JobOpportunity, JobPreferences } from './types';
 
 // Fallback hardcodé pour garantir le fonctionnement même si les env vars
 // ne sont pas injectées au build time (Vercel cold build sans cache)
@@ -566,4 +566,131 @@ export async function checkRateLimit(apiKey: string): Promise<boolean> {
   await supabase.from('api_rate_limits').insert({ api_key: apiKey, window_start: new Date().toISOString() });
 
   return true; // allowed
+}
+
+// ─────────────────────────────────────────
+// OPPORTUNITES FREELANCE
+// ─────────────────────────────────────────
+
+export async function getJobOpportunities(filters?: {
+  source?: string;
+  status?: string;
+  minScore?: number;
+  search?: string;
+}): Promise<JobOpportunity[]> {
+  let query = supabase
+    .from('job_opportunities')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (filters?.source) query = query.eq('source', filters.source);
+  if (filters?.status) query = query.eq('status', filters.status);
+  if (filters?.minScore) query = query.gte('match_score', filters.minScore);
+  if (filters?.search) query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+
+  const { data, error } = await query;
+  if (error) { console.error(error); return []; }
+  return data ?? [];
+}
+
+export async function saveJobOpportunity(
+  data: Record<string, unknown>
+): Promise<{ data: JobOpportunity | null; error: Error | null }> {
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/job_opportunities`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+        Prefer: 'return=representation',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      // Handle duplicate (409 or unique violation)
+      if (res.status === 409 || err.includes('duplicate') || err.includes('unique')) {
+        return { data: null, error: new Error('duplicate') };
+      }
+      console.error('saveJobOpportunity error:', err);
+      return { data: null, error: new Error(err) };
+    }
+    const rows = await res.json();
+    return { data: Array.isArray(rows) ? rows[0] : rows, error: null };
+  } catch (e) {
+    console.error('saveJobOpportunity fetch error:', e);
+    return { data: null, error: e as Error };
+  }
+}
+
+export async function upsertJobOpportunity(
+  data: Record<string, unknown>
+): Promise<{ data: JobOpportunity | null; error: Error | null }> {
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/job_opportunities?on_conflict=source,source_id`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+        Prefer: 'return=representation,resolution=merge-duplicates',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      console.error('upsertJobOpportunity error:', err);
+      return { data: null, error: new Error(err) };
+    }
+    const rows = await res.json();
+    return { data: Array.isArray(rows) ? rows[0] : rows, error: null };
+  } catch (e) {
+    console.error('upsertJobOpportunity fetch error:', e);
+    return { data: null, error: e as Error };
+  }
+}
+
+export async function updateJobOpportunityStatus(
+  id: number,
+  status: JobOpportunity['status']
+): Promise<void> {
+  await supabase.from('job_opportunities').update({ status }).eq('id', id);
+}
+
+export async function updateJobOpportunityNotes(
+  id: number,
+  notes: string
+): Promise<void> {
+  await supabase.from('job_opportunities').update({ notes }).eq('id', id);
+}
+
+export async function updateJobOpportunityScore(
+  id: number,
+  match_score: number,
+  match_reason: string
+): Promise<void> {
+  await supabase.from('job_opportunities').update({ match_score, match_reason }).eq('id', id);
+}
+
+// ─────────────────────────────────────────
+// PREFERENCES FREELANCE
+// ─────────────────────────────────────────
+
+export async function getJobPreferences(): Promise<JobPreferences | null> {
+  const { data, error } = await supabase
+    .from('job_preferences')
+    .select('*')
+    .order('id', { ascending: true })
+    .limit(1)
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+
+export async function updateJobPreferences(
+  id: number,
+  prefs: Partial<Omit<JobPreferences, 'id' | 'updated_at'>>
+): Promise<void> {
+  await supabase.from('job_preferences').update(prefs).eq('id', id);
 }

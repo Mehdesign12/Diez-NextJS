@@ -165,3 +165,48 @@ export interface ProjectContactNote {
   content: string;
   created_at: string;
 }
+
+// ============================================================
+// Opportunites Freelance
+// ============================================================
+
+export interface JobOpportunity {
+  id: number;
+  source: 'upwork' | 'malt' | 'freelancer' | 'linkedin' | 'indeed' | 'manual';
+  source_url: string | null;
+  source_id: string | null;
+  title: string;
+  description: string | null;
+  client_name: string | null;
+  budget_min: number | null;
+  budget_max: number | null;
+  budget_type: 'fixed' | 'hourly' | null;
+  currency: string;
+  skills: string[];
+  duration: string | null;
+  experience_level: string | null;
+  location: string | null;
+  match_score: number;
+  match_reason: string | null;
+  status: 'new' | 'interested' | 'applied' | 'interview' | 'rejected' | 'expired';
+  notes: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export type JobOpportunityInsert = Omit<JobOpportunity, 'id' | 'status' | 'match_score' | 'match_reason' | 'notes' | 'created_at' | 'updated_at'>;
+
+export interface JobPreferences {
+  id: number;
+  skills: string[];
+  keywords: string[];
+  exclude_keywords: string[];
+  min_budget: number | null;
+  preferred_budget_type: string | null;
+  preferred_duration: string[];
+  preferred_experience: string[];
+  preferred_sources: string[];
+  bio: string | null;
+  updated_at: string;
+}
