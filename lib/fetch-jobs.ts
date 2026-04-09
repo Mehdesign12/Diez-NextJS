@@ -20,10 +20,16 @@ const RELEVANCE_KEYWORDS = [
   'product management', 'product strategy', 'product roadmap',
   'chef de produit', 'responsable produit', 'directeur produit',
   'scrum master', 'agile coach', 'program manager', 'project manager',
-  'head of product', 'vp product', 'cpo',
+  'head of product', 'vp product', 'cpo', 'product analyst',
+  'product operations', 'product ops', 'product marketing',
+  'product designer', 'growth manager', 'growth product',
+  'delivery manager', 'release manager', 'technical program',
 ];
 
-const REMOTEOK_API = 'https://remoteok.com/api?tag=product';
+// Sources dont la requete API filtre deja — on leur fait confiance
+const TRUSTED_SOURCES = new Set(['freelancer']);
+
+const REMOTEOK_API = 'https://remoteok.com/api?tag=product-manager';
 
 const FREELANCER_QUERIES = [
   'product+manager',
@@ -37,6 +43,8 @@ const WEWORKREMOTELY_FEEDS = [
 
 /** Verifie qu'une offre est potentiellement pertinente (filtre pre-scoring) */
 function isRelevant(job: Record<string, unknown>): boolean {
+  // Sources dont la requete API filtre deja — on leur fait confiance
+  if (TRUSTED_SOURCES.has(job.source as string)) return true;
   const text = `${job.title || ''} ${job.description || ''}`.toLowerCase();
   return RELEVANCE_KEYWORDS.some(kw => text.includes(kw));
 }
