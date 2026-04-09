@@ -172,7 +172,7 @@ export interface ProjectContactNote {
 
 export interface JobOpportunity {
   id: number;
-  source: 'upwork' | 'malt' | 'freelancer' | 'linkedin' | 'indeed' | 'manual';
+  source: 'remoteok' | 'freelancer' | 'weworkremotely' | 'upwork' | 'malt' | 'linkedin' | 'indeed' | 'manual';
   source_url: string | null;
   source_id: string | null;
   title: string;

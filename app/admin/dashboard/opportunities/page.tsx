@@ -17,12 +17,13 @@ const STATUS_CONFIG: Record<JobOpportunity['status'], { label: string; color: st
 };
 
 const SOURCE_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
-  upwork:     { label: 'Upwork',      color: 'bg-green-50 text-green-600 border-green-100', icon: 'fa-briefcase' },
-  freelancer: { label: 'Freelancer',  color: 'bg-blue-50 text-blue-600 border-blue-100', icon: 'fa-laptop-code' },
-  malt:       { label: 'Malt',        color: 'bg-indigo-50 text-indigo-600 border-indigo-100', icon: 'fa-user-tie' },
-  linkedin:   { label: 'LinkedIn',    color: 'bg-sky-50 text-sky-600 border-sky-100', icon: 'fa-building' },
-  indeed:     { label: 'Indeed',      color: 'bg-violet-50 text-violet-600 border-violet-100', icon: 'fa-search' },
-  manual:     { label: 'Manuel',      color: 'bg-gray-50 text-gray-500 border-gray-100', icon: 'fa-pen' },
+  remoteok:        { label: 'RemoteOK',         color: 'bg-green-50 text-green-600 border-green-100', icon: 'fa-globe' },
+  freelancer:      { label: 'Freelancer',       color: 'bg-blue-50 text-blue-600 border-blue-100', icon: 'fa-laptop-code' },
+  weworkremotely:  { label: 'WeWorkRemotely',   color: 'bg-amber-50 text-amber-600 border-amber-100', icon: 'fa-briefcase' },
+  upwork:          { label: 'Upwork',           color: 'bg-emerald-50 text-emerald-600 border-emerald-100', icon: 'fa-circle-up' },
+  malt:            { label: 'Malt',             color: 'bg-indigo-50 text-indigo-600 border-indigo-100', icon: 'fa-user-tie' },
+  linkedin:        { label: 'LinkedIn',         color: 'bg-sky-50 text-sky-600 border-sky-100', icon: 'fa-building' },
+  manual:          { label: 'Manuel',           color: 'bg-gray-50 text-gray-500 border-gray-100', icon: 'fa-pen' },
 };
 
 const ALL_STATUSES: JobOpportunity['status'][] = ['new', 'interested', 'applied', 'interview', 'rejected', 'expired'];
