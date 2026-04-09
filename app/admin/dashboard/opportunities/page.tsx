@@ -809,9 +809,14 @@ export default function OpportunitiesPage() {
       </main>
 
       {/* Modal preferences */}
-      {showPrefs && preferences && (
+      {showPrefs && (
         <PreferencesModal
-          preferences={preferences}
+          preferences={preferences || {
+            id: 1, skills: [], keywords: [], exclude_keywords: [], min_budget: null,
+            preferred_budget_type: null, preferred_duration: [], preferred_experience: [],
+            preferred_sources: [], bio: null, cv_url: null, full_name: null, email: null,
+            phone: null, freelancer_token: null, updated_at: '',
+          }}
           onClose={() => setShowPrefs(false)}
           onSave={handlePrefsSave}
         />

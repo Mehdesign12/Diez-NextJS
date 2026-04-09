@@ -17,3 +17,8 @@ CREATE POLICY "Allow anon insert on job_opportunities"
 CREATE POLICY "Allow anon update on job_opportunities"
   ON job_opportunities FOR UPDATE
   USING (true);
+
+-- Allow anonymous update on job_preferences (needed for server-side preference saves)
+CREATE POLICY "Allow anon update on job_preferences"
+  ON job_preferences FOR UPDATE
+  USING (true);

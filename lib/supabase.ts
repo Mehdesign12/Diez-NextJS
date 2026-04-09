@@ -678,7 +678,16 @@ export async function updateJobOpportunityScore(
 // ─────────────────────────────────────────
 
 export async function getJobPreferences(): Promise<JobPreferences | null> {
-  // Use REST API to bypass RLS (needed for server-side cron/admin calls)
+  // Try Supabase client first (works client-side with session)
+  const { data, error } = await supabase
+    .from('job_preferences')
+    .select('*')
+    .order('id', { ascending: true })
+    .limit(1)
+    .single();
+  if (!error && data) return data;
+
+  // Fallback to REST API (works server-side with anon key, bypasses RLS)
   try {
     const res = await fetch(`${supabaseUrl}/rest/v1/job_preferences?order=id.asc&limit=1`, {
       headers: {
@@ -686,11 +695,10 @@ export async function getJobPreferences(): Promise<JobPreferences | null> {
         Authorization: `Bearer ${supabaseAnonKey}`,
       },
     });
-    if (!res.ok) { console.error('getJobPreferences error:', await res.text()); return null; }
+    if (!res.ok) return null;
     const rows = await res.json();
     return Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
-  } catch (e) {
-    console.error('getJobPreferences fetch error:', e);
+  } catch {
     return null;
   }
 }
