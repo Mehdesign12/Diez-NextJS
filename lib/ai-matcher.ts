@@ -30,23 +30,22 @@ export async function scoreOpportunity(
   opportunity: OpportunityData,
   preferences: JobPreferences
 ): Promise<MatchResult> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.DEEPSEEK_API_KEY;
 
   if (!apiKey) {
-    console.warn('ANTHROPIC_API_KEY not set, using keyword-based scoring');
+    console.warn('DEEPSEEK_API_KEY not set, using keyword-based scoring');
     return keywordScore(opportunity, preferences);
   }
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'deepseek-chat',
         max_tokens: 256,
         messages: [
           {
@@ -58,12 +57,12 @@ export async function scoreOpportunity(
     });
 
     if (!response.ok) {
-      console.error('Claude API error:', response.status, await response.text());
+      console.error('DeepSeek API error:', response.status, await response.text());
       return keywordScore(opportunity, preferences);
     }
 
     const result = await response.json();
-    const text = result.content?.[0]?.text || '';
+    const text = result.choices?.[0]?.message?.content || '';
 
     return parseAIResponse(text);
   } catch (error) {

@@ -20,22 +20,21 @@ export async function generateCoverLetter(
   job: JobData,
   preferences: JobPreferences
 ): Promise<string> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.DEEPSEEK_API_KEY;
 
   if (!apiKey) {
     return templateCoverLetter(job, preferences);
   }
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'deepseek-chat',
         max_tokens: 1024,
         messages: [
           {
@@ -47,12 +46,12 @@ export async function generateCoverLetter(
     });
 
     if (!response.ok) {
-      console.error('Cover letter API error:', response.status);
+      console.error('DeepSeek API error:', response.status);
       return templateCoverLetter(job, preferences);
     }
 
     const result = await response.json();
-    return result.content?.[0]?.text || templateCoverLetter(job, preferences);
+    return result.choices?.[0]?.message?.content || templateCoverLetter(job, preferences);
   } catch (error) {
     console.error('Cover letter generation error:', error);
     return templateCoverLetter(job, preferences);
