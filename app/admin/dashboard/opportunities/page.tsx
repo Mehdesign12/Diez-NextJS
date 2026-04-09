@@ -328,6 +328,8 @@ export default function OpportunitiesPage() {
   const [minScoreFilter, setMinScoreFilter] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [showPrefs, setShowPrefs] = useState(false);
+  const [fetching, setFetching] = useState(false);
+  const [fetchResult, setFetchResult] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     const data = await getJobOpportunities();
@@ -361,6 +363,26 @@ export default function OpportunitiesPage() {
     await updateJobOpportunityNotes(id, notes);
     setOpportunities(prev => prev.map(o => o.id === id ? { ...o, notes } : o));
   }, []);
+
+  const handleFetchJobs = useCallback(async () => {
+    setFetching(true);
+    setFetchResult(null);
+    try {
+      const res = await fetch('/api/admin/fetch-jobs', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        const total = (data.fetched?.remoteok || 0) + (data.fetched?.freelancer || 0) + (data.fetched?.weworkremotely || 0);
+        setFetchResult(`${total} offre${total > 1 ? 's' : ''} recuperee${total > 1 ? 's' : ''}`);
+        await loadData();
+      } else {
+        setFetchResult('Erreur lors du fetch');
+      }
+    } catch {
+      setFetchResult('Erreur reseau');
+    }
+    setFetching(false);
+    setTimeout(() => setFetchResult(null), 5000);
+  }, [loadData]);
 
   const handlePrefsSave = useCallback(async (prefs: JobPreferences) => {
     await updateJobPreferences(prefs.id, {
@@ -434,12 +456,27 @@ export default function OpportunitiesPage() {
             <p className="text-xs text-gray-400">{opportunities.length} opportunite{opportunities.length > 1 ? 's' : ''} au total</p>
           </div>
         </div>
-        <button
-          onClick={() => setShowPrefs(true)}
-          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-semibold rounded-xl transition-colors flex items-center gap-2"
-        >
-          <i className="fas fa-sliders-h text-xs"></i> Preferences
-        </button>
+        <div className="flex items-center gap-3">
+          {fetchResult && (
+            <span className="text-xs font-semibold text-green-600 bg-green-50 px-3 py-1.5 rounded-full">
+              {fetchResult}
+            </span>
+          )}
+          <button
+            onClick={handleFetchJobs}
+            disabled={fetching}
+            className="px-4 py-2 bg-[#FF4D29] hover:bg-orange-600 disabled:opacity-50 text-white text-sm font-bold rounded-xl transition-colors flex items-center gap-2 shadow-md shadow-[#FF4D29]/20"
+          >
+            <i className={`fas ${fetching ? 'fa-spinner animate-spin' : 'fa-sync-alt'} text-xs`}></i>
+            {fetching ? 'Recherche...' : 'Actualiser'}
+          </button>
+          <button
+            onClick={() => setShowPrefs(true)}
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-semibold rounded-xl transition-colors flex items-center gap-2"
+          >
+            <i className="fas fa-sliders-h text-xs"></i> Preferences
+          </button>
+        </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-6 py-8">
