@@ -10,6 +10,9 @@ export interface FetchResults {
   remoteok: number;
   freelancer: number;
   weworkremotely: number;
+  himalayas: number;
+  arbeitnow: number;
+  jobicy: number;
   filtered: number;
   errors: string[];
 }
@@ -27,7 +30,7 @@ const RELEVANCE_KEYWORDS = [
 ];
 
 // Sources dont la requete API filtre deja — on leur fait confiance
-const TRUSTED_SOURCES = new Set(['freelancer']);
+const TRUSTED_SOURCES = new Set(['freelancer', 'himalayas']);
 
 const REMOTEOK_API = 'https://remoteok.com/api?tag=product-manager';
 
@@ -51,7 +54,7 @@ function isRelevant(job: Record<string, unknown>): boolean {
 
 /** Fetch toutes les sources et stocke les offres */
 export async function fetchAllJobs(): Promise<FetchResults> {
-  const results: FetchResults = { remoteok: 0, freelancer: 0, weworkremotely: 0, filtered: 0, errors: [] };
+  const results: FetchResults = { remoteok: 0, freelancer: 0, weworkremotely: 0, himalayas: 0, arbeitnow: 0, jobicy: 0, filtered: 0, errors: [] };
   const preferences = await getJobPreferences();
 
   // Helper: filter + save
@@ -87,7 +90,28 @@ export async function fetchAllJobs(): Promise<FetchResults> {
     }
   }
 
-  const total = results.remoteok + results.freelancer + results.weworkremotely;
+  // 4. Himalayas
+  try {
+    await processJobs(await fetchHimalayas(), 'himalayas');
+  } catch (err) {
+    results.errors.push(`Himalayas: ${err}`);
+  }
+
+  // 5. Arbeitnow
+  try {
+    await processJobs(await fetchArbeitnow(), 'arbeitnow');
+  } catch (err) {
+    results.errors.push(`Arbeitnow: ${err}`);
+  }
+
+  // 6. Jobicy
+  try {
+    await processJobs(await fetchJobicy(), 'jobicy');
+  } catch (err) {
+    results.errors.push(`Jobicy: ${err}`);
+  }
+
+  const total = results.remoteok + results.freelancer + results.weworkremotely + results.himalayas + results.arbeitnow + results.jobicy;
   console.log(`[fetch-jobs] Total: ${total} (RemoteOK: ${results.remoteok}, Freelancer: ${results.freelancer}, WWR: ${results.weworkremotely}), Errors: ${results.errors.length}`);
 
   return results;
@@ -280,4 +304,124 @@ function extractSkillsFromText(text: string): string[] {
   ];
   const lower = text.toLowerCase();
   return skillKeywords.filter(skill => lower.includes(skill));
+}
+
+// ── Himalayas.app API ──
+
+const HIMALAYAS_QUERIES = ['product+manager', 'product+owner', 'scrum+master'];
+
+async function fetchHimalayas(): Promise<Record<string, unknown>[]> {
+  const allJobs: Record<string, unknown>[] = [];
+
+  for (const query of HIMALAYAS_QUERIES) {
+    const res = await fetch(`https://himalayas.app/jobs/api?title=${query}&limit=15`, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DiezAgency/1.0)' },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) continue;
+    const data = await res.json();
+    const jobs = Array.isArray(data?.jobs) ? data.jobs : [];
+
+    for (const job of jobs.slice(0, 15)) {
+      allJobs.push({
+        source: 'himalayas',
+        source_id: job.companySlug ? `${job.companySlug}-${(job.title || '').toLowerCase().replace(/\s+/g, '-').slice(0, 50)}` : null,
+        source_url: job.companySlug ? `https://himalayas.app/companies/${job.companySlug}/jobs` : null,
+        title: job.title as string,
+        description: cleanHTML(job.description as string)?.slice(0, 2000) || (job.excerpt as string) || null,
+        client_name: (job.companyName as string) || null,
+        skills: extractSkillsFromText(`${job.title || ''} ${job.description || ''}`),
+        location: Array.isArray(job.locationRestrictions) && job.locationRestrictions.length > 0
+          ? (job.locationRestrictions as string[]).join(', ')
+          : 'Remote',
+        budget_min: job.minSalary ? Number(job.minSalary) : null,
+        budget_max: job.maxSalary ? Number(job.maxSalary) : null,
+        budget_type: job.minSalary ? 'fixed' : null,
+        currency: (job.currency as string) || 'USD',
+        experience_level: Array.isArray(job.seniority) ? (job.seniority as string[]).join(', ') : null,
+        metadata: {
+          company_logo: job.companyLogo,
+          employment_type: job.employmentType,
+          categories: job.categories,
+        },
+      });
+    }
+  }
+
+  return allJobs;
+}
+
+// ── Arbeitnow API ──
+
+async function fetchArbeitnow(): Promise<Record<string, unknown>[]> {
+  const res = await fetch('https://www.arbeitnow.com/api/job-board-api', {
+    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DiezAgency/1.0)' },
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!res.ok) return [];
+  const data = await res.json();
+  const jobs = Array.isArray(data?.data) ? data.data : [];
+
+  // Arbeitnow retourne TOUTES les offres — le filtre isRelevant triera
+  return jobs.slice(0, 50).map((job: Record<string, unknown>) => ({
+    source: 'arbeitnow',
+    source_id: job.slug as string,
+    source_url: `https://www.arbeitnow.com/jobs/${job.slug}`,
+    title: job.title as string,
+    description: cleanHTML(job.description as string)?.slice(0, 2000) || null,
+    client_name: (job.company_name as string) || null,
+    skills: extractSkillsFromText(`${job.title || ''} ${job.description || ''}`),
+    location: (job.location as string) || (job.remote === true ? 'Remote' : null),
+    budget_min: null,
+    budget_max: null,
+    budget_type: null,
+    currency: 'EUR',
+    metadata: {
+      tags: job.tags,
+      remote: job.remote,
+    },
+  }));
+}
+
+// ── Jobicy API ──
+
+const JOBICY_TAGS = ['product-manager', 'project-manager', 'scrum'];
+
+async function fetchJobicy(): Promise<Record<string, unknown>[]> {
+  const allJobs: Record<string, unknown>[] = [];
+
+  for (const tag of JOBICY_TAGS) {
+    const res = await fetch(`https://jobicy.com/api/v2/remote-jobs?count=10&tag=${tag}`, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DiezAgency/1.0)' },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) continue;
+    const data = await res.json();
+    const jobs = Array.isArray(data?.jobs) ? data.jobs : [];
+
+    for (const job of jobs) {
+      allJobs.push({
+        source: 'jobicy',
+        source_id: String(job.id),
+        source_url: job.url as string,
+        title: job.jobTitle as string,
+        description: cleanHTML(job.jobDescription as string)?.slice(0, 2000) || job.jobExcerpt || null,
+        client_name: (job.companyName as string) || null,
+        skills: extractSkillsFromText(`${job.jobTitle || ''} ${job.jobDescription || ''}`),
+        location: (job.jobGeo as string) || 'Remote',
+        budget_min: job.annualSalaryMin ? Number(job.annualSalaryMin) : null,
+        budget_max: job.annualSalaryMax ? Number(job.annualSalaryMax) : null,
+        budget_type: job.annualSalaryMin ? 'fixed' : null,
+        currency: (job.salaryCurrency as string) || 'USD',
+        experience_level: (job.jobLevel as string) || null,
+        metadata: {
+          company_logo: job.companyLogo,
+          job_type: job.jobType,
+          job_industry: job.jobIndustry,
+        },
+      });
+    }
+  }
+
+  return allJobs;
 }

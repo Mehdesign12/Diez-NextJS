@@ -20,7 +20,10 @@ const SOURCE_CONFIG: Record<string, { label: string; color: string; icon: string
   remoteok:        { label: 'RemoteOK',         color: 'bg-green-50 text-green-600 border-green-100', icon: 'fa-globe' },
   freelancer:      { label: 'Freelancer',       color: 'bg-blue-50 text-blue-600 border-blue-100', icon: 'fa-laptop-code' },
   weworkremotely:  { label: 'WeWorkRemotely',   color: 'bg-amber-50 text-amber-600 border-amber-100', icon: 'fa-briefcase' },
-  upwork:          { label: 'Upwork',           color: 'bg-emerald-50 text-emerald-600 border-emerald-100', icon: 'fa-circle-up' },
+  himalayas:       { label: 'Himalayas',        color: 'bg-emerald-50 text-emerald-600 border-emerald-100', icon: 'fa-mountain' },
+  arbeitnow:       { label: 'Arbeitnow',        color: 'bg-rose-50 text-rose-600 border-rose-100', icon: 'fa-map-marker-alt' },
+  jobicy:          { label: 'Jobicy',           color: 'bg-violet-50 text-violet-600 border-violet-100', icon: 'fa-satellite' },
+  upwork:          { label: 'Upwork',           color: 'bg-teal-50 text-teal-600 border-teal-100', icon: 'fa-circle-up' },
   malt:            { label: 'Malt',             color: 'bg-indigo-50 text-indigo-600 border-indigo-100', icon: 'fa-user-tie' },
   linkedin:        { label: 'LinkedIn',         color: 'bg-sky-50 text-sky-600 border-sky-100', icon: 'fa-building' },
   manual:          { label: 'Manuel',           color: 'bg-gray-50 text-gray-500 border-gray-100', icon: 'fa-pen' },
@@ -375,8 +378,9 @@ export default function OpportunitiesPage() {
       });
       const data = await res.json();
       if (data.success) {
-        const total = (data.fetched?.remoteok || 0) + (data.fetched?.freelancer || 0) + (data.fetched?.weworkremotely || 0);
-        const filtered = data.fetched?.filtered || 0;
+        const f = data.fetched || {};
+        const total = (f.remoteok || 0) + (f.freelancer || 0) + (f.weworkremotely || 0) + (f.himalayas || 0) + (f.arbeitnow || 0) + (f.jobicy || 0);
+        const filtered = f.filtered || 0;
         setFetchResult(`${total} offre${total > 1 ? 's' : ''} pertinente${total > 1 ? 's' : ''}${filtered ? ` (${filtered} filtree${filtered > 1 ? 's' : ''})` : ''}`);
         await loadData();
       } else {
