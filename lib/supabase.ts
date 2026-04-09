@@ -701,3 +701,21 @@ export async function updateJobPreferences(
 ): Promise<void> {
   await supabase.from('job_preferences').update(prefs).eq('id', id);
 }
+
+export async function updateJobOpportunityCoverLetter(
+  id: number,
+  cover_letter: string
+): Promise<void> {
+  await supabase.from('job_opportunities').update({ cover_letter }).eq('id', id);
+}
+
+export async function markJobAsApplied(
+  id: number,
+  apply_method: 'email' | 'freelancer' | 'manual'
+): Promise<void> {
+  await supabase.from('job_opportunities').update({
+    status: 'applied',
+    applied_at: new Date().toISOString(),
+    apply_method,
+  }).eq('id', id);
+}

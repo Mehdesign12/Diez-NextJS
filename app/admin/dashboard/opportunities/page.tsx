@@ -48,10 +48,12 @@ function OpportunityCard({
   opp,
   onStatusChange,
   onNotesChange,
+  onApply,
 }: {
   opp: JobOpportunity;
   onStatusChange: (id: number, status: JobOpportunity['status']) => void;
   onNotesChange: (id: number, notes: string) => void;
+  onApply: (opp: JobOpportunity, method: 'generate' | 'email' | 'freelancer' | 'clipboard') => void;
 }) {
   const [open, setOpen] = useState(false);
   const [noteDraft, setNoteDraft] = useState(opp.notes || '');
@@ -175,6 +177,69 @@ function OpportunityCard({
             </div>
           </div>
 
+          {/* Candidature */}
+          <div className="mb-5">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+              <i className="fas fa-paper-plane mr-1.5"></i>Candidature
+            </p>
+            {opp.cover_letter ? (
+              <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 mb-3">
+                <p className="text-sm text-emerald-900 leading-relaxed whitespace-pre-wrap">{opp.cover_letter}</p>
+              </div>
+            ) : null}
+            {opp.applied_at ? (
+              <div className="flex items-center gap-2 mb-3">
+                <span className="px-3 py-1.5 bg-green-50 text-green-600 text-xs font-bold rounded-full border border-green-100">
+                  <i className="fas fa-check mr-1"></i>Postule via {opp.apply_method} le {new Date(opp.applied_at).toLocaleDateString('fr-FR')}
+                </span>
+              </div>
+            ) : null}
+            <div className="flex flex-wrap gap-2">
+              {!opp.cover_letter && (
+                <button
+                  onClick={() => onApply(opp, 'generate')}
+                  className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-bold rounded-full border border-indigo-100 transition-colors"
+                >
+                  <i className="fas fa-magic mr-1"></i>Generer lettre IA
+                </button>
+              )}
+              {opp.cover_letter && !opp.applied_at && (
+                <>
+                  {opp.contact_email && (
+                    <button
+                      onClick={() => onApply(opp, 'email')}
+                      className="px-3 py-1.5 bg-[#FF4D29] hover:bg-orange-600 text-white text-xs font-bold rounded-full transition-colors shadow-sm"
+                    >
+                      <i className="fas fa-envelope mr-1"></i>Envoyer par email
+                    </button>
+                  )}
+                  {opp.source === 'freelancer' && (
+                    <button
+                      onClick={() => onApply(opp, 'freelancer')}
+                      className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold rounded-full transition-colors shadow-sm"
+                    >
+                      <i className="fas fa-gavel mr-1"></i>Bid Freelancer
+                    </button>
+                  )}
+                  <button
+                    onClick={() => onApply(opp, 'clipboard')}
+                    className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold rounded-full border border-gray-200 transition-colors"
+                  >
+                    <i className="fas fa-copy mr-1"></i>Copier & postuler
+                  </button>
+                </>
+              )}
+              {opp.cover_letter && (
+                <button
+                  onClick={() => onApply(opp, 'generate')}
+                  className="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-500 text-xs font-semibold rounded-full border border-gray-100 transition-colors"
+                >
+                  <i className="fas fa-redo mr-1"></i>Regenerer
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* Actions statut */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-1">Statut :</span>
@@ -252,6 +317,31 @@ function PreferencesModal({
           </button>
         </div>
         <div className="px-6 py-5 space-y-5">
+          {/* Identity */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Nom complet</label>
+              <input type="text" value={form.full_name || ''} onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF4D29]/40" placeholder="Jean Dupont" />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Email</label>
+              <input type="email" value={form.email || ''} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF4D29]/40" placeholder="jean@example.com" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Telephone</label>
+              <input type="text" value={form.phone || ''} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF4D29]/40" placeholder="+33 6 12 34 56 78" />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">URL du CV (PDF)</label>
+              <input type="url" value={form.cv_url || ''} onChange={e => setForm(f => ({ ...f, cv_url: e.target.value }))}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF4D29]/40" placeholder="https://..." />
+            </div>
+          </div>
           {/* Bio */}
           <div>
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Profil / Bio</label>
@@ -302,6 +392,17 @@ function PreferencesModal({
               onChange={e => setForm(f => ({ ...f, min_budget: e.target.value ? Number(e.target.value) : null }))}
               className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF4D29]/40"
               placeholder="500"
+            />
+          </div>
+          {/* Freelancer token */}
+          <div>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 block">Token Freelancer (optionnel, pour auto-bid)</label>
+            <input
+              type="password"
+              value={form.freelancer_token || ''}
+              onChange={e => setForm(f => ({ ...f, freelancer_token: e.target.value || null }))}
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF4D29]/40"
+              placeholder="Token OAuth Freelancer.com"
             />
           </div>
         </div>
@@ -393,6 +494,86 @@ export default function OpportunitiesPage() {
     setTimeout(() => setFetchResult(null), 5000);
   }, [loadData]);
 
+  const handleApply = useCallback(async (opp: JobOpportunity, method: 'generate' | 'email' | 'freelancer' | 'clipboard') => {
+    const { data: { session } } = await supabase.auth.getSession();
+    const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` };
+
+    if (method === 'generate') {
+      setFetchResult('Generation de la lettre...');
+      const res = await fetch('/api/admin/generate-letter', {
+        method: 'POST', headers,
+        body: JSON.stringify({
+          opportunity_id: opp.id,
+          title: opp.title,
+          description: opp.description,
+          client_name: opp.client_name,
+          skills: opp.skills,
+          source: opp.source,
+        }),
+      });
+      const data = await res.json();
+      if (data.cover_letter) {
+        setOpportunities(prev => prev.map(o => o.id === opp.id ? { ...o, cover_letter: data.cover_letter } : o));
+        setFetchResult('Lettre generee !');
+      } else {
+        setFetchResult('Erreur generation');
+      }
+      setTimeout(() => setFetchResult(null), 3000);
+    }
+
+    if (method === 'email') {
+      if (!opp.contact_email || !opp.cover_letter) return;
+      setFetchResult('Envoi du email...');
+      const res = await fetch('/api/admin/apply-email', {
+        method: 'POST', headers,
+        body: JSON.stringify({
+          opportunity_id: opp.id,
+          to_email: opp.contact_email,
+          cover_letter: opp.cover_letter,
+          job_title: opp.title,
+        }),
+      });
+      if ((await res.json()).success) {
+        setOpportunities(prev => prev.map(o => o.id === opp.id ? { ...o, status: 'applied' as const, applied_at: new Date().toISOString(), apply_method: 'email' as const } : o));
+        setFetchResult('Candidature envoyee !');
+      } else {
+        setFetchResult('Erreur envoi email');
+      }
+      setTimeout(() => setFetchResult(null), 3000);
+    }
+
+    if (method === 'freelancer') {
+      if (!opp.cover_letter) return;
+      const sourceId = opp.source_id;
+      setFetchResult('Envoi du bid Freelancer...');
+      const res = await fetch('/api/admin/apply-freelancer', {
+        method: 'POST', headers,
+        body: JSON.stringify({
+          opportunity_id: opp.id,
+          project_id: sourceId,
+          cover_letter: opp.cover_letter,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setOpportunities(prev => prev.map(o => o.id === opp.id ? { ...o, status: 'applied' as const, applied_at: new Date().toISOString(), apply_method: 'freelancer' as const } : o));
+        setFetchResult('Bid envoye !');
+      } else {
+        setFetchResult(data.error || 'Erreur bid');
+      }
+      setTimeout(() => setFetchResult(null), 3000);
+    }
+
+    if (method === 'clipboard') {
+      if (opp.cover_letter) {
+        await navigator.clipboard.writeText(opp.cover_letter);
+        setFetchResult('Lettre copiee !');
+        setTimeout(() => setFetchResult(null), 2000);
+      }
+      if (opp.source_url) window.open(opp.source_url, '_blank');
+    }
+  }, []);
+
   const handleClearJobs = useCallback(async () => {
     if (!confirm('Supprimer toutes les opportunites ? Cette action est irreversible.')) return;
     try {
@@ -416,6 +597,11 @@ export default function OpportunitiesPage() {
       exclude_keywords: prefs.exclude_keywords,
       min_budget: prefs.min_budget,
       bio: prefs.bio,
+      full_name: prefs.full_name,
+      email: prefs.email,
+      phone: prefs.phone,
+      cv_url: prefs.cv_url,
+      freelancer_token: prefs.freelancer_token,
     });
     setPreferences(prefs);
   }, []);
@@ -615,6 +801,7 @@ export default function OpportunitiesPage() {
                 opp={opp}
                 onStatusChange={handleStatusChange}
                 onNotesChange={handleNotesChange}
+                onApply={handleApply}
               />
             ))}
           </div>

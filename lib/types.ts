@@ -190,6 +190,10 @@ export interface JobOpportunity {
   match_reason: string | null;
   status: 'new' | 'interested' | 'applied' | 'interview' | 'rejected' | 'expired';
   notes: string | null;
+  cover_letter: string | null;
+  applied_at: string | null;
+  apply_method: 'email' | 'freelancer' | 'manual' | null;
+  contact_email: string | null;
   metadata: Record<string, unknown>;
   created_at: string;
   updated_at: string;
@@ -208,5 +212,10 @@ export interface JobPreferences {
   preferred_experience: string[];
   preferred_sources: string[];
   bio: string | null;
+  cv_url: string | null;
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+  freelancer_token: string | null;
   updated_at: string;
 }
