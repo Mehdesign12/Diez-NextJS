@@ -113,7 +113,7 @@ export default function CartographiePage() {
   // ── Auth ──────────────────────────────────────────────────
   useEffect(() => {
     getSession().then((s) => {
-      if (!s) { router.push('/admin'); return; }
+      if (!s) { router.push('/admin'); setLoading(false); return; }
       setToken(s.access_token);
     });
   }, [router]);
@@ -133,13 +133,19 @@ export default function CartographiePage() {
   // ── Data fetch ────────────────────────────────────────────
   const fetchData = useCallback(async () => {
     if (!token) return;
-    const res = await authFetch('/api/admin/cartographie');
-    if (!res.ok) return;
-    const json = await res.json();
-    setEntities(json.entities ?? []);
-    setEdges(json.edges ?? []);
-    setLoading(false);
-  }, []);
+    try {
+      const res = await authFetch('/api/admin/cartographie');
+      if (res.ok) {
+        const json = await res.json();
+        setEntities(json.entities ?? []);
+        setEdges(json.edges ?? []);
+      }
+    } catch (e) {
+      console.error('cartographie fetch error', e);
+    } finally {
+      setLoading(false);
+    }
+  }, [authFetch, token]);
 
   useEffect(() => { if (token) fetchData(); }, [fetchData, token]);
 
@@ -400,7 +406,7 @@ export default function CartographiePage() {
   const totalMehdi = entities.filter(e => e.owner === 'mehdi' || e.owner === 'both').length;
 
   if (loading) return (
-    <div className="min-h-screen bg-[#0F0F0F] flex items-center justify-center">
+    <div className="min-h-screen bg-[#FFF8F3] flex items-center justify-center">
       <i className="fas fa-spinner animate-spin text-[#FF4D29] text-3xl"></i>
     </div>
   );
