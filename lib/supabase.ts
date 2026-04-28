@@ -3,7 +3,7 @@
 // ============================================================
 
 import { createClient } from '@supabase/supabase-js';
-import type { Realisation, Article, Contact, ContactInsert, Application, ApplicationInsert, PseoCity, PseoSector, PseoPage, PseoPageWithRelations, Project, ProjectContact, ProjectContactNote, JobOpportunity, JobPreferences } from './types';
+import type { Realisation, Article, Contact, ContactInsert, Application, ApplicationInsert, PseoCity, PseoSector, PseoPage, PseoPageWithRelations, Project, ProjectContact, ProjectContactNote, JobOpportunity, JobPreferences, BusinessEntity, BusinessEntityInsert, BusinessEdge, BusinessEdgeInsert } from './types';
 
 // Fallback hardcodé pour garantir le fonctionnement même si les env vars
 // ne sont pas injectées au build time (Vercel cold build sans cache)
@@ -715,6 +715,63 @@ export async function updateJobOpportunityCoverLetter(
   cover_letter: string
 ): Promise<void> {
   await supabase.from('job_opportunities').update({ cover_letter }).eq('id', id);
+}
+
+// ─────────────────────────────────────────
+// CARTOGRAPHIE BUSINESS
+// ─────────────────────────────────────────
+
+export async function getBusinessEntities(): Promise<BusinessEntity[]> {
+  const { data, error } = await supabase
+    .from('business_entities')
+    .select('*')
+    .order('created_at', { ascending: true });
+  if (error) { console.error(error); return []; }
+  return data ?? [];
+}
+
+export async function createBusinessEntity(entity: BusinessEntityInsert): Promise<BusinessEntity | null> {
+  const { data, error } = await supabase
+    .from('business_entities')
+    .insert({ ...entity, updated_at: new Date().toISOString() })
+    .select()
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+
+export async function updateBusinessEntity(id: string, fields: Partial<BusinessEntityInsert>): Promise<void> {
+  await supabase
+    .from('business_entities')
+    .update({ ...fields, updated_at: new Date().toISOString() })
+    .eq('id', id);
+}
+
+export async function deleteBusinessEntity(id: string): Promise<void> {
+  await supabase.from('business_entities').delete().eq('id', id);
+}
+
+export async function getBusinessEdges(): Promise<BusinessEdge[]> {
+  const { data, error } = await supabase
+    .from('business_edges')
+    .select('*')
+    .order('created_at', { ascending: true });
+  if (error) { console.error(error); return []; }
+  return data ?? [];
+}
+
+export async function createBusinessEdge(edge: BusinessEdgeInsert): Promise<BusinessEdge | null> {
+  const { data, error } = await supabase
+    .from('business_edges')
+    .insert(edge)
+    .select()
+    .single();
+  if (error) { console.error(error); return null; }
+  return data;
+}
+
+export async function deleteBusinessEdge(id: string): Promise<void> {
+  await supabase.from('business_edges').delete().eq('id', id);
 }
 
 export async function markJobAsApplied(

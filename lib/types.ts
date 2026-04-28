@@ -201,6 +201,47 @@ export interface JobOpportunity {
 
 export type JobOpportunityInsert = Omit<JobOpportunity, 'id' | 'status' | 'match_score' | 'match_reason' | 'notes' | 'created_at' | 'updated_at'>;
 
+// ============================================================
+// Cartographie Business
+// ============================================================
+
+export type BusinessEntityType = 'person' | 'holding' | 'company' | 'sci' | 'association' | 'other';
+export type BusinessOwner = 'diezagency' | 'mehdi' | 'both';
+export type BusinessStatus = 'active' | 'inactive' | 'in_development';
+
+export interface BusinessEntity {
+  id: string;
+  name: string;
+  type: BusinessEntityType;
+  owner: BusinessOwner;
+  status: BusinessStatus;
+  description: string | null;
+  website: string | null;
+  sector: string | null;
+  employees: number | null;
+  revenue_est: string | null;
+  color: string | null;
+  size: number;
+  pos_x: number | null;
+  pos_y: number | null;
+  is_root: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export type BusinessEntityInsert = Omit<BusinessEntity, 'id' | 'created_at' | 'updated_at'>;
+
+export interface BusinessEdge {
+  id: string;
+  source_id: string;
+  target_id: string;
+  label: string | null;
+  strength: number;
+  created_at: string;
+}
+
+export type BusinessEdgeInsert = Omit<BusinessEdge, 'id' | 'created_at'>;
+
 export interface JobPreferences {
   id: number;
   skills: string[];

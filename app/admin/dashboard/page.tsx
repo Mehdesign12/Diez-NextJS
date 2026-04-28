@@ -246,6 +246,23 @@ export default function DashboardPage() {
           </Link>
         </div>
 
+        {/* Section Cartographie */}
+        <h2 className="text-lg font-extrabold text-[#0F0F0F] mb-5 mt-10">Business</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
+          <Link href="/admin/dashboard/cartographie" className="group block">
+            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-lg hover:border-[#FF4D29]/20 transition-all duration-300">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                  <i className="fas fa-circle-nodes text-blue-600 text-lg"></i>
+                </div>
+                <i className="fas fa-arrow-right text-gray-300 group-hover:text-[#FF4D29] group-hover:translate-x-1 transition-all"></i>
+              </div>
+              <h3 className="text-lg font-extrabold text-[#0F0F0F] mb-1">Cartographie Business</h3>
+              <p className="text-sm text-gray-500">Visualisez et gérez l'ensemble de vos structures — Diez Agency & Mehdi Hajji.</p>
+            </div>
+          </Link>
+        </div>
+
         {/* Section Freelance */}
         <h2 className="text-lg font-extrabold text-[#0F0F0F] mb-5 mt-10">Freelance</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
