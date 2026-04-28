@@ -94,6 +94,7 @@ export default function CartographiePage() {
   const [loading, setLoading] = useState(true);
   const [entities, setEntities] = useState<BusinessEntity[]>([]);
   const [edges, setEdges] = useState<BusinessEdge[]>([]);
+  const [token, setToken] = useState<string | null>(null);
 
   // Panel state
   const [selectedEntity, setSelectedEntity] = useState<BusinessEntity | null>(null);
@@ -111,12 +112,28 @@ export default function CartographiePage() {
 
   // ── Auth ──────────────────────────────────────────────────
   useEffect(() => {
-    getSession().then((s) => { if (!s) router.push('/admin'); });
+    getSession().then((s) => {
+      if (!s) { router.push('/admin'); return; }
+      setToken(s.access_token);
+    });
   }, [router]);
+
+  // ── Authenticated fetch helper ─────────────────────────────
+  const authFetch = useCallback((url: string, options: RequestInit = {}) => {
+    return fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers as Record<string, string>),
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }, [token]);
 
   // ── Data fetch ────────────────────────────────────────────
   const fetchData = useCallback(async () => {
-    const res = await fetch('/api/admin/cartographie');
+    if (!token) return;
+    const res = await authFetch('/api/admin/cartographie');
     if (!res.ok) return;
     const json = await res.json();
     setEntities(json.entities ?? []);
@@ -124,7 +141,7 @@ export default function CartographiePage() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => { if (token) fetchData(); }, [fetchData, token]);
 
   // ── D3 graph ──────────────────────────────────────────────
   useEffect(() => {
@@ -222,9 +239,8 @@ export default function CartographiePage() {
           .on('end', (event, d) => {
             if (!event.active) simulation.alphaTarget(0);
             // Persist position
-            fetch('/api/admin/cartographie', {
+            authFetch('/api/admin/cartographie', {
               method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ id: d.id, pos_x: event.x, pos_y: event.y }),
             });
             d.fx = null; d.fy = null;
@@ -269,7 +285,7 @@ export default function CartographiePage() {
     });
 
     return () => { simulation.stop(); };
-  }, [loading, entities, edges, filterOwner]);
+  }, [loading, entities, edges, filterOwner, authFetch]);
 
   // ── CRUD ──────────────────────────────────────────────────
   const handleAddEntity = async () => {
@@ -290,9 +306,8 @@ export default function CartographiePage() {
       pos_x: null,
       pos_y: null,
     };
-    const res = await fetch('/api/admin/cartographie', {
+    const res = await authFetch('/api/admin/cartographie', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
     if (res.ok) {
@@ -320,9 +335,8 @@ export default function CartographiePage() {
       color: form.color || null,
       size: Number(form.size),
     };
-    await fetch('/api/admin/cartographie', {
+    await authFetch('/api/admin/cartographie', {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
     await fetchData();
@@ -332,9 +346,8 @@ export default function CartographiePage() {
 
   const handleDeleteEntity = async (id: string) => {
     if (!confirm('Supprimer cette entité ? Les connexions associées seront aussi supprimées.')) return;
-    await fetch('/api/admin/cartographie', {
+    await authFetch('/api/admin/cartographie', {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, _type: 'entity' }),
     });
     await fetchData();
@@ -345,9 +358,8 @@ export default function CartographiePage() {
   const handleAddEdge = async () => {
     if (!edgeSource || !edgeTarget) return;
     setSaving(true);
-    await fetch('/api/admin/cartographie', {
+    await authFetch('/api/admin/cartographie', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ _type: 'edge', source_id: edgeSource, target_id: edgeTarget, label: edgeLabel || null, strength: 1 }),
     });
     await fetchData();
@@ -357,9 +369,8 @@ export default function CartographiePage() {
   };
 
   const handleDeleteEdge = async (id: string) => {
-    await fetch('/api/admin/cartographie', {
+    await authFetch('/api/admin/cartographie', {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, _type: 'edge' }),
     });
     await fetchData();

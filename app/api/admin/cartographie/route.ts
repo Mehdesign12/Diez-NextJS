@@ -1,28 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 import {
   getBusinessEntities, getBusinessEdges,
   createBusinessEntity, updateBusinessEntity, deleteBusinessEntity,
   createBusinessEdge, deleteBusinessEdge,
-  getSession,
 } from '@/lib/supabase';
 
-async function requireAuth() {
-  const session = await getSession();
-  return !!session;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://bcwpqblpovhbgzkipqgn.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjd3BxYmxwb3ZoYmd6a2lwcWduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTYxNzgsImV4cCI6MjA4OTA3MjE3OH0.5uXrIJtENQ-0xfn-BKjAfCIyow-0XIkyaGYKeaWqTTU';
+
+async function requireAuth(req: NextRequest): Promise<boolean> {
+  const authHeader = req.headers.get('authorization');
+  if (!authHeader?.startsWith('Bearer ')) return false;
+  const token = authHeader.replace('Bearer ', '');
+  const client = createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: `Bearer ${token}` } },
+  });
+  const { data: { user }, error } = await client.auth.getUser(token);
+  return !error && !!user;
 }
 
-// GET — fetch all entities + edges
-export async function GET() {
-  if (!(await requireAuth())) {
+export async function GET(req: NextRequest) {
+  if (!(await requireAuth(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const [entities, edges] = await Promise.all([getBusinessEntities(), getBusinessEdges()]);
   return NextResponse.json({ entities, edges });
 }
 
-// POST — create entity or edge
 export async function POST(req: NextRequest) {
-  if (!(await requireAuth())) {
+  if (!(await requireAuth(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const body = await req.json();
@@ -40,9 +47,8 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(entity, { status: 201 });
 }
 
-// PATCH — update entity fields (including position)
 export async function PATCH(req: NextRequest) {
-  if (!(await requireAuth())) {
+  if (!(await requireAuth(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const { id, ...fields } = await req.json();
@@ -51,9 +57,8 @@ export async function PATCH(req: NextRequest) {
   return NextResponse.json({ ok: true });
 }
 
-// DELETE — delete entity or edge
 export async function DELETE(req: NextRequest) {
-  if (!(await requireAuth())) {
+  if (!(await requireAuth(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const { id, _type } = await req.json();
